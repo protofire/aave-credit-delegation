@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
 import { ReactNode } from 'react';
-import { DASHBOARD_LIST_COLUMN_WIDTHS } from 'src/utils/dashboardSortUtils';
+import { CREDIT_DELEGATION_LIST_COLUMN_WIDTHS } from 'src/utils/creditDelegationSortUtils';
 
 interface ListButtonsColumnProps {
   children?: ReactNode;
@@ -14,8 +14,8 @@ export const ListButtonsColumn = ({ children, isColumnHeader = false }: ListButt
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'flex-end',
-        maxWidth: DASHBOARD_LIST_COLUMN_WIDTHS.BUTTONS,
-        minWidth: DASHBOARD_LIST_COLUMN_WIDTHS.BUTTONS,
+        maxWidth: CREDIT_DELEGATION_LIST_COLUMN_WIDTHS.BUTTONS,
+        minWidth: CREDIT_DELEGATION_LIST_COLUMN_WIDTHS.BUTTONS,
         flex: isColumnHeader ? 1 : 1,
         '.MuiButton-root': {
           ml: '6px',

@@ -1,5 +1,5 @@
-import { Trans } from '@lingui/macro';
 import { ReactNode } from 'react';
+import { CREDIT_DELEGATION_LIST_COLUMN_WIDTHS } from 'src/utils/creditDelegationSortUtils';
 
 import { ListColumn } from '../../../components/lists/ListColumn';
 import { ListHeaderTitle } from '../../../components/lists/ListHeaderTitle';
@@ -13,14 +13,12 @@ interface ListHeaderProps {
 export const ListHeader = ({ head }: ListHeaderProps) => {
   return (
     <ListHeaderWrapper>
-      <ListColumn maxWidth={160} isRow>
-        <ListHeaderTitle>
-          <Trans>Assets</Trans>
-        </ListHeaderTitle>
-      </ListColumn>
-
       {head.map((title, i) => (
-        <ListColumn overFlow={'visible'} key={i}>
+        <ListColumn
+          overFlow={'visible'}
+          key={i}
+          maxWidth={i === 0 ? CREDIT_DELEGATION_LIST_COLUMN_WIDTHS.ASSET : undefined}
+        >
           <ListHeaderTitle>{title}</ListHeaderTitle>
         </ListColumn>
       ))}

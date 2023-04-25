@@ -1,5 +1,7 @@
+import { ApolloProvider } from '@apollo/client';
 import { Box, useMediaQuery, useTheme } from '@mui/material';
 
+import { client } from './apollo';
 import { BorrowAssetsList } from './lists/BorrowAssetsList/BorrowAssetsList';
 import { BorrowedPositionsList } from './lists/BorrowedPositionsList/BorrowedPositionsList';
 import { SuppliedPositionsList } from './lists/SuppliedPositionsList/SuppliedPositionsList';
@@ -17,22 +19,24 @@ export const CreditDelegationContentWrapper = ({
   const paperWidth = isDesktop ? 'calc(50% - 8px)' : '100%';
 
   return (
-    <Box
-      sx={{
-        display: isDesktop ? 'flex' : 'block',
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
-      }}
-    >
-      <Box sx={{ display: { xs: isBorrow ? 'none' : 'block', lg: 'block' }, width: paperWidth }}>
-        <SuppliedPositionsList />
-        <SupplyAssetsList />
-      </Box>
+    <ApolloProvider client={client}>
+      <Box
+        sx={{
+          display: isDesktop ? 'flex' : 'block',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+        }}
+      >
+        <Box sx={{ display: { xs: isBorrow ? 'none' : 'block', lg: 'block' }, width: paperWidth }}>
+          <SuppliedPositionsList />
+          <SupplyAssetsList />
+        </Box>
 
-      <Box sx={{ display: { xs: !isBorrow ? 'none' : 'block', lg: 'block' }, width: paperWidth }}>
-        <BorrowedPositionsList />
-        <BorrowAssetsList />
+        <Box sx={{ display: { xs: !isBorrow ? 'none' : 'block', lg: 'block' }, width: paperWidth }}>
+          <BorrowedPositionsList />
+          <BorrowAssetsList />
+        </Box>
       </Box>
-    </Box>
+    </ApolloProvider>
   );
 };
