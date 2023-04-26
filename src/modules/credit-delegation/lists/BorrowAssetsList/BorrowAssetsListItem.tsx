@@ -1,12 +1,10 @@
 import { Trans } from '@lingui/macro';
 import { Button } from '@mui/material';
-import { useModalContext } from 'src/hooks/useModal';
 import { useProtocolDataContext } from 'src/hooks/useProtocolDataContext';
-import { DashboardReserve } from 'src/utils/dashboardSortUtils';
+import { BorrowMarket } from 'src/modules/credit-delegation/types';
 
 import { CapsHint } from '../../../../components/caps/CapsHint';
 import { CapType } from '../../../../components/caps/helper';
-import { Link, ROUTES } from '../../../../components/primitives/Link';
 import { ListAPRColumn } from '../ListAPRColumn';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListItemWrapper } from '../ListItemWrapper';
@@ -22,14 +20,10 @@ export const BorrowAssetsListItem = ({
   totalBorrows,
   variableBorrowRate,
   stableBorrowRate,
-  sIncentivesData,
-  vIncentivesData,
   underlyingAsset,
-  isFreezed,
-}: DashboardReserve) => {
-  const { openBorrow } = useModalContext();
+}: BorrowMarket) => {
   const { currentMarket } = useProtocolDataContext();
-  const borrowButtonDisable = isFreezed || Number(availableBorrows) <= 0;
+  const borrowButtonDisable = Number(availableBorrows) <= 0;
 
   return (
     <ListItemWrapper
@@ -56,31 +50,12 @@ export const BorrowAssetsListItem = ({
         }
       />
 
-      <ListAPRColumn
-        value={Number(variableBorrowRate)}
-        incentives={vIncentivesData}
-        symbol={symbol}
-      />
-      <ListAPRColumn
-        value={Number(stableBorrowRate)}
-        incentives={sIncentivesData}
-        symbol={symbol}
-      />
+      <ListAPRColumn value={Number(variableBorrowRate)} incentives={[]} symbol={symbol} />
+      <ListAPRColumn value={Number(stableBorrowRate)} incentives={[]} symbol={symbol} />
 
       <ListButtonsColumn>
-        <Button
-          disabled={borrowButtonDisable}
-          variant="contained"
-          onClick={() => openBorrow(underlyingAsset)}
-        >
+        <Button disabled={borrowButtonDisable} variant="contained">
           <Trans>Borrow</Trans>
-        </Button>
-        <Button
-          variant="outlined"
-          component={Link}
-          href={ROUTES.reserveOverview(underlyingAsset, currentMarket)}
-        >
-          <Trans>Details</Trans>
         </Button>
       </ListButtonsColumn>
     </ListItemWrapper>
