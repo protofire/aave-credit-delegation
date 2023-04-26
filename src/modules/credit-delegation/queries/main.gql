@@ -1,0 +1,19 @@
+{
+  markets(where: { author: "0x7069c89493e8636cd7d9b83ae214ca3dbb84103a" }) {
+    id
+    title
+    author
+    aggregatedPools {
+      id
+      poolList
+    }
+    capitalToken
+  }
+
+  pools(where: { markets_: { id_in: ["0x5cfdd8f4dcbd1ac2d5de1f102fda0b485b3e1f13-33"] } }) {
+    id
+    name
+    capitalTokenSymbol
+    capitalTokenAddress
+  }
+}

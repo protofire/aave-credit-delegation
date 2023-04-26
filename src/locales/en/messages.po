@@ -280,7 +280,6 @@ msgstr "Asset is not listed"
 msgid "Asset supply is limited to a certain amount to reduce protocol exposure to the asset and to help manage risks involved."
 msgstr "Asset supply is limited to a certain amount to reduce protocol exposure to the asset and to help manage risks involved."
 
-#: src/modules/credit-delegation/lists/ListHeader.tsx
 #: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsList.tsx
 #: src/modules/dashboard/lists/ListHeader.tsx
 #: src/modules/dashboard/lists/SupplyAssetsList/SupplyAssetsList.tsx
@@ -511,8 +510,6 @@ msgstr "CLAIM {symbol}"
 msgid "CLAIMING {symbol}"
 msgstr "CLAIMING {symbol}"
 
-#: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsList.tsx
-#: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsListMobileItem.tsx
 #: src/modules/dashboard/lists/SupplyAssetsList/SupplyAssetsList.tsx
 #: src/modules/dashboard/lists/SupplyAssetsList/SupplyAssetsListMobileItem.tsx
 #: src/modules/reserve-overview/SupplyInfo.tsx
@@ -743,8 +740,6 @@ msgstr "Delegated power"
 
 #: src/modules/credit-delegation/lists/BorrowAssetsList/BorrowAssetsListItem.tsx
 #: src/modules/credit-delegation/lists/BorrowAssetsList/BorrowAssetsListMobileItem.tsx
-#: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsListItem.tsx
-#: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsListMobileItem.tsx
 #: src/modules/dashboard/lists/BorrowAssetsList/BorrowAssetsListItem.tsx
 #: src/modules/dashboard/lists/BorrowAssetsList/BorrowAssetsListMobileItem.tsx
 #: src/modules/dashboard/lists/SupplyAssetsList/SupplyAssetsListItem.tsx
@@ -1873,7 +1868,6 @@ msgstr "Supplied asset amount"
 #: src/modules/credit-delegation/lists/SuppliedPositionsList/SuppliedPositionsListItem.tsx
 #: src/modules/credit-delegation/lists/SuppliedPositionsList/SuppliedPositionsListMobileItem.tsx
 #: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsListItem.tsx
-#: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsListMobileItem.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsListItem.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsListMobileItem.tsx
 #: src/modules/dashboard/lists/SupplyAssetsList/SupplyAssetsListItem.tsx
@@ -1884,7 +1878,6 @@ msgstr "Supply"
 
 #: src/components/transactions/Supply/SupplyModalContent.tsx
 #: src/modules/credit-delegation/lists/SuppliedPositionsList/SuppliedPositionsListMobileItem.tsx
-#: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsListMobileItem.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsListMobileItem.tsx
 #: src/modules/dashboard/lists/SupplyAssetsList/SupplyAssetsListMobileItem.tsx
 #: src/modules/markets/MarketAssetsList.tsx
@@ -1901,7 +1894,6 @@ msgstr "Supply apy"
 #: src/components/transactions/Swap/SwapModalContent.tsx
 #: src/components/transactions/Withdraw/WithdrawModalContent.tsx
 #: src/modules/credit-delegation/lists/SuppliedPositionsList/SuppliedPositionsListMobileItem.tsx
-#: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsListMobileItem.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsListMobileItem.tsx
 #: src/modules/dashboard/lists/SupplyAssetsList/SupplyAssetsListMobileItem.tsx
 msgid "Supply balance"
