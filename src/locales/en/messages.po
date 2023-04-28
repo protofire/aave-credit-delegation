@@ -738,7 +738,6 @@ msgstr "Delegate"
 msgid "Delegated power"
 msgstr "Delegated power"
 
-#: src/modules/credit-delegation/lists/BorrowAssetsList/BorrowAssetsListItem.tsx
 #: src/modules/credit-delegation/lists/BorrowAssetsList/BorrowAssetsListMobileItem.tsx
 #: src/modules/dashboard/lists/BorrowAssetsList/BorrowAssetsListItem.tsx
 #: src/modules/dashboard/lists/BorrowAssetsList/BorrowAssetsListMobileItem.tsx

@@ -1,6 +1,5 @@
 import { Trans } from '@lingui/macro';
 import { Button } from '@mui/material';
-import { useModalContext } from 'src/hooks/useModal';
 import { useProtocolDataContext } from 'src/hooks/useProtocolDataContext';
 
 import { CapsHint } from '../../../../components/caps/CapsHint';
@@ -20,12 +19,10 @@ export const SupplyAssetsListItem = ({
   supplyCap,
   totalLiquidity,
   supplyAPY,
-  underlyingAsset,
   isActive,
   detailsAddress,
 }: SupplyPool) => {
   const { currentMarket } = useProtocolDataContext();
-  const { openSupply } = useModalContext();
 
   return (
     <ListItemWrapper
@@ -55,11 +52,7 @@ export const SupplyAssetsListItem = ({
       <ListAPRColumn value={Number(supplyAPY)} incentives={[]} symbol={symbol} />
 
       <ListButtonsColumn>
-        <Button
-          disabled={!isActive || Number(walletBalance) <= 0}
-          variant="contained"
-          onClick={() => openSupply(underlyingAsset)}
-        >
+        <Button disabled={!isActive || Number(walletBalance) <= 0} variant="contained">
           <Trans>Supply</Trans>
         </Button>
       </ListButtonsColumn>
