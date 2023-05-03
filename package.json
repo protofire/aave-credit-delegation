@@ -13,7 +13,7 @@
     "cache:update": "yarn build:populate-cache && CACHE_PATH=../src/static-build node scripts/populate-cache.js",
     "serve:static": "npx serve out",
     "export": "next export",
-    "start": "next start",
+    "start": "next start -p $PORT",
     "lint:code": "next lint --dir src --dir pages",
     "lint:code:fix": "next lint --dir src --dir pages --fix",
     "lint:formatting": "prettier src pages scripts cypress . --check",
