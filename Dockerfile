@@ -1,6 +1,7 @@
 # base image
 FROM node:16.15.1-slim
 
+RUN apk add --no-cache git
 # Create and change to the app directory.
 WORKDIR /usr/app
 
@@ -48,7 +49,7 @@ ENV NEXT_PUBLIC_FORK_CHAIN_ID=$next_public_fork_chain_id
 ARG next_public_fork_url_rpc
 ENV NEXT_PUBLIC_FORK_URL_RPC=$next_public_fork_url_rpc
 
-RUN yarn install 
+RUN yarn install --frozen-lockfile
 
 RUN yarn build
 
