@@ -48,8 +48,6 @@ export const SuppliedPositionsListItem = ({
       data-cy={`dashboardSuppliedListItem_${reserve.symbol.toUpperCase()}_${
         canBeEnabledAsCollateral && usageAsCollateralEnabledOnUser ? 'Collateral' : 'NoCollateral'
       }`}
-      showSupplyCapTooltips
-      showDebtCeilingTooltips
     >
       <ListValueColumn
         symbol={reserve.iconSymbol}
