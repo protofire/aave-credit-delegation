@@ -43,9 +43,6 @@ export const BorrowedPositionsListItem = ({
       detailsAddress={reserve.underlyingAsset}
       currentMarket={currentMarket}
       frozen={reserve.isFrozen}
-      borrowEnabled={reserve.borrowingEnabled}
-      data-cy={`dashboardBorrowedListItem_${reserve.symbol.toUpperCase()}_${borrowRateMode}`}
-      showBorrowCapTooltips
     >
       <ListValueColumn
         symbol={reserve.symbol}
