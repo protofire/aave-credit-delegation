@@ -23,6 +23,7 @@ export enum ModalType {
   GovVote,
   V3Migration,
   RevokeGovDelegation,
+  CreditDelegation,
 }
 
 export interface ModalArgsType {
@@ -35,6 +36,10 @@ export interface ModalArgsType {
   currentRateMode?: InterestRate;
   emode?: EmodeModalType;
   isFrozen?: boolean;
+  delegatee?: {
+    address: string;
+    label?: string;
+  };
 }
 
 export type TxStateType = {
@@ -63,6 +68,10 @@ export interface ModalContextType<T extends ModalArgsType> {
   openRevokeGovDelegation: () => void;
   openV3Migration: () => void;
   openGovVote: (proposalId: number, support: boolean, power: string) => void;
+  openCreditDelegation: (
+    underlyingAsset: string,
+    delegatee: { address: string; label?: string }
+  ) => void;
   close: () => void;
   type?: ModalType;
   args: T;
@@ -164,6 +173,10 @@ export const ModalContextProvider: React.FC = ({ children }) => {
         },
         openV3Migration: () => {
           setType(ModalType.V3Migration);
+        },
+        openCreditDelegation: (underlyingAsset, delegatee) => {
+          setType(ModalType.CreditDelegation);
+          setArgs({ underlyingAsset, delegatee });
         },
         close: () => {
           setType(undefined);

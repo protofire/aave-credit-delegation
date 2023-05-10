@@ -40,8 +40,6 @@ export const BorrowedPositionsListItem = ({
       symbol={reserve.symbol}
       iconSymbol={reserve.iconSymbol}
       name={reserve.name}
-      detailsAddress={reserve.underlyingAsset}
-      currentMarket={currentMarket}
       frozen={reserve.isFrozen}
     >
       <ListValueColumn

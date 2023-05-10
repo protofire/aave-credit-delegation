@@ -23,7 +23,7 @@ export const SuppliedPositionsListItem = ({
 }: DashboardReserve) => {
   const { user } = useAppDataContext();
   const { isIsolated, aIncentivesData, isFrozen, isActive } = reserve;
-  const { currentMarketData, currentMarket } = useProtocolDataContext();
+  const { currentMarketData } = useProtocolDataContext();
   const { openSupply, openWithdraw, openCollateralChange, openSwap } = useModalContext();
   const { debtCeiling } = useAssetCaps();
   const isSwapButton = isFeatureEnabled.liquiditySwap(currentMarketData);
@@ -42,12 +42,7 @@ export const SuppliedPositionsListItem = ({
       symbol={reserve.symbol}
       iconSymbol={reserve.iconSymbol}
       name={reserve.name}
-      detailsAddress={underlyingAsset}
-      currentMarket={currentMarket}
       frozen={reserve.isFrozen}
-      data-cy={`dashboardSuppliedListItem_${reserve.symbol.toUpperCase()}_${
-        canBeEnabledAsCollateral && usageAsCollateralEnabledOnUser ? 'Collateral' : 'NoCollateral'
-      }`}
     >
       <ListValueColumn
         symbol={reserve.iconSymbol}
