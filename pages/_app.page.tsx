@@ -12,7 +12,6 @@ import { Meta } from 'src/components/Meta';
 import { BorrowModal } from 'src/components/transactions/Borrow/BorrowModal';
 import { ClaimRewardsModal } from 'src/components/transactions/ClaimRewards/ClaimRewardsModal';
 import { CollateralChangeModal } from 'src/components/transactions/CollateralChange/CollateralChangeModal';
-import { CreditDelegationModal } from 'src/components/transactions/CreditDelegation/CreditDelegationModal';
 import { EmodeModal } from 'src/components/transactions/Emode/EmodeModal';
 import { FaucetModal } from 'src/components/transactions/Faucet/FaucetModal';
 import { GasStationProvider } from 'src/components/transactions/GasStation/GasStationProvider';
@@ -87,7 +86,6 @@ export default function MyApp(props: MyAppProps) {
                           <SwapModal />
                           <FaucetModal />
                           <MigrateV3Modal />
-                          <CreditDelegationModal />
                         </GasStationProvider>
                       </AppDataProvider>
                     </BackgroundDataProvider>

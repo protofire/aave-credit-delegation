@@ -5,29 +5,27 @@ import { Trans } from '@lingui/macro';
 import { Box, Typography } from '@mui/material';
 import BigNumber from 'bignumber.js';
 import React, { useState } from 'react';
-import { useAssetCaps } from 'src/hooks/useAssetCaps';
+import { AssetInput } from 'src/components/transactions/AssetInput';
+import { GasEstimationError } from 'src/components/transactions/FlowCommons/GasEstimationError';
+import { ModalWrapperProps } from 'src/components/transactions/FlowCommons/ModalWrapper';
+import { TxSuccessView } from 'src/components/transactions/FlowCommons/Success';
+import {
+  DetailsNumberLine,
+  TxModalDetails,
+} from 'src/components/transactions/FlowCommons/TxModalDetails';
 import { useModalContext } from 'src/hooks/useModal';
 import { useProtocolDataContext } from 'src/hooks/useProtocolDataContext';
 import { getMaxAmountAvailableToBorrow } from 'src/utils/getMaxAmountAvailableToBorrow';
-import { isFeatureEnabled } from 'src/utils/marketsAndNetworksConfig';
 import { roundToTokenDecimals } from 'src/utils/utils';
 
 import { useAppDataContext } from '../../../hooks/app-data-provider/useAppDataProvider';
-import { AssetInput } from '../AssetInput';
-import { GasEstimationError } from '../FlowCommons/GasEstimationError';
-import { ModalWrapperProps } from '../FlowCommons/ModalWrapper';
-import { TxSuccessView } from '../FlowCommons/Success';
-import { DetailsNumberLine, TxModalDetails } from '../FlowCommons/TxModalDetails';
-import { AAVEWarning } from '../Warnings/AAVEWarning';
-import { IsolationModeWarning } from '../Warnings/IsolationModeWarning';
-import { SNXWarning } from '../Warnings/SNXWarning';
 import { CreditDelegationActions } from './CreditDelegationActions';
 
 export enum ErrorType {
   CAP_REACHED,
 }
 
-interface CreditDelegationModalContentProsp extends ModalWrapperProps {
+interface CreditDelegationModalContentProps extends ModalWrapperProps {
   delegatee: {
     address: string;
     label?: string;
@@ -38,14 +36,12 @@ export const CreditDelegationModalContent = React.memo(
   ({
     underlyingAsset,
     poolReserve,
-    userReserve,
     isWrongNetwork,
     delegatee,
-  }: CreditDelegationModalContentProsp) => {
+  }: CreditDelegationModalContentProps) => {
     const { marketReferencePriceInUsd, user } = useAppDataContext();
-    const { currentMarketData, currentNetworkConfig } = useProtocolDataContext();
+    const { currentNetworkConfig } = useProtocolDataContext();
     const { mainTxState: supplyTxState, gasLimit, txError } = useModalContext();
-    const { supplyCap: supplyCapUsage, debtCeiling: debtCeilingUsage } = useAssetCaps();
 
     // states
     const [amount, setAmount] = useState('');
@@ -82,28 +78,14 @@ export const CreditDelegationModalContent = React.memo(
 
     const isMaxSelected = amount === maxAmountToDelegate;
 
-    // ************** Warnings **********
-    // isolation warning
-    const hasDifferentCollateral = user.userReservesData.find(
-      (reserve) => reserve.usageAsCollateralEnabledOnUser && reserve.reserve.id !== poolReserve.id
-    );
-    const showIsolationWarning: boolean =
-      !user.isInIsolationMode &&
-      poolReserve.isIsolated &&
-      !hasDifferentCollateral &&
-      (userReserve && userReserve.underlyingBalance !== '0'
-        ? userReserve.usageAsCollateralEnabledOnUser
-        : true);
-
     const supplyActionsProps = {
       delegatee: delegatee.address,
-      amountToSupply: amount,
+      amount,
       isWrongNetwork,
       poolAddress: supplyUnWrapped ? API_ETH_MOCK_ADDRESS : poolReserve.underlyingAsset,
       symbol: supplyUnWrapped ? currentNetworkConfig.baseAssetSymbol : poolReserve.symbol,
       blocked: Number(amount) <= 0,
       decimals: poolReserve.decimals,
-      amount,
       poolReserve,
     };
 
@@ -118,14 +100,6 @@ export const CreditDelegationModalContent = React.memo(
 
     return (
       <>
-        {showIsolationWarning && <IsolationModeWarning asset={poolReserve.symbol} />}
-        {supplyCapUsage.determineWarningDisplay({ supplyCap: supplyCapUsage })}
-        {debtCeilingUsage.determineWarningDisplay({ debtCeiling: debtCeilingUsage })}
-        {process.env.NEXT_PUBLIC_ENABLE_STAKING === 'true' &&
-          poolReserve.symbol === 'AAVE' &&
-          isFeatureEnabled.staking(currentMarketData) && <AAVEWarning />}
-        {poolReserve.symbol === 'SNX' && maxAmountToDelegate !== '0' && <SNXWarning />}
-
         {/* <AddressInput
           value={address}
           onChange={setAddress}

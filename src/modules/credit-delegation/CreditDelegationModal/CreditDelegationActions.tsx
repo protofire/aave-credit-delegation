@@ -1,14 +1,15 @@
 import { Trans } from '@lingui/macro';
 import { BoxProps } from '@mui/material';
 import { parseUnits } from 'ethers/lib/utils';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { ComputedReserveData } from 'src/hooks/app-data-provider/useAppDataProvider';
 import { useModalContext } from 'src/hooks/useModal';
 import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
+import { useCreditDelegationContext } from 'src/modules/credit-delegation/CreditDelegationContext';
 import { useRootStore } from 'src/store/root';
 import { getErrorTextFromError, TxAction } from 'src/ui-config/errorMapping';
 
-import { TxActionsWrapper } from '../TxActionsWrapper';
+import { TxActionsWrapper } from '../../../components/transactions/TxActionsWrapper';
 
 export interface CreditDelegationActionProps extends BoxProps {
   poolReserve: ComputedReserveData;
@@ -35,47 +36,22 @@ export const CreditDelegationActions = React.memo(
     delegatee,
     ...props
   }: CreditDelegationActionProps) => {
-    const [generateApproveDelegation, getCreditDelegationApprovedAmount] = useRootStore((state) => [
-      state.generateApproveDelegation,
-      state.getCreditDelegationApprovedAmount,
-    ]);
+    const [generateApproveDelegation] = useRootStore((state) => [state.generateApproveDelegation]);
 
-    const { mainTxState, loadingTxns, setLoadingTxns, setMainTxState, setGasLimit, setTxError } =
-      useModalContext();
+    const { mainTxState, loadingTxns, setMainTxState, setGasLimit, setTxError } = useModalContext();
 
     const { sendTx } = useWeb3Context();
 
-    const [approvedAmount, setApprovedAmount] = useState<string | undefined>();
+    const { fetchBorrowAllowance, pools } = useCreditDelegationContext();
 
-    // callback to fetch approved amount and determine execution path on dependency updates
-    const fetchBorrowAllowance = useCallback(
-      async (forceApprovalCheck?: boolean) => {
-        // Check approved amount on-chain on first load or if an action triggers a re-check such as an approval being confirmed
-        if (approvedAmount === undefined || forceApprovalCheck) {
-          setLoadingTxns(true);
-          const { amount: approvedAmount } = await getCreditDelegationApprovedAmount({
-            delegatee,
-            debtTokenAddress: poolReserve.stableDebtTokenAddress,
-          });
-          setApprovedAmount(approvedAmount);
-        }
-
-        setLoadingTxns(false);
-      },
-      [approvedAmount, setLoadingTxns]
-    );
-
-    // Run on first load to decide execution path
-    useEffect(() => {
-      fetchBorrowAllowance();
-    }, [fetchBorrowAllowance]);
+    const pool = pools.find((p) => p.proxyAddress === delegatee);
 
     // Update gas estimation
     useEffect(() => {
       setGasLimit('40000');
     }, [setGasLimit]);
 
-    const action = async () => {
+    const action = useCallback(async () => {
       try {
         const approveDelegationTxData = generateApproveDelegation({
           debtTokenAddress: poolReserve.stableDebtTokenAddress,
@@ -89,6 +65,9 @@ export const CreditDelegationActions = React.memo(
 
         await response.wait(1);
 
+        if (pool) {
+          await fetchBorrowAllowance(pool.id, true);
+        }
         setMainTxState({
           txHash: response.hash,
           loading: false,
@@ -102,7 +81,18 @@ export const CreditDelegationActions = React.memo(
           loading: false,
         });
       }
-    };
+    }, [
+      generateApproveDelegation,
+      amount,
+      decimals,
+      setMainTxState,
+      mainTxState,
+      sendTx,
+      pool,
+      fetchBorrowAllowance,
+      getErrorTextFromError,
+      setTxError,
+    ]);
 
     return (
       <TxActionsWrapper

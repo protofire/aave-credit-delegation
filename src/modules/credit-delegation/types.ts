@@ -35,6 +35,9 @@ export interface DelegationPool {
   availableBalance: string | number;
   availableBalanceUsd: string | number;
   metadata?: PoolMetadata;
+  proxyAddress: string;
+  approvedCredit: string;
+  approvedCreditUsd: string;
 }
 
 export interface BorrowMarket {

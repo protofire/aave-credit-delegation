@@ -23,6 +23,7 @@ export const SupplyAssetsListItem = ({
   availableBalance,
   availableBalanceUsd,
   metadata,
+  proxyAddress,
 }: DelegationPool) => {
   const { openCreditDelegation } = useModalContext();
 
@@ -53,7 +54,7 @@ export const SupplyAssetsListItem = ({
           variant="contained"
           onClick={() =>
             openCreditDelegation(underlyingAsset, {
-              address: '0xFB338C5fE584c026270e5DeD1C2e0AcA786a22fe',
+              address: proxyAddress,
               label: metadata?.Label ?? '',
             })
           }

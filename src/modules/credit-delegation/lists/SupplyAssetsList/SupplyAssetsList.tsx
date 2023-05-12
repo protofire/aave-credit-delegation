@@ -8,7 +8,7 @@ import { CREDIT_DELEGATION_LIST_COLUMN_WIDTHS } from 'src/utils/creditDelegation
 
 import { ListWrapper } from '../../../../components/lists/ListWrapper';
 import { useWalletBalances } from '../../../../hooks/app-data-provider/useWalletBalances';
-import { usePools } from '../../hooks/usePools';
+import { useCreditDelegationContext } from '../../CreditDelegationContext';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListLoader } from '../ListLoader';
 import { SupplyAssetsListItem } from './SupplyAssetsListItem';
@@ -65,7 +65,7 @@ export const SupplyAssetsList = () => {
   const [sortName, setSortName] = useState('');
   const [sortDesc, setSortDesc] = useState(false);
 
-  const { loading: loadingPools, pools } = usePools();
+  const { loadingPools, pools } = useCreditDelegationContext();
 
   if (loadingPools || loading)
     return (
