@@ -1,6 +1,5 @@
 import { Trans } from '@lingui/macro';
 import { Button } from '@mui/material';
-import { useProtocolDataContext } from 'src/hooks/useProtocolDataContext';
 import { BorrowMarket } from 'src/modules/credit-delegation/types';
 
 import { CapsHint } from '../../../../components/caps/CapsHint';
@@ -20,20 +19,11 @@ export const BorrowAssetsListItem = ({
   totalBorrows,
   variableBorrowRate,
   stableBorrowRate,
-  underlyingAsset,
 }: BorrowMarket) => {
-  const { currentMarket } = useProtocolDataContext();
   const borrowButtonDisable = Number(availableBorrows) <= 0;
 
   return (
-    <ListItemWrapper
-      symbol={symbol}
-      iconSymbol={iconSymbol}
-      name={name}
-      detailsAddress={underlyingAsset}
-      data-cy={`dashboardBorrowListItem_${symbol.toUpperCase()}`}
-      currentMarket={currentMarket}
-    >
+    <ListItemWrapper symbol={symbol} iconSymbol={iconSymbol} name={name}>
       <ListValueColumn
         symbol={symbol}
         value={Number(availableBorrows)}

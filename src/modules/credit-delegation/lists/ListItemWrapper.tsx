@@ -1,6 +1,5 @@
 import { Tooltip, Typography } from '@mui/material';
 import { ReactNode } from 'react';
-import { CustomMarket } from 'src/ui-config/marketsConfig';
 import { DASHBOARD_LIST_COLUMN_WIDTHS } from 'src/utils/dashboardSortUtils';
 
 import { ListColumn } from '../../../components/lists/ListColumn';
@@ -11,9 +10,7 @@ interface ListItemWrapperProps {
   symbol: string;
   iconSymbol: string;
   name: string;
-  detailsAddress: string;
   children: ReactNode;
-  currentMarket: CustomMarket;
   frozen?: boolean;
 }
 
@@ -22,8 +19,6 @@ export const ListItemWrapper = ({
   iconSymbol,
   children,
   name,
-  detailsAddress,
-  currentMarket,
   frozen,
 
   ...rest

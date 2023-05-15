@@ -1,3 +1,5 @@
+import { PoolMetadata } from './hooks/usePoolsMetadata';
+
 export interface SubgraphPool {
   id: string;
   name: string;
@@ -18,7 +20,7 @@ export interface SubgraphMarket {
   desiredCover: string;
 }
 
-export interface SupplyPool {
+export interface DelegationPool {
   id: string;
   symbol: string;
   iconSymbol: string;
@@ -30,7 +32,12 @@ export interface SupplyPool {
   supplyAPY: string;
   underlyingAsset: string;
   isActive: boolean;
-  detailsAddress: string;
+  availableBalance: string | number;
+  availableBalanceUsd: string | number;
+  metadata?: PoolMetadata;
+  proxyAddress: string;
+  approvedCredit: string;
+  approvedCreditUsd: string;
 }
 
 export interface BorrowMarket {

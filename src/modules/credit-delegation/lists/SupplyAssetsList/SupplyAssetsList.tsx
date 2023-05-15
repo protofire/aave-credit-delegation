@@ -8,15 +8,16 @@ import { CREDIT_DELEGATION_LIST_COLUMN_WIDTHS } from 'src/utils/creditDelegation
 
 import { ListWrapper } from '../../../../components/lists/ListWrapper';
 import { useWalletBalances } from '../../../../hooks/app-data-provider/useWalletBalances';
-import { usePools } from '../../hooks/usePools';
+import { useCreditDelegationContext } from '../../CreditDelegationContext';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListLoader } from '../ListLoader';
 import { SupplyAssetsListItem } from './SupplyAssetsListItem';
 
 const head = [
   { title: <Trans key="assets">Assets</Trans>, sortKey: 'symbol' },
-  { title: <Trans key="Wallet balance">Wallet balance</Trans>, sortKey: 'walletBalance' },
+  { title: <Trans key="Available credit">Available credit</Trans>, sortKey: 'availableBalance' },
   { title: <Trans key="APY">APY</Trans>, sortKey: 'supplyAPY' },
+  { title: <Trans key="Delegatee">Delegatee</Trans>, sortKey: 'delegatee' },
 ];
 
 interface HeaderProps {
@@ -64,32 +65,32 @@ export const SupplyAssetsList = () => {
   const [sortName, setSortName] = useState('');
   const [sortDesc, setSortDesc] = useState(false);
 
-  const { loading: loadingPools, pools } = usePools();
+  const { loadingPools, pools } = useCreditDelegationContext();
 
   if (loadingPools || loading)
     return (
       <ListLoader
         head={head.map((col) => col.title)}
-        title={<Trans>Assets to supply</Trans>}
+        title={<Trans>Pools to delegate to</Trans>}
         withTopMargin
       />
     );
 
-  const supplyDisabled = false;
+  const delegationDisabled = false;
 
   return (
     <ListWrapper
       titleComponent={
         <Typography component="div" variant="h3" sx={{ mr: 4 }}>
-          <Trans>Assets to supply</Trans>
+          <Trans>Pools to delegate to</Trans>
         </Typography>
       }
-      localStorageName="supplyAssetsCreditDelegationTableCollapse"
+      localStorageName="delegateAssetsTableCollapse"
       withTopMargin
-      noData={supplyDisabled}
+      noData={delegationDisabled}
     >
       <>
-        {!downToXSM && !supplyDisabled && (
+        {!downToXSM && !delegationDisabled && (
           <Header
             sortName={sortName}
             setSortName={setSortName}

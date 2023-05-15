@@ -39,12 +39,14 @@ msgstr "ACTIVATE COOLDOWN"
 msgid "APR"
 msgstr "APR"
 
+#: src/modules/credit-delegation/CreditDelegationModal/CreditDelegationModalContent.tsx
 #: src/modules/credit-delegation/lists/BorrowedPositionsList/BorrowedPositionsList.tsx
 #: src/modules/credit-delegation/lists/BorrowedPositionsList/BorrowedPositionsList.tsx
 #: src/modules/credit-delegation/lists/BorrowedPositionsList/BorrowedPositionsListMobileItem.tsx
 #: src/modules/credit-delegation/lists/SuppliedPositionsList/SuppliedPositionsList.tsx
 #: src/modules/credit-delegation/lists/SuppliedPositionsList/SuppliedPositionsList.tsx
 #: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsList.tsx
+#: src/modules/credit-delegation/modals/CreditDelegationModalContent.tsx
 #: src/modules/dashboard/lists/BorrowedPositionsList/BorrowedPositionsList.tsx
 #: src/modules/dashboard/lists/BorrowedPositionsList/BorrowedPositionsList.tsx
 #: src/modules/dashboard/lists/BorrowedPositionsList/BorrowedPositionsListMobileItem.tsx
@@ -142,6 +144,10 @@ msgstr "Add to wallet"
 msgid "Add {0} to wallet to track your balance."
 msgstr "Add {0} to wallet to track your balance."
 
+#: src/components/transactions/AddressInput.tsx
+msgid "Address"
+msgstr "Address"
+
 #: src/ui-config/errorMapping.tsx
 msgid "Address is not a contract"
 msgstr "Address is not a contract"
@@ -200,6 +206,11 @@ msgstr "An error has occurred fetching the proposal metadata from IPFS."
 msgid "Approve Confirmed"
 msgstr "Approve Confirmed"
 
+#: src/modules/credit-delegation/CreditDelegationModal/CreditDelegationActions.tsx
+#: src/modules/credit-delegation/modals/CreditDelegationActions.tsx
+msgid "Approve credit delegation for {symbol}"
+msgstr "Approve credit delegation for {symbol}"
+
 #: src/components/transactions/FlowCommons/RightHelperText.tsx
 msgid "Approve with"
 msgstr "Approve with"
@@ -207,6 +218,11 @@ msgstr "Approve with"
 #: src/components/transactions/TxActionsWrapper.tsx
 msgid "Approve {symbol} to continue"
 msgstr "Approve {symbol} to continue"
+
+#: src/modules/credit-delegation/CreditDelegationModal/CreditDelegationActions.tsx
+#: src/modules/credit-delegation/modals/CreditDelegationActions.tsx
+msgid "Approving delegation {symbol}"
+msgstr "Approving delegation {symbol}"
 
 #: src/components/transactions/TxActionsWrapper.tsx
 msgid "Approving {symbol}..."
@@ -294,8 +310,6 @@ msgstr "Assets"
 msgid "Assets to borrow"
 msgstr "Assets to borrow"
 
-#: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsList.tsx
-#: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsList.tsx
 #: src/modules/dashboard/lists/SupplyAssetsList/SupplyAssetsList.tsx
 #: src/modules/dashboard/lists/SupplyAssetsList/SupplyAssetsList.tsx
 msgid "Assets to supply"
@@ -322,6 +336,12 @@ msgstr "Available"
 #: src/components/transactions/Emode/EmodeModalContent.tsx
 msgid "Available assets"
 msgstr "Available assets"
+
+#: src/modules/credit-delegation/CreditDelegationModal/CreditDelegationModalContent.tsx
+#: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsList.tsx
+#: src/modules/credit-delegation/modals/CreditDelegationModalContent.tsx
+msgid "Available credit"
+msgstr "Available credit"
 
 #: src/modules/reserve-overview/ReserveTopDetails.tsx
 msgid "Available liquidity"
@@ -355,7 +375,6 @@ msgstr "Back to Dashboard"
 #: src/components/transactions/AssetInput.tsx
 #: src/components/transactions/ClaimRewards/ClaimRewardsModalContent.tsx
 #: src/modules/credit-delegation/lists/BorrowedPositionsList/BorrowedPositionsList.tsx
-#: src/modules/credit-delegation/lists/SuppliedPositionsList/SuppliedPositionsList.tsx
 #: src/modules/credit-delegation/lists/SuppliedPositionsList/SuppliedPositionsList.tsx
 #: src/modules/dashboard/lists/BorrowedPositionsList/BorrowedPositionsList.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsList.tsx
@@ -731,12 +750,35 @@ msgid "Debt ceiling limits the amount possible to borrow against this asset by p
 msgstr "Debt ceiling limits the amount possible to borrow against this asset by protocol users. Debt ceiling is specific to assets in isolation mode and is denoted in USD."
 
 #: pages/credit-delegation.page.tsx
+#: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsListItem.tsx
 msgid "Delegate"
 msgstr "Delegate"
+
+#: src/modules/credit-delegation/modals/CreditDelegationModal.tsx
+msgid "Delegate credit"
+msgstr "Delegate credit"
+
+#: src/modules/credit-delegation/lists/SuppliedPositionsList/SuppliedPositionsList.tsx
+msgid "Delegated Amount"
+msgstr "Delegated Amount"
 
 #: src/modules/governance/DelegatedInfoPanel.tsx
 msgid "Delegated power"
 msgstr "Delegated power"
+
+#: src/modules/credit-delegation/lists/SuppliedPositionsList/SuppliedPositionsList.tsx
+#: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsList.tsx
+msgid "Delegatee"
+msgstr "Delegatee"
+
+#: src/modules/credit-delegation/CreditDelegationModal/CreditDelegationModalContent.tsx
+#: src/modules/credit-delegation/modals/CreditDelegationModalContent.tsx
+msgid "Delegating to pool ({0})"
+msgstr "Delegating to pool ({0})"
+
+#: src/modules/credit-delegation/CreditDelegationTopPanel.tsx
+msgid "Delegation net worth"
+msgstr "Delegation net worth"
 
 #: src/modules/credit-delegation/lists/BorrowAssetsList/BorrowAssetsListMobileItem.tsx
 #: src/modules/dashboard/lists/BorrowAssetsList/BorrowAssetsListItem.tsx
@@ -1184,6 +1226,10 @@ msgstr "Liquidation value"
 msgid "Loading data..."
 msgstr "Loading data..."
 
+#: src/modules/credit-delegation/CreditDelegationTopPanel.tsx
+msgid "Loans net APY"
+msgstr "Loans net APY"
+
 #: src/ui-config/errorMapping.tsx
 msgid "Ltv validation failed"
 msgstr "Ltv validation failed"
@@ -1191,6 +1237,10 @@ msgstr "Ltv validation failed"
 #: src/modules/dashboard/LiquidationRiskParametresModal/components/LTVContent.tsx
 msgid "MAX"
 msgstr "MAX"
+
+#: src/modules/credit-delegation/lists/SuppliedPositionsList/SuppliedPositionsListItem.tsx
+msgid "Manage"
+msgstr "Manage"
 
 #: src/modules/reserve-overview/ReserveTopDetails.tsx
 msgid "Market"
@@ -1292,7 +1342,6 @@ msgstr "Need help connecting a wallet? <0>Read our FAQ</0>"
 msgid "Net APR"
 msgstr "Net APR"
 
-#: src/modules/credit-delegation/CreditDelegationTopPanel.tsx
 #: src/modules/dashboard/DashboardTopPanel.tsx
 msgid "Net APY"
 msgstr "Net APY"
@@ -1301,7 +1350,6 @@ msgstr "Net APY"
 msgid "Net APY is the combined effect of all supply and borrow positions on net worth, including incentives. It is possible to have a negative net APY if debt APY is higher than supply APY."
 msgstr "Net APY is the combined effect of all supply and borrow positions on net worth, including incentives. It is possible to have a negative net APY if debt APY is higher than supply APY."
 
-#: src/modules/credit-delegation/CreditDelegationTopPanel.tsx
 #: src/modules/dashboard/DashboardTopPanel.tsx
 msgid "Net worth"
 msgstr "Net worth"
@@ -1461,6 +1509,11 @@ msgstr "Please, connect your wallet"
 #: src/ui-config/errorMapping.tsx
 msgid "Pool addresses provider is not registered"
 msgstr "Pool addresses provider is not registered"
+
+#: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsList.tsx
+#: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsList.tsx
+msgid "Pools to delegate to"
+msgstr "Pools to delegate to"
 
 #: src/modules/dashboard/lists/SlippageList.tsx
 msgid "Powered by"
@@ -1864,9 +1917,7 @@ msgstr "Supplied asset amount"
 
 #: pages/index.page.tsx
 #: src/components/transactions/Supply/SupplyModal.tsx
-#: src/modules/credit-delegation/lists/SuppliedPositionsList/SuppliedPositionsListItem.tsx
 #: src/modules/credit-delegation/lists/SuppliedPositionsList/SuppliedPositionsListMobileItem.tsx
-#: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsListItem.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsListItem.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsListMobileItem.tsx
 #: src/modules/dashboard/lists/SupplyAssetsList/SupplyAssetsListItem.tsx
@@ -1925,7 +1976,6 @@ msgstr "Supplying {symbol}"
 #: src/components/transactions/Swap/SwapActions.tsx
 #: src/components/transactions/Swap/SwapActions.tsx
 #: src/components/transactions/Swap/SwapModal.tsx
-#: src/modules/credit-delegation/lists/SuppliedPositionsList/SuppliedPositionsListItem.tsx
 #: src/modules/credit-delegation/lists/SuppliedPositionsList/SuppliedPositionsListMobileItem.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsListItem.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsListMobileItem.tsx
@@ -2432,7 +2482,6 @@ msgstr "Wallet Balance"
 #: src/components/transactions/Repay/RepayTypeSelector.tsx
 #: src/components/transactions/Stake/StakeModalContent.tsx
 #: src/components/transactions/Supply/SupplyModalContent.tsx
-#: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsList.tsx
 #: src/modules/dashboard/lists/SupplyAssetsList/SupplyAssetsList.tsx
 #: src/modules/faucet/FaucetAssetsList.tsx
 msgid "Wallet balance"
@@ -2467,7 +2516,6 @@ msgid "With testnet Faucet you can get free assets to test the Aave Protocol. Ma
 msgstr "With testnet Faucet you can get free assets to test the Aave Protocol. Make sure to switch your wallet provider to the appropriate testnet network, select desired asset, and click ‘Faucet’ to get tokens transferred to your wallet. The assets on a testnet are not “real,” meaning they have no monetary value. <0>Learn more</0>"
 
 #: src/components/transactions/Withdraw/WithdrawModal.tsx
-#: src/modules/credit-delegation/lists/SuppliedPositionsList/SuppliedPositionsListItem.tsx
 #: src/modules/credit-delegation/lists/SuppliedPositionsList/SuppliedPositionsListMobileItem.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsListItem.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsListMobileItem.tsx
@@ -2575,8 +2623,6 @@ msgstr "You will exit isolation mode and other tokens can now be used as collate
 msgid "You {action} <0/> {symbol}"
 msgstr "You {action} <0/> {symbol}"
 
-#: src/modules/credit-delegation/lists/BorrowedPositionsList/BorrowedPositionsList.tsx
-#: src/modules/credit-delegation/lists/BorrowedPositionsList/BorrowedPositionsList.tsx
 #: src/modules/dashboard/lists/BorrowedPositionsList/BorrowedPositionsList.tsx
 #: src/modules/dashboard/lists/BorrowedPositionsList/BorrowedPositionsList.tsx
 msgid "Your borrows"
@@ -2585,6 +2631,11 @@ msgstr "Your borrows"
 #: src/modules/dashboard/LiquidationRiskParametresModal/LiquidationRiskParametresModal.tsx
 msgid "Your current loan to value based on your collateral supplied."
 msgstr "Your current loan to value based on your collateral supplied."
+
+#: src/modules/credit-delegation/lists/SuppliedPositionsList/SuppliedPositionsList.tsx
+#: src/modules/credit-delegation/lists/SuppliedPositionsList/SuppliedPositionsList.tsx
+msgid "Your delegations"
+msgstr "Your delegations"
 
 #: src/modules/dashboard/LiquidationRiskParametresModal/LiquidationRiskParametresModal.tsx
 msgid "Your health factor and loan to value determine the assurance of your collateral. To avoid liquidations you can supply more collateral or repay borrow positions."
@@ -2599,6 +2650,11 @@ msgstr "Your health factor and loan to value determine the assurance of your col
 msgid "Your info"
 msgstr "Your info"
 
+#: src/modules/credit-delegation/lists/BorrowedPositionsList/BorrowedPositionsList.tsx
+#: src/modules/credit-delegation/lists/BorrowedPositionsList/BorrowedPositionsList.tsx
+msgid "Your loans"
+msgstr "Your loans"
+
 #: src/modules/governance/VotingPowerInfoPanel.tsx
 msgid "Your proposition power is based on your AAVE/stkAAVE balance and received delegations."
 msgstr "Your proposition power is based on your AAVE/stkAAVE balance and received delegations."
@@ -2607,8 +2663,6 @@ msgstr "Your proposition power is based on your AAVE/stkAAVE balance and receive
 msgid "Your reward balance is 0"
 msgstr "Your reward balance is 0"
 
-#: src/modules/credit-delegation/lists/SuppliedPositionsList/SuppliedPositionsList.tsx
-#: src/modules/credit-delegation/lists/SuppliedPositionsList/SuppliedPositionsList.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsList.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsList.tsx
 msgid "Your supplies"
@@ -2655,6 +2709,11 @@ msgstr "blocked activities"
 #: src/components/transactions/FlowCommons/GasEstimationError.tsx
 msgid "copy the error"
 msgstr "copy the error"
+
+#: src/modules/credit-delegation/CreditDelegationModal/CreditDelegationModalContent.tsx
+#: src/modules/credit-delegation/modals/CreditDelegationModalContent.tsx
+msgid "delegated"
+msgstr "delegated"
 
 #: src/modules/governance/GovernanceTopPanel.tsx
 msgid "documentation"

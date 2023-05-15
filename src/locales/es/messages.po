@@ -1337,6 +1337,26 @@ msgstr "Nada tomado prestado aún"
 msgid "Nothing staked"
 msgstr "Nada invertido"
 
+#: pages/credit-delegation.page.tsx
+#: src/modules/credit-delegation/lists/SuppliedPositionsList/SuppliedPositionsList.tsx
+msgid "Nothing supplied yet"
+msgstr "Nada suministrado aún"
+
+#: pages/credit-delegation.page.tsx
+#: src/modules/credit-delegation/lists/SuppliedPositionsList/SuppliedPositionsList.tsx
+msgid "Your delegations"
+msgstr "Sus delegaciones"
+
+#: pages/credit-delegation.page.tsx
+#: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsList.tsx
+msgid "Pools to delegate to"
+msgstr "Pools a delegar"
+
+#: pages/credit-delegation.page.tsx
+#: src/modules/credit-delegation/lists/BorrowedPositionsList/BorrowedPositionsList.tsx
+msgid "Your loans"
+msgstr "Sus prestamos"
+
 #: pages/v3-migration.page.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsList.tsx
 msgid "Nothing supplied yet"

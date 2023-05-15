@@ -1,4 +1,4 @@
-name: "[STG] - Build and Deploy Netlify FE to GCP Cloud Run"
+name: '[STG] - Build and Deploy Netlify FE to GCP Cloud Run'
 
 on:
   push:
@@ -71,7 +71,7 @@ jobs:
       - name: Push the image to the Google Container Registry (GCR)
         run: |-
           docker push gcr.io/$PROJECT_ID/$GCR_REPO_NAME:$GITHUB_REF_NAME
-     
+
       - name: Deploy
         run: |-
           gcloud run deploy $GCR_REPO_NAME \

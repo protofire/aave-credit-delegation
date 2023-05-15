@@ -117,7 +117,11 @@ export const CreditDelegationTopPanel = () => {
           </Box>
         }
       >
-        <TopInfoPanelItem icon={<WalletIcon />} title={<Trans>Net worth</Trans>} loading={loading}>
+        <TopInfoPanelItem
+          icon={<WalletIcon />}
+          title={<Trans>Delegation net worth</Trans>}
+          loading={loading}
+        >
           {currentAccount ? (
             <FormattedNumber
               value={Number(user?.netWorthUSD || 0)}
@@ -137,7 +141,7 @@ export const CreditDelegationTopPanel = () => {
           icon={<NetAPYIcon />}
           title={
             <div style={{ display: 'flex' }}>
-              <Trans>Net APY</Trans>
+              <Trans>Loans net APY</Trans>
               <NetAPYTooltip />
             </div>
           }
