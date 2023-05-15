@@ -1,6 +1,6 @@
 import { Trans } from '@lingui/macro';
 import { Typography, useMediaQuery, useTheme } from '@mui/material';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { ListColumn } from 'src/components/lists/ListColumn';
 import { ListHeaderTitle } from 'src/components/lists/ListHeaderTitle';
 import { ListHeaderWrapper } from 'src/components/lists/ListHeaderWrapper';
@@ -9,15 +9,19 @@ import { CREDIT_DELEGATION_LIST_COLUMN_WIDTHS } from 'src/utils/creditDelegation
 import { ListWrapper } from '../../../../components/lists/ListWrapper';
 import { useWalletBalances } from '../../../../hooks/app-data-provider/useWalletBalances';
 import { useCreditDelegationContext } from '../../CreditDelegationContext';
+import { handleSortPools } from '../../utils';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListLoader } from '../ListLoader';
 import { SupplyAssetsListItem } from './SupplyAssetsListItem';
 
 const head = [
   { title: <Trans key="assets">Assets</Trans>, sortKey: 'symbol' },
+  { title: <Trans key="title">Title</Trans>, sortKey: 'metadata.Label' },
+  { title: <Trans key="manager">Manager</Trans>, sortKey: 'manager' },
+  { title: <Trans key="borrowers">Borrowers</Trans>, sortKey: 'borrowers' },
   { title: <Trans key="Available credit">Available credit</Trans>, sortKey: 'availableBalance' },
+  { title: <Trans key="Delegated amount">Delegated amount</Trans>, sortKey: 'approvedCredit' },
   { title: <Trans key="APY">APY</Trans>, sortKey: 'supplyAPY' },
-  { title: <Trans key="Delegatee">Delegatee</Trans>, sortKey: 'delegatee' },
 ];
 
 interface HeaderProps {
@@ -67,6 +71,11 @@ export const SupplyAssetsList = () => {
 
   const { loadingPools, pools } = useCreditDelegationContext();
 
+  const sortedPools = useMemo(
+    () => handleSortPools(sortDesc, sortName, pools),
+    [sortDesc, sortName, pools]
+  );
+
   if (loadingPools || loading)
     return (
       <ListLoader
@@ -98,7 +107,7 @@ export const SupplyAssetsList = () => {
             setSortDesc={setSortDesc}
           />
         )}
-        {pools.map((item) => (
+        {sortedPools.map((item) => (
           <SupplyAssetsListItem {...item} key={item.id} />
         ))}
       </>

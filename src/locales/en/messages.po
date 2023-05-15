@@ -465,6 +465,10 @@ msgstr "Borrow {symbol}"
 msgid "Borrowed"
 msgstr "Borrowed"
 
+#: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsList.tsx
+msgid "Borrowers"
+msgstr "Borrowers"
+
 #: src/components/transactions/Borrow/BorrowModalContent.tsx
 msgid "Borrowing is currently unavailable for {0}."
 msgstr "Borrowing is currently unavailable for {0}."
@@ -555,7 +559,6 @@ msgstr "Choose how much voting/proposition power to give to someone else by dele
 msgid "Choose one of the on-ramp services"
 msgstr "Choose one of the on-ramp services"
 
-#: src/modules/credit-delegation/CreditDelegationTopPanel.tsx
 #: src/modules/dashboard/DashboardTopPanel.tsx
 msgid "Claim"
 msgstr "Claim"
@@ -750,7 +753,6 @@ msgid "Debt ceiling limits the amount possible to borrow against this asset by p
 msgstr "Debt ceiling limits the amount possible to borrow against this asset by protocol users. Debt ceiling is specific to assets in isolation mode and is denoted in USD."
 
 #: pages/credit-delegation.page.tsx
-#: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsListItem.tsx
 msgid "Delegate"
 msgstr "Delegate"
 
@@ -762,12 +764,15 @@ msgstr "Delegate credit"
 msgid "Delegated Amount"
 msgstr "Delegated Amount"
 
+#: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsList.tsx
+msgid "Delegated amount"
+msgstr "Delegated amount"
+
 #: src/modules/governance/DelegatedInfoPanel.tsx
 msgid "Delegated power"
 msgstr "Delegated power"
 
 #: src/modules/credit-delegation/lists/SuppliedPositionsList/SuppliedPositionsList.tsx
-#: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsList.tsx
 msgid "Delegatee"
 msgstr "Delegatee"
 
@@ -1242,6 +1247,10 @@ msgstr "MAX"
 msgid "Manage"
 msgstr "Manage"
 
+#: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsList.tsx
+msgid "Manager"
+msgstr "Manager"
+
 #: src/modules/reserve-overview/ReserveTopDetails.tsx
 msgid "Market"
 msgstr "Market"
@@ -1370,6 +1379,10 @@ msgstr "New APY"
 msgid "No assets selected to migrate."
 msgstr "No assets selected to migrate."
 
+#: src/modules/credit-delegation/lists/SuppliedPositionsList/SuppliedPositionsList.tsx
+msgid "No delegations yet"
+msgstr "No delegations yet"
+
 #: src/components/transactions/StakeRewardClaim/StakeRewardClaimModalContent.tsx
 msgid "No rewards to claim"
 msgstr "No rewards to claim"
@@ -1425,7 +1438,6 @@ msgid "Nothing staked"
 msgstr "Nothing staked"
 
 #: pages/v3-migration.page.tsx
-#: src/modules/credit-delegation/lists/SuppliedPositionsList/SuppliedPositionsList.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsList.tsx
 msgid "Nothing supplied yet"
 msgstr "Nothing supplied yet"
@@ -2222,6 +2234,10 @@ msgstr "Time left until the withdrawal window closes."
 msgid "Tip: Try increasing slippage or reduce input amount"
 msgstr "Tip: Try increasing slippage or reduce input amount"
 
+#: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsList.tsx
+msgid "Title"
+msgstr "Title"
+
 #: src/hooks/useReserveActionState.tsx
 #: src/modules/dashboard/lists/BorrowAssetsList/BorrowAssetsList.tsx
 msgid "To borrow you need to supply any asset to be used as collateral."
@@ -2787,6 +2803,7 @@ msgstr "withdrew"
 #: src/components/transactions/GovDelegation/GovDelegationModalContent.tsx
 #: src/components/transactions/StakeCooldown/StakeCooldownModalContent.tsx
 #: src/components/transactions/StakeCooldown/StakeCooldownModalContent.tsx
+#: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsListItem.tsx
 #: src/modules/dashboard/DashboardEModeButton.tsx
 #: src/modules/reserve-overview/ReserveTopDetails.tsx
 msgid "{0}"

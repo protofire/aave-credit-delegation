@@ -17,5 +17,6 @@
     capitalTokenSymbol
     capitalTokenAddress
     capitalTokenDecimals
+    manager
   }
 }
