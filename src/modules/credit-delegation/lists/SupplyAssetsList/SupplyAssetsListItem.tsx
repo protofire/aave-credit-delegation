@@ -24,15 +24,21 @@ export const SupplyAssetsListItem = ({
   availableBalanceUsd,
   metadata,
   proxyAddress,
+  approvedCredit,
+  approvedCreditUsd,
 }: DelegationPool) => {
   const { openCreditDelegation } = useModalContext();
 
   return (
     <ListItemWrapper symbol={symbol} iconSymbol={iconSymbol} name={name}>
+      <ListColumn>{metadata?.Label}</ListColumn>
+      <ListColumn>--</ListColumn>
+      <ListColumn>--</ListColumn>
+
       <ListValueColumn
         symbol={symbol}
-        value={Number(availableBalance)}
-        subValue={availableBalanceUsd}
+        value={Number(availableBalance) - Number(approvedCredit)}
+        subValue={Number(availableBalanceUsd) - Number(approvedCreditUsd)}
         withTooltip
         disabled={Number(availableBalance) === 0}
         capsComponent={
@@ -45,8 +51,15 @@ export const SupplyAssetsListItem = ({
         }
       />
 
+      <ListValueColumn
+        symbol={symbol}
+        value={Number(approvedCredit)}
+        subValue={approvedCreditUsd}
+        withTooltip
+        disabled={Number(approvedCredit) === 0}
+      />
+
       <ListAPRColumn value={Number(supplyAPY)} incentives={[]} symbol={symbol} />
-      <ListColumn>{metadata?.Label}</ListColumn>
 
       <ListButtonsColumn>
         <Button
@@ -59,7 +72,7 @@ export const SupplyAssetsListItem = ({
             })
           }
         >
-          <Trans>Delegate</Trans>
+          <Trans>{Number(approvedCredit) === 0 ? 'Delegate' : 'Manage'}</Trans>
         </Button>
       </ListButtonsColumn>
     </ListItemWrapper>

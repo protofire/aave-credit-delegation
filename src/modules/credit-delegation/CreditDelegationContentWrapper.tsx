@@ -1,11 +1,10 @@
 import { ApolloProvider } from '@apollo/client';
-import { Box, useMediaQuery, useTheme } from '@mui/material';
+import { Box } from '@mui/material';
 
 import { client } from './apollo';
 import { CreditDelegationProvider } from './CreditDelegationContext';
 import { BorrowAssetsList } from './lists/BorrowAssetsList/BorrowAssetsList';
 import { BorrowedPositionsList } from './lists/BorrowedPositionsList/BorrowedPositionsList';
-import { SuppliedPositionsList } from './lists/SuppliedPositionsList/SuppliedPositionsList';
 import { SupplyAssetsList } from './lists/SupplyAssetsList/SupplyAssetsList';
 import { CreditDelegationModal } from './modals/CreditDelegationModal';
 
@@ -16,30 +15,23 @@ interface CreditDelegationContentWrapperProps {
 export const CreditDelegationContentWrapper = ({
   isBorrow,
 }: CreditDelegationContentWrapperProps) => {
-  const { breakpoints } = useTheme();
-  const isDesktop = useMediaQuery(breakpoints.up('lg'));
-  const paperWidth = isDesktop ? 'calc(50% - 8px)' : '100%';
+  // const { breakpoints } = useTheme();
+  // const isDesktop = useMediaQuery(breakpoints.up('lg'));
+  // const paperWidth = isDesktop ? 'calc(50% - 8px)' : '100%';
 
   return (
     <ApolloProvider client={client}>
       <CreditDelegationProvider>
         <Box
           sx={{
-            display: isDesktop ? 'flex' : 'block',
-            justifyContent: 'space-between',
-            alignItems: 'flex-start',
+            display: 'block',
           }}
         >
-          <Box
-            sx={{ display: { xs: isBorrow ? 'none' : 'block', lg: 'block' }, width: paperWidth }}
-          >
-            <SuppliedPositionsList />
+          <Box style={{ display: isBorrow ? 'none' : 'block' }}>
             <SupplyAssetsList />
           </Box>
 
-          <Box
-            sx={{ display: { xs: !isBorrow ? 'none' : 'block', lg: 'block' }, width: paperWidth }}
-          >
+          <Box style={{ display: isBorrow ? 'block' : 'none' }}>
             <BorrowedPositionsList />
             <BorrowAssetsList />
           </Box>

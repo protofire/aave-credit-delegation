@@ -37,6 +37,8 @@ export const usePools = () => {
   const metadata = usePoolsMetadata();
 
   const [approvedCredit, setApprovedCredit] = useState<ApproveCredit>({});
+  const [approvedCreditLoading, setApprovedCreditLoading] = useState<boolean>(false);
+  const [approvedCreditLoaded, setApprovedCreditLoaded] = useState<boolean>(false);
 
   const { baseAssetSymbol } = currentNetworkConfig;
 
@@ -126,21 +128,31 @@ export const usePools = () => {
         }
       }
     },
-    [approvedCredit]
+    [approvedCredit, data?.pools, reserves, getCreditDelegationApprovedAmount, setApprovedCredit]
   );
 
   const fetchAllBorrowAllowances = useCallback(
     async (forceApprovalCheck?: boolean) => {
-      data?.pools.map((pool) => fetchBorrowAllowance(pool.id, forceApprovalCheck));
+      if (approvedCreditLoading) {
+        return;
+      }
+      setApprovedCreditLoading(true);
+
+      await Promise.all(
+        (data?.pools ?? []).map((pool) => fetchBorrowAllowance(pool.id, forceApprovalCheck))
+      );
+      setApprovedCreditLoading(false);
     },
-    [fetchBorrowAllowance]
+
+    [fetchBorrowAllowance, setApprovedCreditLoading, data?.pools]
   );
 
   useEffect(() => {
-    if (!appDataLoading && !poolsLoading) {
+    if (!appDataLoading && !poolsLoading && !approvedCreditLoaded) {
       fetchAllBorrowAllowances();
+      setApprovedCreditLoaded(true);
     }
-  }, [fetchAllBorrowAllowances, appDataLoading, poolsLoading]);
+  }, [fetchAllBorrowAllowances, appDataLoading, poolsLoading, approvedCreditLoaded]);
 
   const pools: DelegationPool[] = useMemo(
     () =>
@@ -189,7 +201,7 @@ export const usePools = () => {
   return {
     pools,
     error,
-    loading: poolsLoading || appDataLoading,
+    loading: poolsLoading || appDataLoading || approvedCreditLoading,
     fetchBorrowAllowance,
     fetchAllBorrowAllowances,
   };

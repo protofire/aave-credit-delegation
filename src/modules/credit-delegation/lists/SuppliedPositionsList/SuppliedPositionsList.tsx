@@ -85,6 +85,8 @@ export const SuppliedPositionsList = () => {
 
   const { loadingPools, pools } = useCreditDelegationContext();
 
+  const myPools = pools.filter((pool) => Number(pool.approvedCredit) !== 0);
+
   if (loading || loadingPools)
     return (
       <ListLoader title={<Trans>Your delegations</Trans>} head={head.map((col) => col.title)} />
@@ -98,10 +100,10 @@ export const SuppliedPositionsList = () => {
         </Typography>
       }
       localStorageName="suppliedAssetsCreditDelegationTableCollapse"
-      noData={!pools}
+      noData={!myPools}
       topInfo={
         <>
-          {!pools && (
+          {!myPools && (
             <>
               <ListTopInfoItem
                 title={<Trans>Balance</Trans>}
@@ -118,7 +120,7 @@ export const SuppliedPositionsList = () => {
         </>
       }
     >
-      {pools.length ? (
+      {myPools.length ? (
         <>
           {!downToXSM && (
             <Header
@@ -128,12 +130,12 @@ export const SuppliedPositionsList = () => {
               setSortDesc={setSortDesc}
             />
           )}
-          {pools.map((item) => (
+          {myPools.map((item) => (
             <SuppliedPositionsListItem {...item} key={item.id} />
           ))}
         </>
       ) : (
-        <CreditDelegationContentNoData text={<Trans>Nothing supplied yet</Trans>} />
+        <CreditDelegationContentNoData text={<Trans>No delegations yet</Trans>} />
       )}
     </ListWrapper>
   );
