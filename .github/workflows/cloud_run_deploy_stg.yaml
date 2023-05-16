@@ -29,6 +29,9 @@ env:
   NEXT_PUBLIC_FORK_BASE_CHAIN_ID: 1
   NEXT_PUBLIC_FORK_CHAIN_ID: 1
   NEXT_PUBLIC_FORK_URL_RPC: 'https://rpc.tenderly.co/fork/1234567'
+  NEXT_PUBLIC_CD_API_URL: 'https://aave-cdm-backend-asvwsyulcq-ue.a.run.app/'
+  NEXT_PUBLIC_CD_SUBGRAPH_URL: 'https://api.thegraph.com/subgraphs/name/atomica-dev/solvency-risk-markets-staging'
+  NEXT_PUBLIC_ATOMICA_API_URL: 'https://api.atomica.org/srm-staging/'
 
 jobs:
   Build_Push_Deploy:
