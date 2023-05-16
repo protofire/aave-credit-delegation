@@ -51,6 +51,15 @@ ENV NEXT_PUBLIC_FORK_CHAIN_ID=$next_public_fork_chain_id
 ARG next_public_fork_url_rpc
 ENV NEXT_PUBLIC_FORK_URL_RPC=$next_public_fork_url_rpc
 
+ARG next_public_cd_api_url
+ENV NEXT_PUBLIC_CD_API_URL=$next_public_cd_api_url
+
+ARG next_public_cd_subgraph_url
+ENV NEXT_PUBLIC_CD_SUBGRAPH_URL=$next_public_cd_subgraph_url
+
+ARG next_public_atomica_api_url
+ENV NEXT_PUBLIC_ATOMICA_API_URL=$next_public_atomica_api_url
+
 RUN yarn install --frozen-lockfile
 
 RUN yarn build
