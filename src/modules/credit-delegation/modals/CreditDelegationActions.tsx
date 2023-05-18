@@ -50,7 +50,7 @@ export const CreditDelegationActions = React.memo(
       setGasLimit('40000');
     }, [setGasLimit]);
 
-    const action = useCallback(async () => {
+    const approveDelegation = useCallback(async () => {
       try {
         const approveDelegationTxData = generateApproveDelegation({
           debtTokenAddress: poolReserve.stableDebtTokenAddress,
@@ -93,6 +93,16 @@ export const CreditDelegationActions = React.memo(
       setTxError,
     ]);
 
+    const deployVault = useCallback(async () => {}, []);
+
+    const action = useCallback(async () => {
+      if (pool?.vault === undefined) {
+        deployVault();
+      } else {
+        await approveDelegation();
+      }
+    }, [approveDelegation]);
+
     return (
       <TxActionsWrapper
         blocked={blocked}
@@ -102,8 +112,16 @@ export const CreditDelegationActions = React.memo(
         amount={amount}
         symbol={symbol}
         preparingTransactions={loadingTxns}
-        actionText={<Trans>Approve credit delegation for {symbol}</Trans>}
-        actionInProgressText={<Trans>Approving delegation {symbol}</Trans>}
+        actionText={
+          <Trans>
+            {pool?.vault
+              ? 'Deploy vault to delegate credit'
+              : 'Approve credit delegation for {symbol}'}
+          </Trans>
+        }
+        actionInProgressText={
+          <Trans>{pool?.vault ? 'Deploying vault...' : 'Approving delegation {symbol}'}</Trans>
+        }
         handleAction={action}
         requiresApproval={false}
         sx={sx}

@@ -20,6 +20,22 @@ export interface SubgraphMarket {
   desiredCover: string;
 }
 
+export interface SubgraphVault {
+  id: string;
+  owner: {
+    id: string;
+  };
+  createdAt: string;
+  debtToken: string;
+  manager: {
+    id: string;
+  };
+  atomicaPool: string;
+  asset: string;
+  allowance: string;
+  loanAmount: string;
+}
+
 export interface DelegationPool {
   id: string;
   symbol: string;
@@ -38,6 +54,7 @@ export interface DelegationPool {
   proxyAddress: string;
   approvedCredit: string;
   approvedCreditUsd: string;
+  vault?: SubgraphVault;
 }
 
 export interface BorrowMarket {

@@ -1,5 +1,5 @@
-{
-  markets(where: { author: "0x7069c89493e8636cd7d9b83ae214ca3dbb84103a" }) {
+query main($author: String!) {
+  markets(where: { author: $author }) {
     id
     title
     author

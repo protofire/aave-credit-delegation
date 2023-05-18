@@ -8,11 +8,13 @@ export interface CreditDelgationData {
   pools: DelegationPool[];
   fetchAllBorrowAllowances: (forceApprovalCheck?: boolean | undefined) => Promise<void>;
   fetchBorrowAllowance: (poolId: string, forceApprovalCheck?: boolean | undefined) => Promise<void>;
+  refetchVaults: () => Promise<unknown>;
 }
 
 export const CreditDelegationContext = createContext({
   pools: [],
   loadingPools: true,
+  refetchVaults: () => Promise.reject(),
   fetchAllBorrowAllowances: () => Promise.reject(),
   fetchBorrowAllowance: () => Promise.reject(),
 } as CreditDelgationData);
@@ -27,11 +29,18 @@ export const CreditDelegationProvider = ({
     pools,
     fetchAllBorrowAllowances,
     fetchBorrowAllowance,
+    refetchVaults,
   } = usePools();
 
   return (
     <CreditDelegationContext.Provider
-      value={{ loadingPools, pools, fetchAllBorrowAllowances, fetchBorrowAllowance }}
+      value={{
+        loadingPools,
+        pools,
+        refetchVaults,
+        fetchAllBorrowAllowances,
+        fetchBorrowAllowance,
+      }}
     >
       {children}
     </CreditDelegationContext.Provider>
