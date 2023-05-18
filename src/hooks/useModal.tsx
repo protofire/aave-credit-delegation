@@ -36,10 +36,7 @@ export interface ModalArgsType {
   currentRateMode?: InterestRate;
   emode?: EmodeModalType;
   isFrozen?: boolean;
-  delegatee?: {
-    address: string;
-    label?: string;
-  };
+  poolId?: string;
 }
 
 export type TxStateType = {
@@ -68,10 +65,7 @@ export interface ModalContextType<T extends ModalArgsType> {
   openRevokeGovDelegation: () => void;
   openV3Migration: () => void;
   openGovVote: (proposalId: number, support: boolean, power: string) => void;
-  openCreditDelegation: (
-    underlyingAsset: string,
-    delegatee: { address: string; label?: string }
-  ) => void;
+  openCreditDelegation: (poolId: string, underlyingAsset: string) => void;
   close: () => void;
   type?: ModalType;
   args: T;
@@ -174,9 +168,9 @@ export const ModalContextProvider: React.FC = ({ children }) => {
         openV3Migration: () => {
           setType(ModalType.V3Migration);
         },
-        openCreditDelegation: (underlyingAsset, delegatee) => {
+        openCreditDelegation: (poolId, underlyingAsset) => {
           setType(ModalType.CreditDelegation);
-          setArgs({ underlyingAsset, delegatee });
+          setArgs({ poolId, underlyingAsset });
         },
         close: () => {
           setType(undefined);

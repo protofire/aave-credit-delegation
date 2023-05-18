@@ -1,8 +1,8 @@
 import { orderBy } from 'lodash';
 
-import { DelegationPool } from './types';
+import { AtomicaDelegationPool } from './types';
 
-const handleSymbolSort = (sortDesc: boolean, pools: DelegationPool[]) => {
+const handleSymbolSort = (sortDesc: boolean, pools: AtomicaDelegationPool[]) => {
   if (sortDesc) {
     return pools.sort((a, b) => (a.symbol.toUpperCase() < b.symbol.toUpperCase() ? -1 : 1));
   }
@@ -12,8 +12,8 @@ const handleSymbolSort = (sortDesc: boolean, pools: DelegationPool[]) => {
 export const handleSortPools = (
   sortDesc: boolean,
   sortName: string,
-  pools: DelegationPool[]
-): DelegationPool[] => {
+  pools: AtomicaDelegationPool[]
+): AtomicaDelegationPool[] => {
   if (sortName === 'symbol') {
     return handleSymbolSort(true, pools);
   } else {

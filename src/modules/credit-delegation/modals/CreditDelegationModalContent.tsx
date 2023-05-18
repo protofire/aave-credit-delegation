@@ -19,6 +19,7 @@ import { getMaxAmountAvailableToBorrow } from 'src/utils/getMaxAmountAvailableTo
 import { roundToTokenDecimals } from 'src/utils/utils';
 
 import { useAppDataContext } from '../../../hooks/app-data-provider/useAppDataProvider';
+import { useCreditDelegationContext } from '../CreditDelegationContext';
 import { CreditDelegationActions } from './CreditDelegationActions';
 
 export enum ErrorType {
@@ -26,22 +27,17 @@ export enum ErrorType {
 }
 
 interface CreditDelegationModalContentProps extends ModalWrapperProps {
-  delegatee: {
-    address: string;
-    label?: string;
-  };
+  poolId: string;
 }
 
 export const CreditDelegationModalContent = React.memo(
-  ({
-    underlyingAsset,
-    poolReserve,
-    isWrongNetwork,
-    delegatee,
-  }: CreditDelegationModalContentProps) => {
+  ({ poolId, underlyingAsset, poolReserve, isWrongNetwork }: CreditDelegationModalContentProps) => {
     const { marketReferencePriceInUsd, user } = useAppDataContext();
     const { currentNetworkConfig } = useProtocolDataContext();
     const { mainTxState: supplyTxState, gasLimit, txError } = useModalContext();
+
+    const { pools } = useCreditDelegationContext();
+    const pool = pools.find((p) => p.id === poolId);
 
     // states
     const [amount, setAmount] = useState('');
@@ -79,14 +75,14 @@ export const CreditDelegationModalContent = React.memo(
     const isMaxSelected = amount === maxAmountToDelegate;
 
     const supplyActionsProps = {
-      delegatee: delegatee.address,
       amount,
       isWrongNetwork,
       poolAddress: supplyUnWrapped ? API_ETH_MOCK_ADDRESS : poolReserve.underlyingAsset,
       symbol: supplyUnWrapped ? currentNetworkConfig.baseAssetSymbol : poolReserve.symbol,
-      blocked: Number(amount) <= 0,
+      blocked: false,
       decimals: poolReserve.decimals,
       poolReserve,
+      pool,
     };
 
     if (supplyTxState.success)
@@ -108,7 +104,7 @@ export const CreditDelegationModalContent = React.memo(
         /> */}
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
           <Typography color="text.secondary">
-            <Trans>Delegating to pool ({delegatee.label})</Trans>
+            <Trans>Delegating to pool ({pool?.name})</Trans>
           </Typography>
         </Box>
 

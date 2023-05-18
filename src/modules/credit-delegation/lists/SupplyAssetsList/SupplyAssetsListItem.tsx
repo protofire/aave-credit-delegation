@@ -5,7 +5,7 @@ import { useModalContext } from 'src/hooks/useModal';
 
 import { CapsHint } from '../../../../components/caps/CapsHint';
 import { CapType } from '../../../../components/caps/helper';
-import { DelegationPool } from '../../types';
+import { AtomicaDelegationPool } from '../../types';
 import { ListAPRColumn } from '../ListAPRColumn';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListItemWrapper } from '../ListItemWrapper';
@@ -23,10 +23,10 @@ export const SupplyAssetsListItem = ({
   availableBalance,
   availableBalanceUsd,
   metadata,
-  proxyAddress,
   approvedCredit,
   approvedCreditUsd,
-}: DelegationPool) => {
+  id,
+}: AtomicaDelegationPool) => {
   const { openCreditDelegation } = useModalContext();
 
   return (
@@ -65,12 +65,7 @@ export const SupplyAssetsListItem = ({
         <Button
           disabled={!isActive || Number(availableBalance) <= 0}
           variant="contained"
-          onClick={() =>
-            openCreditDelegation(underlyingAsset, {
-              address: proxyAddress,
-              label: metadata?.Label ?? '',
-            })
-          }
+          onClick={() => openCreditDelegation(id, underlyingAsset)}
         >
           <Trans>{Number(approvedCredit) === 0 ? 'Delegate' : 'Manage'}</Trans>
         </Button>

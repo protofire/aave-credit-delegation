@@ -1,6 +1,6 @@
 import { PoolMetadata } from './hooks/usePoolsMetadata';
 
-export interface SubgraphPool {
+export interface AtomicaSubgraphPool {
   id: string;
   name: string;
   capitalTokenSymbol: string;
@@ -20,7 +20,24 @@ export interface SubgraphMarket {
   desiredCover: string;
 }
 
-export interface DelegationPool {
+export interface SubgraphVault {
+  id: string;
+  vault: string;
+  owner: {
+    id: string;
+  };
+  createdAt: string;
+  debtToken: string;
+  manager: {
+    id: string;
+  };
+  atomicaPool: string;
+  asset: string;
+  allowance: string;
+  loanAmount: string;
+}
+
+export interface AtomicaDelegationPool {
   id: string;
   symbol: string;
   iconSymbol: string;
@@ -35,9 +52,9 @@ export interface DelegationPool {
   availableBalance: string | number;
   availableBalanceUsd: string | number;
   metadata?: PoolMetadata;
-  proxyAddress: string;
   approvedCredit: string;
   approvedCreditUsd: string;
+  vault?: SubgraphVault;
 }
 
 export interface BorrowMarket {
