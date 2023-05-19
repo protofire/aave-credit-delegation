@@ -33,6 +33,8 @@ env:
   NEXT_PUBLIC_CD_SUBGRAPH_URL: 'https://api.thegraph.com/subgraphs/name/atomica-dev/solvency-risk-markets-staging'
   NEXT_PUBLIC_ATOMICA_API_URL: 'https://api.atomica.org/srm-staging/'
   NEXT_PUBLIC_CD_VAULTS_SUBGRAPH_URL: 'https://api.studio.thegraph.com/proxy/46833/aave-credit-delegation/v0.2.0'
+  NEXT_PUBLIC_GOOGLE_API_SERVICE_PRIVATE_KEY: ${{ secrets.NEXT_PUBLIC_GOOGLE_API_SERVICE_PRIVATE_KEY }}
+  NEXT_PUBLIC_GOOGLE_API_SERVICE_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_GOOGLE_API_SERVICE_CLIENT_ID }}
 
 
 jobs:
@@ -40,9 +42,6 @@ jobs:
     name: Setup, Build, Push and Deploy
     runs-on: ubuntu-latest
     environment: staging
-    env:
-      NEXT_PUBLIC_GOOGLE_API_SERVICE_PRIVATE_KEY: ${{ secrets.NEXT_PUBLIC_GOOGLE_API_SERVICE_PRIVATE_KEY }}
-      NEXT_PUBLIC_GOOGLE_API_SERVICE_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_GOOGLE_API_SERVICE_CLIENT_ID }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -85,6 +84,7 @@ jobs:
           --build-arg next_public_cd_subgraph_url=$NEXT_PUBLIC_CD_SUBGRAPH_URL \
           --build-arg next_public_atomica_api_url=$NEXT_PUBLIC_ATOMICA_API_URL \
           --build-arg next_public_cd_vaults_subgraph_url=$NEXT_PUBLIC_CD_VAULTS_SUBGRAPH_URL \
+          --build-arg next_public_google_api_service_private_key=$NEXT_PUBLIC_GOOGLE_API_SERVICE_PRIVATE_KEY \
           --build-arg next_public_google_api_service_client_id=$NEXT_PUBLIC_GOOGLE_API_SERVICE_CLIENT_ID
 
       - name: Push the image to the Google Container Registry (GCR)
