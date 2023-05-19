@@ -3,15 +3,16 @@ import { useQuery } from '@apollo/client';
 import { loader } from 'graphql.macro';
 import { useWalletBalances } from 'src/hooks/app-data-provider/useWalletBalances';
 
-import { BorrowMarket, SubgraphMarket, SubgraphPool } from '../types';
+import { AtomicaSubgraphPool, BorrowMarket, SubgraphMarket } from '../types';
 
 const MAIN_QUERY = loader('../queries/main.gql');
 
 export const useMarkets = () => {
   const { walletBalances } = useWalletBalances();
-  const { loading, error, data } = useQuery<{ markets: SubgraphMarket[]; pools: SubgraphPool[] }>(
-    MAIN_QUERY
-  );
+  const { loading, error, data } = useQuery<{
+    markets: SubgraphMarket[];
+    pools: AtomicaSubgraphPool[];
+  }>(MAIN_QUERY);
 
   const tokens =
     data?.pools?.map((pool) => ({

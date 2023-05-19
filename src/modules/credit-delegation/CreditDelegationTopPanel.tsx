@@ -8,7 +8,6 @@ import { NetAPYTooltip } from 'src/components/infoTooltips/NetAPYTooltip';
 import { getMarketInfoById } from 'src/components/MarketSwitcher';
 import { ROUTES } from 'src/components/primitives/Link';
 import { PageTitle } from 'src/components/TopInfoPanel/PageTitle';
-import { useModalContext } from 'src/hooks/useModal';
 import { useProtocolDataContext } from 'src/hooks/useProtocolDataContext';
 import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
 import { useRootStore } from 'src/store/root';
@@ -28,7 +27,6 @@ export const CreditDelegationTopPanel = () => {
   const { market } = getMarketInfoById(currentMarket);
   const { user, reserves, loading } = useAppDataContext();
   const { currentAccount } = useWeb3Context();
-  const { openClaimRewards } = useModalContext();
 
   const isMigrateToV3Available = useRootStore((state) => selectIsMigrationAvailable(state));
   const showMigrateButton =
@@ -117,7 +115,11 @@ export const CreditDelegationTopPanel = () => {
           </Box>
         }
       >
-        <TopInfoPanelItem icon={<WalletIcon />} title={<Trans>Net worth</Trans>} loading={loading}>
+        <TopInfoPanelItem
+          icon={<WalletIcon />}
+          title={<Trans>Delegation net worth</Trans>}
+          loading={loading}
+        >
           {currentAccount ? (
             <FormattedNumber
               value={Number(user?.netWorthUSD || 0)}
@@ -137,7 +139,7 @@ export const CreditDelegationTopPanel = () => {
           icon={<NetAPYIcon />}
           title={
             <div style={{ display: 'flex' }}>
-              <Trans>Net APY</Trans>
+              <Trans>Loans net APY</Trans>
               <NetAPYTooltip />
             </div>
           }
@@ -182,16 +184,6 @@ export const CreditDelegationTopPanel = () => {
                   data-cy={'Claim_Value'}
                 />
               </Box>
-
-              <Button
-                variant="gradient"
-                size="small"
-                onClick={() => openClaimRewards()}
-                sx={{ minWidth: 'unset', ml: { xs: 0, xsm: 2 } }}
-                data-cy={'Dashboard_Claim_Button'}
-              >
-                <Trans>Claim</Trans>
-              </Button>
             </Box>
           </TopInfoPanelItem>
         )}

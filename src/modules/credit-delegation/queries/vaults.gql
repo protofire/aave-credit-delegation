@@ -1,0 +1,18 @@
+query vaults($owner: String!) {
+  vaults(where: { owner: $owner }) {
+    id
+    vault
+    owner {
+      id
+    }
+    createdAt
+    debtToken
+    manager {
+      id
+    }
+    atomicaPool
+    asset
+    allowance
+    loanAmount
+  }
+}

@@ -1,4 +1,4 @@
-name: "[STG] - Build and Deploy Netlify FE to GCP Cloud Run"
+name: '[STG] - Build and Deploy Netlify FE to GCP Cloud Run'
 
 on:
   push:
@@ -29,11 +29,18 @@ env:
   NEXT_PUBLIC_FORK_BASE_CHAIN_ID: 1
   NEXT_PUBLIC_FORK_CHAIN_ID: 1
   NEXT_PUBLIC_FORK_URL_RPC: 'https://rpc.tenderly.co/fork/1234567'
+  NEXT_PUBLIC_CD_API_URL: 'https://aave-cdm-backend-asvwsyulcq-ue.a.run.app/'
+  NEXT_PUBLIC_CD_SUBGRAPH_URL: 'https://api.thegraph.com/subgraphs/name/atomica-dev/solvency-risk-markets-staging'
+  NEXT_PUBLIC_ATOMICA_API_URL: 'https://api.atomica.org/srm-staging/'
+  NEXT_PUBLIC_CD_VAULTS_SUBGRAPH_URL: 'https://api.studio.thegraph.com/proxy/46833/aave-credit-delegation/v0.2.0'
+  NEXT_PUBLIC_GOOGLE_API_SERVICE_PRIVATE_KEY: ${{ secrets.NEXT_PUBLIC_GOOGLE_API_SERVICE_PRIVATE_KEY }}
+  NEXT_PUBLIC_GOOGLE_API_SERVICE_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_GOOGLE_API_SERVICE_CLIENT_ID }}
 
 jobs:
   Build_Push_Deploy:
     name: Setup, Build, Push and Deploy
     runs-on: ubuntu-latest
+    environment: staging
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -66,12 +73,18 @@ jobs:
           --build-arg next_public_turnstile_site_key=$NEXT_PUBLIC_TURNSTILE_SITE_KEY \
           --build-arg next_public_fork_base_chain_id=$NEXT_PUBLIC_FORK_BASE_CHAIN_ID \
           --build-arg next_public_fork_chain_id=$NEXT_PUBLIC_FORK_CHAIN_ID \
-          --build-arg next_public_fork_url_rpc=$NEXT_PUBLIC_FORK_URL_RPC
+          --build-arg next_public_fork_url_rpc=$NEXT_PUBLIC_FORK_URL_RPC \
+          --build-arg next_public_cd_api_url=$NEXT_PUBLIC_CD_API_URL \
+          --build-arg next_public_cd_subgraph_url=$NEXT_PUBLIC_CD_SUBGRAPH_URL \
+          --build-arg next_public_atomica_api_url=$NEXT_PUBLIC_ATOMICA_API_URL \
+          --build-arg next_public_cd_vaults_subgraph_url=$NEXT_PUBLIC_CD_VAULTS_SUBGRAPH_URL \
+          --build-arg next_public_google_api_service_private_key=$NEXT_PUBLIC_GOOGLE_API_SERVICE_PRIVATE_KEY \
+          --build-arg next_public_google_api_service_client_id=$NEXT_PUBLIC_GOOGLE_API_SERVICE_CLIENT_ID
 
       - name: Push the image to the Google Container Registry (GCR)
         run: |-
           docker push gcr.io/$PROJECT_ID/$GCR_REPO_NAME:$GITHUB_REF_NAME
-     
+
       - name: Deploy
         run: |-
           gcloud run deploy $GCR_REPO_NAME \

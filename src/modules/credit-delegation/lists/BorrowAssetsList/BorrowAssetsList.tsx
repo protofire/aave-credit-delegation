@@ -109,8 +109,6 @@ export const BorrowAssetsList = () => {
       />
     );
 
-  console.log({ markets });
-
   return (
     <ListWrapper
       titleComponent={

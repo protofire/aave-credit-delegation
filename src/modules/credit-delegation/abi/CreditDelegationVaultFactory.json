@@ -1,0 +1,93 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_impl",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "vault",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "name": "VaultCreated",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "CDV_IMPLEMENTATION",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_manager",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_atomicaPool",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_debtToken",
+        "type": "address"
+      }
+    ],
+    "name": "deployVault",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "vault",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      }
+    ],
+    "name": "vaultsByOwner",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

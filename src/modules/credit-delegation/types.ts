@@ -1,9 +1,12 @@
-export interface SubgraphPool {
+import { PoolMetadata } from './hooks/usePoolsMetadata';
+
+export interface AtomicaSubgraphPool {
   id: string;
   name: string;
   capitalTokenSymbol: string;
   capitalTokenAddress: string;
   capitalTokenDecimals: number;
+  manager: string;
 }
 
 export interface SubgraphMarket {
@@ -18,7 +21,24 @@ export interface SubgraphMarket {
   desiredCover: string;
 }
 
-export interface SupplyPool {
+export interface SubgraphVault {
+  id: string;
+  vault: string;
+  owner: {
+    id: string;
+  };
+  createdAt: string;
+  debtToken: string;
+  manager: {
+    id: string;
+  };
+  atomicaPool: string;
+  asset: string;
+  allowance: string;
+  loanAmount: string;
+}
+
+export interface AtomicaDelegationPool {
   id: string;
   symbol: string;
   iconSymbol: string;
@@ -30,7 +50,13 @@ export interface SupplyPool {
   supplyAPY: string;
   underlyingAsset: string;
   isActive: boolean;
-  detailsAddress: string;
+  availableBalance: string | number;
+  availableBalanceUsd: string | number;
+  metadata?: PoolMetadata;
+  approvedCredit: string;
+  approvedCreditUsd: string;
+  vault?: SubgraphVault;
+  manager: string;
 }
 
 export interface BorrowMarket {

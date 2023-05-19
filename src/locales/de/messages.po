@@ -1337,6 +1337,26 @@ msgstr ""
 msgid "Nothing staked"
 msgstr ""
 
+#: pages/credit-delegation.page.tsx
+#: src/modules/credit-delegation/lists/SuppliedPositionsList/SuppliedPositionsList.tsx
+msgid "Nothing supplied yet"
+msgstr ""
+
+#: pages/credit-delegation.page.tsx
+#: src/modules/credit-delegation/lists/SuppliedPositionsList/SuppliedPositionsList.tsx
+msgid "Your delegations"
+msgstr ""
+
+#: pages/credit-delegation.page.tsx
+#: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsList.tsx
+msgid "Pools to delegate to"
+msgstr ""
+
+#: pages/credit-delegation.page.tsx
+#: src/modules/credit-delegation/lists/BorrowedPositionsList/BorrowedPositionsList.tsx
+msgid "Your loans"
+msgstr ""
+
 #: pages/v3-migration.page.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsList.tsx
 msgid "Nothing supplied yet"
