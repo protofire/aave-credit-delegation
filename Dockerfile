@@ -63,6 +63,12 @@ ENV NEXT_PUBLIC_ATOMICA_API_URL=$next_public_atomica_api_url
 ARG next_public_cd_vaults_subgraph_url
 ENV NEXT_PUBLIC_CD_VAULTS_SUBGRAPH_URL=$next_public_cd_vaults_subgraph_url
 
+ARG next_public_google_api_service_private_key
+ENV NEXT_PUBLIC_GOOGLE_API_SERVICE_PRIVATE_KEY=$next_public_google_api_service_private_key
+
+ARG next_public_google_api_service_client_id
+ENV NEXT_PUBLIC_GOOGLE_API_SERVICE_CLIENT_ID=$next_public_google_api_service_client_id
+
 RUN yarn install --frozen-lockfile
 
 RUN yarn build

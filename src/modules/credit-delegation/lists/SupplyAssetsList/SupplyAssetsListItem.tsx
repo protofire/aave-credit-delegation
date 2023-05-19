@@ -1,10 +1,12 @@
 import { Trans } from '@lingui/macro';
 import { Button } from '@mui/material';
 import { ListColumn } from 'src/components/lists/ListColumn';
+import { Link } from 'src/components/primitives/Link';
 import { useModalContext } from 'src/hooks/useModal';
 
 import { CapsHint } from '../../../../components/caps/CapsHint';
 import { CapType } from '../../../../components/caps/helper';
+import { useManagerDetails } from '../../hooks/useManagerDetails';
 import { AtomicaDelegationPool } from '../../types';
 import { ListAPRColumn } from '../ListAPRColumn';
 import { ListButtonsColumn } from '../ListButtonsColumn';
@@ -26,13 +28,35 @@ export const SupplyAssetsListItem = ({
   approvedCredit,
   approvedCreditUsd,
   id,
+  manager,
 }: AtomicaDelegationPool) => {
   const { openCreditDelegation } = useModalContext();
+
+  const { managerDetails } = useManagerDetails(manager);
 
   return (
     <ListItemWrapper symbol={symbol} iconSymbol={iconSymbol} name={name}>
       <ListColumn>{metadata?.Label}</ListColumn>
-      <ListColumn>--</ListColumn>
+      <ListColumn>
+        <Link
+          href={managerDetails?.website ?? ''}
+          sx={{
+            display: 'inline-flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            textDecoration: 'underline',
+          }}
+        >
+          {managerDetails?.logo && (
+            <img
+              src={managerDetails?.logo}
+              alt={managerDetails?.title}
+              style={{ width: 20, height: 20, marginRight: 2 }}
+            />
+          )}
+          {managerDetails?.title}
+        </Link>
+      </ListColumn>
       <ListColumn>--</ListColumn>
 
       <ListValueColumn
