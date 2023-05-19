@@ -95,7 +95,7 @@ jobs:
           gcloud run deploy $GCR_REPO_NAME \
           --region $REGION \
           --image gcr.io/$PROJECT_ID/$GCR_REPO_NAME:$GITHUB_REF_NAME \
-          --set-env-vars NEXT_PUBLIC_GOOGLE_API_SERVICE_PRIVATE_KEY=$NEXT_PUBLIC_GOOGLE_API_SERVICE_PRIVATE_KEY
+          --set-env-vars NEXT_PUBLIC_GOOGLE_API_SERVICE_PRIVATE_KEY=$NEXT_PUBLIC_GOOGLE_API_SERVICE_PRIVATE_KEY \
           --platform "managed" \
           --allow-unauthenticated \
           --min-instances 1 \
