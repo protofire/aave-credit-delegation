@@ -6,6 +6,7 @@ export interface AtomicaSubgraphPool {
   capitalTokenSymbol: string;
   capitalTokenAddress: string;
   capitalTokenDecimals: number;
+  manager: string;
 }
 
 export interface SubgraphMarket {
@@ -55,6 +56,7 @@ export interface AtomicaDelegationPool {
   approvedCredit: string;
   approvedCreditUsd: string;
   vault?: SubgraphVault;
+  manager: string;
 }
 
 export interface BorrowMarket {

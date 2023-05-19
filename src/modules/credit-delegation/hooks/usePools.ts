@@ -21,6 +21,7 @@ import { usePoolsMetadata } from './usePoolsMetadata';
 import { useUserVaults } from './useUserVaults';
 
 const MAIN_QUERY = loader('../queries/main.gql');
+
 type ApproveCredit = Record<string, { amount: string; amountUsd: string }>;
 
 export const usePools = () => {
@@ -194,6 +195,7 @@ export const usePools = () => {
           symbol: pool.capitalTokenSymbol,
           iconSymbol: pool.capitalTokenSymbol,
           name: pool.name,
+          manager: pool.manager,
           walletBalance:
             (userReserve?.underlyingAsset &&
               walletBalances[userReserve?.underlyingAsset]?.amount) ??
