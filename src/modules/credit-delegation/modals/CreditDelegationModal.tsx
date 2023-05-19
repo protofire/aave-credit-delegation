@@ -8,17 +8,14 @@ import { CreditDelegationModalContent } from './CreditDelegationModalContent';
 
 export const CreditDelegationModal = () => {
   const { type, close, args } = useModalContext() as ModalContextType<{
+    poolId: string;
     underlyingAsset: string;
-    delegatee: {
-      address: string;
-      label?: string;
-    };
   }>;
 
   return (
     <BasicModal open={type === ModalType.CreditDelegation} setOpen={close}>
       <ModalWrapper title={<Trans>Delegate credit</Trans>} underlyingAsset={args.underlyingAsset}>
-        {(params) => <CreditDelegationModalContent {...params} delegatee={args.delegatee} />}
+        {(params) => <CreditDelegationModalContent {...params} poolId={args.poolId} />}
       </ModalWrapper>
     </BasicModal>
   );

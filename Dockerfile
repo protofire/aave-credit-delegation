@@ -60,6 +60,9 @@ ENV NEXT_PUBLIC_CD_SUBGRAPH_URL=$next_public_cd_subgraph_url
 ARG next_public_atomica_api_url
 ENV NEXT_PUBLIC_ATOMICA_API_URL=$next_public_atomica_api_url
 
+ARG next_public_cd_vaults_subgraph_url
+ENV NEXT_PUBLIC_CD_VAULTS_SUBGRAPH_URL=$next_public_cd_vaults_subgraph_url
+
 RUN yarn install --frozen-lockfile
 
 RUN yarn build

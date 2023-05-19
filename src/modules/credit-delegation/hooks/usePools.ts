@@ -16,8 +16,9 @@ import {
   getMaxAmountAvailableToBorrow,
 } from 'src/utils/getMaxAmountAvailableToBorrow';
 
-import { DelegationPool, SubgraphPool } from '../types';
+import { AtomicaDelegationPool, AtomicaSubgraphPool } from '../types';
 import { usePoolsMetadata } from './usePoolsMetadata';
+import { useUserVaults } from './useUserVaults';
 
 const MAIN_QUERY = loader('../queries/main.gql');
 type ApproveCredit = Record<string, { amount: string; amountUsd: string }>;
@@ -31,7 +32,8 @@ export const usePools = () => {
   } = useAppDataContext();
   const { currentNetworkConfig } = useProtocolDataContext();
   const { walletBalances } = useWalletBalances();
-  const [getCreditDelegationApprovedAmount] = useRootStore((state) => [
+  const [account, getCreditDelegationApprovedAmount] = useRootStore((state) => [
+    state.account,
     state.getCreditDelegationApprovedAmount,
   ]);
   const metadata = usePoolsMetadata();
@@ -39,6 +41,8 @@ export const usePools = () => {
   const [approvedCredit, setApprovedCredit] = useState<ApproveCredit>({});
   const [approvedCreditLoading, setApprovedCreditLoading] = useState<boolean>(false);
   const [approvedCreditLoaded, setApprovedCreditLoaded] = useState<boolean>(false);
+
+  const { loading: loadingVaults, vaults, refetch: refetchVaults } = useUserVaults();
 
   const { baseAssetSymbol } = currentNetworkConfig;
 
@@ -92,7 +96,15 @@ export const usePools = () => {
       };
     });
 
-  const { loading: poolsLoading, error, data } = useQuery<{ pools: SubgraphPool[] }>(MAIN_QUERY);
+  const {
+    loading: poolsLoading,
+    error,
+    data,
+  } = useQuery<{ pools: AtomicaSubgraphPool[] }>(MAIN_QUERY, {
+    variables: {
+      author: account.toLowerCase(),
+    },
+  });
 
   const fetchBorrowAllowance = useCallback(
     async (poolId: string, forceApprovalCheck?: boolean) => {
@@ -108,9 +120,13 @@ export const usePools = () => {
           return pool.capitalTokenSymbol.toLowerCase() === reserve.symbol.toLowerCase();
         }) as ComputedReserveData;
 
-        if (poolReserve) {
+        const vault = vaults?.find(
+          (vault) => vault.atomicaPool.toLowerCase() === poolId.toLowerCase()
+        );
+
+        if (poolReserve && vault) {
           const { amount } = await getCreditDelegationApprovedAmount({
-            delegatee: '0xFB338C5fE584c026270e5DeD1C2e0AcA786a22fe',
+            delegatee: vault.vault,
             debtTokenAddress: poolReserve.stableDebtTokenAddress,
           });
 
@@ -154,9 +170,9 @@ export const usePools = () => {
     }
   }, [fetchAllBorrowAllowances, appDataLoading, poolsLoading, approvedCreditLoaded]);
 
-  const pools: DelegationPool[] = useMemo(
+  const pools: AtomicaDelegationPool[] = useMemo(
     () =>
-      (data?.pools ?? []).map((pool: SubgraphPool) => {
+      (data?.pools ?? []).map((pool: AtomicaSubgraphPool) => {
         const userReserve = suppliedPositions.find(
           (position) => position.reserve.symbol === pool.capitalTokenSymbol
         );
@@ -167,6 +183,10 @@ export const usePools = () => {
 
         const poolMetadata = metadata?.find(
           (data) => data.EntityId.toLowerCase() === pool.id.toLowerCase()
+        );
+
+        const vault = vaults?.find(
+          (vault) => vault.atomicaPool.toLowerCase() === pool.id.toLowerCase()
         );
 
         return {
@@ -190,9 +210,9 @@ export const usePools = () => {
           availableBalance: tokenToBorrow?.availableBorrows ?? '0.0',
           availableBalanceUsd: tokenToBorrow?.availableBorrowsInUSD ?? '0.0',
           metadata: poolMetadata,
-          proxyAddress: '0xFB338C5fE584c026270e5DeD1C2e0AcA786a22fe',
           approvedCredit: approvedCredit[pool.id.toLowerCase()]?.amount ?? '0.0',
           approvedCreditUsd: approvedCredit[pool.id.toLowerCase()]?.amountUsd ?? '0.0',
+          vault,
         };
       }),
     [data?.pools, suppliedPositions, tokensToBorrow, metadata, approvedCredit]
@@ -201,8 +221,9 @@ export const usePools = () => {
   return {
     pools,
     error,
-    loading: poolsLoading || appDataLoading || approvedCreditLoading,
+    loading: poolsLoading || appDataLoading || approvedCreditLoading || loadingVaults,
     fetchBorrowAllowance,
     fetchAllBorrowAllowances,
+    refetchVaults,
   };
 };

@@ -85,8 +85,6 @@ export const SupplyAssetsList = () => {
       />
     );
 
-  const delegationDisabled = false;
-
   return (
     <ListWrapper
       titleComponent={
@@ -96,10 +94,9 @@ export const SupplyAssetsList = () => {
       }
       localStorageName="delegateAssetsTableCollapse"
       withTopMargin
-      noData={delegationDisabled}
     >
       <>
-        {!downToXSM && !delegationDisabled && (
+        {!downToXSM && (
           <Header
             sortName={sortName}
             setSortName={setSortName}
