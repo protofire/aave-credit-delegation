@@ -36,28 +36,12 @@ class GoogleSheetsApiService {
   }
 
   public async connectToGoogleSheets(spreadsheetId: string, sheetTitle: string) {
-    const private_key = process.env.NEXT_PUBLIC_GOOGLE_API_SERVICE_PRIVATE_KEY;
-    const client_email = process.env.NEXT_PUBLIC_GOOGLE_API_SERVICE_CLIENT_ID;
-
-    if (!client_email) {
-      throw new Error(
-        'Missing required environment variable `NEXT_PUBLIC_GOOGLE_API_SERVICE_CLIENT_ID`'
-      );
-    }
-
-    if (!private_key) {
-      throw new Error(
-        'Missing required environment variable `NEXT_PUBLIC_GOOGLE_API_SERVICE_PRIVATE_KEY`'
-      );
-    }
+    const credentials = require('../../../sheets-credentials.json');
 
     const doc = new GoogleSpreadsheet(spreadsheetId);
 
     try {
-      await doc.useServiceAccountAuth({
-        client_email,
-        private_key: private_key.replace(/\\n/g, '\n'),
-      });
+      await doc.useServiceAccountAuth(credentials);
 
       await doc.loadInfo();
 
