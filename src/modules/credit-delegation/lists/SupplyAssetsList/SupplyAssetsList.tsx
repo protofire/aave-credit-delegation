@@ -16,11 +16,10 @@ import { SupplyAssetsListItem } from './SupplyAssetsListItem';
 
 const head = [
   { title: <Trans key="assets">Assets</Trans>, sortKey: 'symbol' },
-  { title: <Trans key="title">Title</Trans>, sortKey: 'metadata.Label' },
-  { title: <Trans key="manager">Manager</Trans>, sortKey: 'manager' },
+  { title: <Trans key="title">Pool Description</Trans>, sortKey: 'metadata.Label' },
+  { title: <Trans key="manager">Pool Manager</Trans>, sortKey: 'manager' },
   { title: <Trans key="borrowers">Borrowers</Trans>, sortKey: 'borrowers' },
-  { title: <Trans key="Available credit">Available credit</Trans>, sortKey: 'availableBalance' },
-  { title: <Trans key="Delegated amount">Delegated amount</Trans>, sortKey: 'approvedCredit' },
+  { title: <Trans key="lended">Lended</Trans>, sortKey: 'approvedCredit' },
   { title: <Trans key="APY">APY</Trans>, sortKey: 'supplyAPY' },
 ];
 

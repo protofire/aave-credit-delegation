@@ -323,7 +323,6 @@ msgstr "Available"
 msgid "Available assets"
 msgstr "Available assets"
 
-#: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsList.tsx
 #: src/modules/credit-delegation/modals/CreditDelegationModalContent.tsx
 msgid "Available credit"
 msgstr "Available credit"
@@ -336,7 +335,6 @@ msgstr "Available liquidity"
 msgid "Available on"
 msgstr "Available on"
 
-#: src/modules/credit-delegation/CreditDelegationTopPanel.tsx
 #: src/modules/dashboard/DashboardTopPanel.tsx
 msgid "Available rewards"
 msgstr "Available rewards"
@@ -744,10 +742,6 @@ msgstr "Delegate"
 msgid "Delegate credit"
 msgstr "Delegate credit"
 
-#: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsList.tsx
-msgid "Delegated amount"
-msgstr "Delegated amount"
-
 #: src/modules/governance/DelegatedInfoPanel.tsx
 msgid "Delegated power"
 msgstr "Delegated power"
@@ -755,10 +749,6 @@ msgstr "Delegated power"
 #: src/modules/credit-delegation/modals/CreditDelegationModalContent.tsx
 msgid "Delegating to pool ({0})"
 msgstr "Delegating to pool ({0})"
-
-#: src/modules/credit-delegation/CreditDelegationTopPanel.tsx
-msgid "Delegation net worth"
-msgstr "Delegation net worth"
 
 #: src/modules/credit-delegation/lists/BorrowAssetsList/BorrowAssetsListMobileItem.tsx
 #: src/modules/dashboard/lists/BorrowAssetsList/BorrowAssetsListItem.tsx
@@ -1161,6 +1151,11 @@ msgstr "Learn more in our <0>FAQ guide</0>"
 msgid "Learn more."
 msgstr "Learn more."
 
+#: src/modules/credit-delegation/CreditDelegationTopPanel.tsx
+#: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsList.tsx
+msgid "Lended"
+msgstr "Lended"
+
 #: src/layouts/MobileMenu.tsx
 msgid "Links"
 msgstr "Links"
@@ -1206,10 +1201,6 @@ msgstr "Liquidation value"
 msgid "Loading data..."
 msgstr "Loading data..."
 
-#: src/modules/credit-delegation/CreditDelegationTopPanel.tsx
-msgid "Loans net APY"
-msgstr "Loans net APY"
-
 #: src/ui-config/errorMapping.tsx
 msgid "Ltv validation failed"
 msgstr "Ltv validation failed"
@@ -1217,10 +1208,6 @@ msgstr "Ltv validation failed"
 #: src/modules/dashboard/LiquidationRiskParametresModal/components/LTVContent.tsx
 msgid "MAX"
 msgstr "MAX"
-
-#: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsList.tsx
-msgid "Manager"
-msgstr "Manager"
 
 #: src/modules/reserve-overview/ReserveTopDetails.tsx
 msgid "Market"
@@ -1484,6 +1471,14 @@ msgstr "Please switch to {networkName}."
 #: src/components/ConnectWalletPaperStaking.tsx
 msgid "Please, connect your wallet"
 msgstr "Please, connect your wallet"
+
+#: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsList.tsx
+msgid "Pool Description"
+msgstr "Pool Description"
+
+#: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsList.tsx
+msgid "Pool Manager"
+msgstr "Pool Manager"
 
 #: src/ui-config/errorMapping.tsx
 msgid "Pool addresses provider is not registered"
@@ -2197,10 +2192,6 @@ msgstr "Time left until the withdrawal window closes."
 msgid "Tip: Try increasing slippage or reduce input amount"
 msgstr "Tip: Try increasing slippage or reduce input amount"
 
-#: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsList.tsx
-msgid "Title"
-msgstr "Title"
-
 #: src/hooks/useReserveActionState.tsx
 #: src/modules/dashboard/lists/BorrowAssetsList/BorrowAssetsList.tsx
 msgid "To borrow you need to supply any asset to be used as collateral."
@@ -2600,6 +2591,10 @@ msgstr "You will exit isolation mode and other tokens can now be used as collate
 msgid "You {action} <0/> {symbol}"
 msgstr "You {action} <0/> {symbol}"
 
+#: src/modules/credit-delegation/CreditDelegationTopPanel.tsx
+msgid "Your average APY"
+msgstr "Your average APY"
+
 #: src/modules/dashboard/lists/BorrowedPositionsList/BorrowedPositionsList.tsx
 #: src/modules/dashboard/lists/BorrowedPositionsList/BorrowedPositionsList.tsx
 msgid "Your borrows"
@@ -2621,6 +2616,10 @@ msgstr "Your health factor and loan to value determine the assurance of your col
 #: src/modules/reserve-overview/ReserveActions.tsx
 msgid "Your info"
 msgstr "Your info"
+
+#: src/modules/credit-delegation/CreditDelegationTopPanel.tsx
+msgid "Your lending capacity"
+msgstr "Your lending capacity"
 
 #: src/modules/credit-delegation/lists/BorrowedPositionsList/BorrowedPositionsList.tsx
 #: src/modules/credit-delegation/lists/BorrowedPositionsList/BorrowedPositionsList.tsx

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import StyledToggleButton from 'src/components/StyledToggleButton';
 import StyledToggleButtonGroup from 'src/components/StyledToggleButtonGroup';
 import { usePermissions } from 'src/hooks/usePermissions';
+import { CreditDelegationProvider } from 'src/modules/credit-delegation/CreditDelegationContext';
 import { CreditDelegationTopPanel } from 'src/modules/credit-delegation/CreditDelegationTopPanel';
 
 import { ConnectWalletPaper } from '../src/components/ConnectWalletPaper';
@@ -19,7 +20,7 @@ export default function CreditDelegation() {
   const [mode, setMode] = useState<'delegate' | 'borrow' | ''>('delegate');
 
   return (
-    <>
+    <CreditDelegationProvider>
       <CreditDelegationTopPanel />
       <ContentContainer>
         <Box
@@ -54,7 +55,7 @@ export default function CreditDelegation() {
           <ConnectWalletPaper loading={web3Loading} />
         )}
       </ContentContainer>
-    </>
+    </CreditDelegationProvider>
   );
 }
 

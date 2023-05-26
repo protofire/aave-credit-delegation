@@ -1,6 +1,7 @@
 import { API_ETH_MOCK_ADDRESS, InterestRate } from '@aave/contract-helpers';
 import { USD_DECIMALS, valueToBigNumber } from '@aave/math-utils';
 import { useQuery } from '@apollo/client';
+import { BigNumber } from 'bignumber.js';
 import { loader } from 'graphql.macro';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
@@ -22,7 +23,7 @@ import { useUserVaults } from './useUserVaults';
 
 const MAIN_QUERY = loader('../queries/main.gql');
 
-type ApproveCredit = Record<string, { amount: string; amountUsd: string }>;
+type ApproveCredit = Record<string, { amount: string; amountUsd: string; amountUsdBig: BigNumber }>;
 
 export const usePools = () => {
   const {
@@ -131,26 +132,37 @@ export const usePools = () => {
             debtTokenAddress: poolReserve.stableDebtTokenAddress,
           });
 
-          setApprovedCredit((prev) => ({
-            ...prev,
-            [poolId.toLowerCase()]: {
-              amount,
-              amountUsd: valueToBigNumber(amount ?? '0')
-                .multipliedBy(poolReserve.formattedPriceInMarketReferenceCurrency)
-                .multipliedBy(marketReferencePriceInUsd)
-                .shiftedBy(-USD_DECIMALS)
-                .toFixed(2),
-            },
-          }));
+          setApprovedCredit((prev) => {
+            const amountUsdBig = valueToBigNumber(amount ?? '0')
+              .multipliedBy(poolReserve.formattedPriceInMarketReferenceCurrency)
+              .multipliedBy(marketReferencePriceInUsd)
+              .shiftedBy(-USD_DECIMALS);
+
+            return {
+              ...prev,
+              [poolId.toLowerCase()]: {
+                amount,
+                amountUsdBig,
+                amountUsd: amountUsdBig.toFixed(2),
+              },
+            };
+          });
         }
       }
     },
-    [approvedCredit, data?.pools, reserves, getCreditDelegationApprovedAmount, setApprovedCredit]
+    [
+      approvedCredit,
+      data?.pools,
+      vaults,
+      reserves,
+      getCreditDelegationApprovedAmount,
+      setApprovedCredit,
+    ]
   );
 
   const fetchAllBorrowAllowances = useCallback(
     async (forceApprovalCheck?: boolean) => {
-      if (approvedCreditLoading) {
+      if (approvedCreditLoading || loadingVaults) {
         return;
       }
       setApprovedCreditLoading(true);
@@ -161,64 +173,74 @@ export const usePools = () => {
       setApprovedCreditLoading(false);
     },
 
-    [fetchBorrowAllowance, setApprovedCreditLoading, data?.pools]
+    [
+      fetchBorrowAllowance,
+      setApprovedCreditLoading,
+      approvedCreditLoading,
+      loadingVaults,
+      data?.pools,
+    ]
   );
 
   useEffect(() => {
-    if (!appDataLoading && !poolsLoading && !approvedCreditLoaded) {
+    if (!appDataLoading && !poolsLoading && !approvedCreditLoaded && !loadingVaults) {
       fetchAllBorrowAllowances();
       setApprovedCreditLoaded(true);
     }
-  }, [fetchAllBorrowAllowances, appDataLoading, poolsLoading, approvedCreditLoaded]);
+  }, [fetchAllBorrowAllowances, appDataLoading, poolsLoading, approvedCreditLoaded, loadingVaults]);
 
-  const pools: AtomicaDelegationPool[] = useMemo(
-    () =>
-      (data?.pools ?? []).map((pool: AtomicaSubgraphPool) => {
-        const userReserve = suppliedPositions.find(
-          (position) => position.reserve.symbol === pool.capitalTokenSymbol
-        );
+  const pools: AtomicaDelegationPool[] = useMemo(() => {
+    if (poolsLoading || appDataLoading || approvedCreditLoading || loadingVaults) {
+      return [];
+    }
 
-        const tokenToBorrow = tokensToBorrow.find(
-          (token) => token.symbol === pool.capitalTokenSymbol
-        );
+    return (data?.pools ?? []).map((pool: AtomicaSubgraphPool) => {
+      const userReserve = suppliedPositions.find(
+        (position) => position.reserve.symbol === pool.capitalTokenSymbol
+      );
 
-        const poolMetadata = metadata?.find(
-          (data) => data.EntityId.toLowerCase() === pool.id.toLowerCase()
-        );
+      const tokenToBorrow = tokensToBorrow.find(
+        (token) => token.symbol === pool.capitalTokenSymbol
+      );
 
-        const vault = vaults?.find(
-          (vault) => vault.atomicaPool.toLowerCase() === pool.id.toLowerCase()
-        );
+      const poolMetadata = metadata?.find(
+        (data) => data.EntityId.toLowerCase() === pool.id.toLowerCase()
+      );
 
-        return {
-          id: pool.id,
-          symbol: pool.capitalTokenSymbol,
-          iconSymbol: pool.capitalTokenSymbol,
-          name: pool.name,
-          manager: pool.manager,
-          walletBalance:
-            (userReserve?.underlyingAsset &&
-              walletBalances[userReserve?.underlyingAsset]?.amount) ??
-            '0.0',
-          walletBalanceUSD:
-            (userReserve?.underlyingAsset &&
-              walletBalances[userReserve?.underlyingAsset]?.amountUSD) ??
-            '0.0',
-          supplyCap: userReserve?.reserve.supplyCap ?? '0.0',
-          totalLiquidity: userReserve?.reserve.totalLiquidity ?? '0.0',
-          supplyAPY: '0.0',
-          underlyingAsset: userReserve?.underlyingAsset ?? '',
-          isActive: true,
-          availableBalance: tokenToBorrow?.availableBorrows ?? '0.0',
-          availableBalanceUsd: tokenToBorrow?.availableBorrowsInUSD ?? '0.0',
-          metadata: poolMetadata,
-          approvedCredit: approvedCredit[pool.id.toLowerCase()]?.amount ?? '0.0',
-          approvedCreditUsd: approvedCredit[pool.id.toLowerCase()]?.amountUsd ?? '0.0',
-          vault,
-        };
-      }),
-    [data?.pools, suppliedPositions, tokensToBorrow, metadata, approvedCredit]
-  );
+      const vault = vaults?.find(
+        (vault) => vault.atomicaPool.toLowerCase() === pool.id.toLowerCase()
+      );
+
+      return {
+        id: pool.id,
+        symbol: pool.capitalTokenSymbol,
+        iconSymbol: pool.capitalTokenSymbol,
+        name: pool.name,
+        manager: pool.manager,
+        markets: pool.markets,
+        walletBalance:
+          (userReserve?.underlyingAsset && walletBalances[userReserve?.underlyingAsset]?.amount) ??
+          '0.0',
+        walletBalanceUSD:
+          (userReserve?.underlyingAsset &&
+            walletBalances[userReserve?.underlyingAsset]?.amountUSD) ??
+          '0.0',
+        supplyCap: userReserve?.reserve.supplyCap ?? '0.0',
+        totalLiquidity: userReserve?.reserve.totalLiquidity ?? '0.0',
+        supplyAPY: '0.0',
+        underlyingAsset: userReserve?.underlyingAsset ?? '',
+        isActive: true,
+        availableBalance: tokenToBorrow?.availableBorrows ?? '0.0',
+        availableBalanceUsd: tokenToBorrow?.availableBorrowsInUSD ?? '0.0',
+        metadata: poolMetadata,
+        approvedCredit: approvedCredit[pool.id.toLowerCase()]?.amount ?? '0.0',
+        approvedCreditUsd: approvedCredit[pool.id.toLowerCase()]?.amountUsd ?? '0.0',
+        approvedCreditUsdBig:
+          approvedCredit[pool.id.toLowerCase()]?.amountUsdBig ?? valueToBigNumber(0),
+        vault,
+      };
+    });
+  }, [data?.pools, suppliedPositions, tokensToBorrow, metadata, approvedCredit]);
 
   return {
     pools,
