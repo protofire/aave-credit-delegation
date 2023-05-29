@@ -2,10 +2,9 @@ import { Trans } from '@lingui/macro';
 import { Button } from '@mui/material';
 import { ListColumn } from 'src/components/lists/ListColumn';
 import { Link } from 'src/components/primitives/Link';
+import { Row } from 'src/components/primitives/Row';
 import { useModalContext } from 'src/hooks/useModal';
 
-import { CapsHint } from '../../../../components/caps/CapsHint';
-import { CapType } from '../../../../components/caps/helper';
 import { useManagerDetails } from '../../hooks/useManagerDetails';
 import { AtomicaDelegationPool } from '../../types';
 import { ListAPRColumn } from '../ListAPRColumn';
@@ -17,18 +16,16 @@ export const SupplyAssetsListItem = ({
   symbol,
   iconSymbol,
   name,
-  supplyCap,
-  totalLiquidity,
   supplyAPY,
   isActive,
   underlyingAsset,
   availableBalance,
-  availableBalanceUsd,
   metadata,
   approvedCredit,
   approvedCreditUsd,
   id,
   manager,
+  markets,
 }: AtomicaDelegationPool) => {
   const { openCreditDelegation } = useModalContext();
 
@@ -57,23 +54,13 @@ export const SupplyAssetsListItem = ({
           {managerDetails?.title}
         </Link>
       </ListColumn>
-      <ListColumn>--</ListColumn>
-
-      <ListValueColumn
-        symbol={symbol}
-        value={Number(availableBalance) - Number(approvedCredit)}
-        subValue={Number(availableBalanceUsd) - Number(approvedCreditUsd)}
-        withTooltip
-        disabled={Number(availableBalance) === 0}
-        capsComponent={
-          <CapsHint
-            capType={CapType.supplyCap}
-            capAmount={supplyCap}
-            totalAmount={totalLiquidity}
-            withoutText
-          />
-        }
-      />
+      <ListColumn sx={{ fontSize: 10 }}>
+        {markets?.map((market) => (
+          <Row key={market.id}>
+            {market.product.title}: {market.title}
+          </Row>
+        ))}
+      </ListColumn>
 
       <ListValueColumn
         symbol={symbol}

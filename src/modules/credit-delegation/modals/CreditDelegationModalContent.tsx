@@ -1,5 +1,5 @@
 import { API_ETH_MOCK_ADDRESS, InterestRate } from '@aave/contract-helpers';
-import { USD_DECIMALS } from '@aave/math-utils';
+import { USD_DECIMALS, valueToBigNumber } from '@aave/math-utils';
 import { Trans } from '@lingui/macro';
 // import { AddressInput } from '../AddressInput';
 import { Box, Typography } from '@mui/material';
@@ -36,11 +36,11 @@ export const CreditDelegationModalContent = React.memo(
     const { currentNetworkConfig } = useProtocolDataContext();
     const { mainTxState: supplyTxState, gasLimit, txError } = useModalContext();
 
-    const { pools } = useCreditDelegationContext();
+    const { pools, lended } = useCreditDelegationContext();
     const pool = pools.find((p) => p.id === poolId);
 
     // states
-    const [amount, setAmount] = useState('');
+    const [amount, setAmount] = useState(pool?.approvedCredit ?? '0');
 
     // const [address, setAddress] = useState('');
 
@@ -48,11 +48,17 @@ export const CreditDelegationModalContent = React.memo(
 
     const supplyApy = '0.0';
 
-    const maxAmountToDelegate = getMaxAmountAvailableToBorrow(
-      poolReserve,
-      user,
-      InterestRate.Stable
-    );
+    const maxAmountToDelegate = valueToBigNumber(
+      getMaxAmountAvailableToBorrow(poolReserve, user, InterestRate.Stable)
+    )
+      .minus(
+        valueToBigNumber(lended)
+          .shiftedBy(USD_DECIMALS)
+          .dividedBy(marketReferencePriceInUsd)
+          .dividedBy(poolReserve.formattedPriceInMarketReferenceCurrency)
+      )
+      .plus(valueToBigNumber(pool?.approvedCredit ?? '0'))
+      .toFixed(2);
 
     const handleChange = (value: string) => {
       if (value === '-1') {

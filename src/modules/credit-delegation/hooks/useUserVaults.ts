@@ -7,9 +7,10 @@ import { SubgraphVault } from '../types';
 const VAULTS_QUERY = loader('../queries/vaults.gql');
 
 export const useUserVaults = () => {
-  const account = useRootStore((state) => state.account);
+  const [account, accountLoading] = useRootStore((state) => [state.account, state.accountLoading]);
 
   const { loading, error, data, refetch } = useQuery<{ vaults: SubgraphVault[] }>(VAULTS_QUERY, {
+    skip: !account,
     variables: {
       owner: account.toLowerCase(),
     },
@@ -19,7 +20,7 @@ export const useUserVaults = () => {
   });
 
   return {
-    loading,
+    loading: loading || accountLoading,
     error,
     vaults: data?.vaults ?? [],
     refetch,

@@ -1,10 +1,7 @@
-import { ChainId } from '@aave/contract-helpers';
-import { normalize, UserIncentiveData } from '@aave/math-utils';
 import { Trans } from '@lingui/macro';
 import { Box, Button, Typography, useMediaQuery, useTheme } from '@mui/material';
 import Link from 'next/link';
 import * as React from 'react';
-import { NetAPYTooltip } from 'src/components/infoTooltips/NetAPYTooltip';
 import { getMarketInfoById } from 'src/components/MarketSwitcher';
 import { ROUTES } from 'src/components/primitives/Link';
 import { PageTitle } from 'src/components/TopInfoPanel/PageTitle';
@@ -13,7 +10,6 @@ import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
 import { useRootStore } from 'src/store/root';
 import { selectIsMigrationAvailable } from 'src/store/v3MigrationSelectors';
 
-import ClaimGiftIcon from '../../../public/icons/markets/claim-gift-icon.svg';
 import NetAPYIcon from '../../../public/icons/markets/net-apy-icon.svg';
 import WalletIcon from '../../../public/icons/markets/wallet-icon.svg';
 import { FormattedNumber } from '../../components/primitives/FormattedNumber';
@@ -21,11 +17,12 @@ import { NoData } from '../../components/primitives/NoData';
 import { TopInfoPanel } from '../../components/TopInfoPanel/TopInfoPanel';
 import { TopInfoPanelItem } from '../../components/TopInfoPanel/TopInfoPanelItem';
 import { useAppDataContext } from '../../hooks/app-data-provider/useAppDataProvider';
+import { useCreditDelegationContext } from './CreditDelegationContext';
 
 export const CreditDelegationTopPanel = () => {
-  const { currentNetworkConfig, currentMarketData, currentMarket } = useProtocolDataContext();
+  const { currentNetworkConfig, currentMarket } = useProtocolDataContext();
   const { market } = getMarketInfoById(currentMarket);
-  const { user, reserves, loading } = useAppDataContext();
+  const { user, loading } = useAppDataContext();
   const { currentAccount } = useWeb3Context();
 
   const isMigrateToV3Available = useRootStore((state) => selectIsMigrationAvailable(state));
@@ -34,42 +31,7 @@ export const CreditDelegationTopPanel = () => {
   const theme = useTheme();
   const downToSM = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const { claimableRewardsUsd } = Object.keys(user.calculatedUserIncentives).reduce(
-    (acc, rewardTokenAddress) => {
-      const incentive: UserIncentiveData = user.calculatedUserIncentives[rewardTokenAddress];
-      const rewardBalance = normalize(incentive.claimableRewards, incentive.rewardTokenDecimals);
-
-      let tokenPrice = 0;
-      // getting price from reserves for the native rewards for v2 markets
-      if (!currentMarketData.v3 && Number(rewardBalance) > 0) {
-        if (currentMarketData.chainId === ChainId.mainnet) {
-          const aave = reserves.find((reserve) => reserve.symbol === 'AAVE');
-          tokenPrice = aave ? Number(aave.priceInUSD) : 0;
-        } else {
-          reserves.forEach((reserve) => {
-            if (reserve.symbol === currentNetworkConfig.wrappedBaseAssetSymbol) {
-              tokenPrice = Number(reserve.priceInUSD);
-            }
-          });
-        }
-      } else {
-        tokenPrice = Number(incentive.rewardPriceFeed);
-      }
-
-      const rewardBalanceUsd = Number(rewardBalance) * tokenPrice;
-
-      if (rewardBalanceUsd > 0) {
-        if (acc.assets.indexOf(incentive.rewardTokenSymbol) === -1) {
-          acc.assets.push(incentive.rewardTokenSymbol);
-        }
-
-        acc.claimableRewardsUsd += Number(rewardBalanceUsd);
-      }
-
-      return acc;
-    },
-    { claimableRewardsUsd: 0, assets: [] } as { claimableRewardsUsd: number; assets: string[] }
-  );
+  const { lendingCapacity, lended, loadingLendingCapacity } = useCreditDelegationContext();
 
   const valueTypographyVariant = downToSM ? 'main16' : 'main21';
   const noDataTypographyVariant = downToSM ? 'secondary16' : 'secondary21';
@@ -117,12 +79,36 @@ export const CreditDelegationTopPanel = () => {
       >
         <TopInfoPanelItem
           icon={<WalletIcon />}
-          title={<Trans>Delegation net worth</Trans>}
-          loading={loading}
+          title={<Trans>Your lending capacity</Trans>}
+          loading={loadingLendingCapacity}
         >
           {currentAccount ? (
             <FormattedNumber
-              value={Number(user?.netWorthUSD || 0)}
+              value={Number(lendingCapacity || 0)}
+              symbol="USD"
+              variant={valueTypographyVariant}
+              visibleDecimals={2}
+              compact
+              symbolsColor="#A5A8B6"
+              symbolsVariant={noDataTypographyVariant}
+            />
+          ) : (
+            <NoData variant={noDataTypographyVariant} sx={{ opacity: '0.7' }} />
+          )}
+        </TopInfoPanelItem>
+
+        <TopInfoPanelItem
+          icon={<WalletIcon />}
+          title={
+            <div style={{ display: 'flex' }}>
+              <Trans>Lended</Trans>
+            </div>
+          }
+          loading={loadingLendingCapacity}
+        >
+          {currentAccount ? (
+            <FormattedNumber
+              value={Number(lended || 0)}
               symbol="USD"
               variant={valueTypographyVariant}
               visibleDecimals={2}
@@ -139,15 +125,14 @@ export const CreditDelegationTopPanel = () => {
           icon={<NetAPYIcon />}
           title={
             <div style={{ display: 'flex' }}>
-              <Trans>Loans net APY</Trans>
-              <NetAPYTooltip />
+              <Trans>Your average APY</Trans>
             </div>
           }
           loading={loading}
         >
-          {currentAccount && Number(user?.netWorthUSD) > 0 ? (
+          {currentAccount ? (
             <FormattedNumber
-              value={user.netAPY}
+              value={0}
               variant={valueTypographyVariant}
               visibleDecimals={2}
               percent
@@ -158,35 +143,6 @@ export const CreditDelegationTopPanel = () => {
             <NoData variant={noDataTypographyVariant} sx={{ opacity: '0.7' }} />
           )}
         </TopInfoPanelItem>
-
-        {currentAccount && claimableRewardsUsd > 0 && (
-          <TopInfoPanelItem
-            title={<Trans>Available rewards</Trans>}
-            icon={<ClaimGiftIcon />}
-            loading={loading}
-          >
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: { xs: 'flex-start', xsm: 'center' },
-                flexDirection: { xs: 'column', xsm: 'row' },
-              }}
-            >
-              <Box sx={{ display: 'inline-flex', alignItems: 'center' }} data-cy={'Claim_Box'}>
-                <FormattedNumber
-                  value={claimableRewardsUsd}
-                  variant={valueTypographyVariant}
-                  visibleDecimals={2}
-                  compact
-                  symbol="USD"
-                  symbolsColor="#A5A8B6"
-                  symbolsVariant={noDataTypographyVariant}
-                  data-cy={'Claim_Value'}
-                />
-              </Box>
-            </Box>
-          </TopInfoPanelItem>
-        )}
       </TopInfoPanel>
     </>
   );

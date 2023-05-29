@@ -1,3 +1,5 @@
+import { BigNumber } from 'bignumber.js';
+
 import { PoolMetadata } from './hooks/usePoolsMetadata';
 
 export interface AtomicaSubgraphPool {
@@ -7,6 +9,14 @@ export interface AtomicaSubgraphPool {
   capitalTokenAddress: string;
   capitalTokenDecimals: number;
   manager: string;
+  markets: {
+    id: string;
+    title: string;
+    product: {
+      id: string;
+      title: string;
+    };
+  }[];
 }
 
 export interface SubgraphMarket {
@@ -55,8 +65,17 @@ export interface AtomicaDelegationPool {
   metadata?: PoolMetadata;
   approvedCredit: string;
   approvedCreditUsd: string;
+  approvedCreditUsdBig: BigNumber;
   vault?: SubgraphVault;
   manager: string;
+  markets: {
+    id: string;
+    title: string;
+    product: {
+      id: string;
+      title: string;
+    };
+  }[];
 }
 
 export interface BorrowMarket {

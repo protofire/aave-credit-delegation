@@ -36,6 +36,7 @@ class GoogleSheetsApiService {
   }
 
   public async connectToGoogleSheets(spreadsheetId: string, sheetTitle: string) {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const credentials = require('../../../sheets-credentials.json');
 
     const doc = new GoogleSpreadsheet(spreadsheetId);

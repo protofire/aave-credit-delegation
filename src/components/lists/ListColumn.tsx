@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box, SxProps, Theme } from '@mui/material';
 import { ReactNode } from 'react';
 
 interface ListColumnProps {
@@ -8,6 +8,7 @@ interface ListColumnProps {
   isRow?: boolean;
   align?: 'left' | 'center' | 'right';
   overFlow?: 'hidden' | 'visible';
+  sx?: SxProps<Theme>;
 }
 
 export const ListColumn = ({
@@ -17,10 +18,12 @@ export const ListColumn = ({
   maxWidth,
   align = 'center',
   overFlow = 'visible',
+  sx,
 }: ListColumnProps) => {
   return (
     <Box
       sx={{
+        ...sx,
         display: 'flex',
         flexDirection: isRow ? 'row' : 'column',
         alignItems: isRow

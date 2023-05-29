@@ -18,5 +18,13 @@ query main($author: String!) {
     capitalTokenAddress
     capitalTokenDecimals
     manager
+    markets {
+      id
+      title
+      product {
+        id
+        title
+      }
+    }
   }
 }

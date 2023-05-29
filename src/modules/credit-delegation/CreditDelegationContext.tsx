@@ -1,16 +1,22 @@
+import { ApolloProvider } from '@apollo/client';
 import { PopulatedTransaction } from 'ethers';
 import { Interface } from 'ethers/lib/utils';
 import { createContext, ReactNode, useCallback, useContext } from 'react';
 import { useRootStore } from 'src/store/root';
 
 import FACTORY_ABI from './abi/CreditDelegationVaultFactory.json';
+import { client } from './apollo';
 import { CREDIT_DELEGATION_VAULT_FACTORY_ADDRESS } from './consts';
+import { useLendingCapacity } from './hooks/useLendingCapacity';
 import { usePools } from './hooks/usePools';
 import { AtomicaDelegationPool } from './types';
 
 export interface CreditDelgationData {
   loadingPools: boolean;
   pools: AtomicaDelegationPool[];
+  lended: string;
+  loadingLendingCapacity: boolean;
+  lendingCapacity: string;
   fetchAllBorrowAllowances: (forceApprovalCheck?: boolean | undefined) => Promise<void>;
   fetchBorrowAllowance: (poolId: string, forceApprovalCheck?: boolean | undefined) => Promise<void>;
   refetchVaults: () => Promise<unknown>;
@@ -24,6 +30,9 @@ export interface CreditDelgationData {
 export const CreditDelegationContext = createContext({
   pools: [],
   loadingPools: true,
+  lended: '0',
+  loadingLendingCapacity: true,
+  lendingCapacity: '0',
   refetchVaults: () => Promise.reject(),
   fetchAllBorrowAllowances: () => Promise.reject(),
   fetchBorrowAllowance: () => Promise.reject(),
@@ -32,7 +41,7 @@ export const CreditDelegationContext = createContext({
   },
 } as CreditDelgationData);
 
-export const CreditDelegationProvider = ({
+const CreditDelegationDataProvider = ({
   children,
 }: {
   children: ReactNode;
@@ -44,6 +53,12 @@ export const CreditDelegationProvider = ({
     fetchBorrowAllowance,
     refetchVaults,
   } = usePools();
+
+  const {
+    lended,
+    loading: loadingLendingCapacity,
+    lendingCapacity,
+  } = useLendingCapacity(loadingPools ? undefined : pools);
 
   const account = useRootStore((state) => state.account);
 
@@ -81,6 +96,9 @@ export const CreditDelegationProvider = ({
       value={{
         loadingPools,
         pools,
+        lended,
+        loadingLendingCapacity,
+        lendingCapacity,
         refetchVaults,
         fetchAllBorrowAllowances,
         fetchBorrowAllowance,
@@ -89,6 +107,18 @@ export const CreditDelegationProvider = ({
     >
       {children}
     </CreditDelegationContext.Provider>
+  );
+};
+
+export const CreditDelegationProvider = ({
+  children,
+}: {
+  children: ReactNode;
+}): JSX.Element | null => {
+  return (
+    <ApolloProvider client={client}>
+      <CreditDelegationDataProvider>{children}</CreditDelegationDataProvider>
+    </ApolloProvider>
   );
 };
 
