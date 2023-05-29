@@ -1,17 +1,15 @@
 import { Trans } from '@lingui/macro';
 import { Typography, useMediaQuery, useTheme } from '@mui/material';
 import { Dispatch, SetStateAction, useState } from 'react';
-import { StableAPYTooltip } from 'src/components/infoTooltips/StableAPYTooltip';
-import { VariableAPYTooltip } from 'src/components/infoTooltips/VariableAPYTooltip';
 import { ListColumn } from 'src/components/lists/ListColumn';
 import { ListHeaderTitle } from 'src/components/lists/ListHeaderTitle';
 import { ListHeaderWrapper } from 'src/components/lists/ListHeaderWrapper';
-import { useMarkets } from 'src/modules/credit-delegation/hooks/useMarkets';
 import { CREDIT_DELEGATION_LIST_COLUMN_WIDTHS } from 'src/utils/creditDelegationSortUtils';
 
 import { CapType } from '../../../../components/caps/helper';
 import { AvailableTooltip } from '../../../../components/infoTooltips/AvailableTooltip';
 import { ListWrapper } from '../../../../components/lists/ListWrapper';
+import { useCreditDelegationContext } from '../../CreditDelegationContext';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListLoader } from '../ListLoader';
 import { BorrowAssetsListItem } from './BorrowAssetsListItem';
@@ -20,6 +18,10 @@ const head = [
   {
     title: <Trans>Asset</Trans>,
     sortKey: 'symbol',
+  },
+  {
+    title: <Trans>Name</Trans>,
+    sortKey: 'title',
   },
   {
     title: (
@@ -31,27 +33,6 @@ const head = [
       />
     ),
     sortKey: 'availableBorrows',
-  },
-
-  {
-    title: (
-      <VariableAPYTooltip
-        text={<Trans>APY, variable</Trans>}
-        key="variableBorrowAPY"
-        variant="subheader2"
-      />
-    ),
-    sortKey: 'variableBorrowAPY',
-  },
-  {
-    title: (
-      <StableAPYTooltip
-        text={<Trans>APY, stable</Trans>}
-        key="stableBorrowAPY"
-        variant="subheader2"
-      />
-    ),
-    sortKey: 'stableBorrowAPY',
   },
 ];
 
@@ -92,7 +73,7 @@ const Header: React.FC<HeaderProps> = ({
 );
 
 export const BorrowAssetsList = () => {
-  const { markets, loading } = useMarkets();
+  const { markets, loading } = useCreditDelegationContext();
   const theme = useTheme();
   const downToXSM = useMediaQuery(theme.breakpoints.down('xsm'));
   const [sortName, setSortName] = useState('');
@@ -103,7 +84,7 @@ export const BorrowAssetsList = () => {
   if (loading)
     return (
       <ListLoader
-        title={<Trans>Assets to borrow</Trans>}
+        title={<Trans>Markets</Trans>}
         head={head.map((col) => col.title)}
         withTopMargin
       />
@@ -113,10 +94,10 @@ export const BorrowAssetsList = () => {
     <ListWrapper
       titleComponent={
         <Typography component="div" variant="h3" sx={{ mr: 4 }}>
-          <Trans>Assets to borrow</Trans>
+          <Trans>Markets</Trans>
         </Typography>
       }
-      localStorageName="borrowAssetsDashboardTableCollapse"
+      localStorageName="borrowAssetsCreditDelegationTableCollapse"
       withTopMargin
       noData={borrowDisabled}
     >

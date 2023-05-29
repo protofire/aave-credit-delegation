@@ -68,7 +68,7 @@ export const SupplyAssetsList = () => {
   const [sortName, setSortName] = useState('');
   const [sortDesc, setSortDesc] = useState(false);
 
-  const { loadingPools, pools } = useCreditDelegationContext();
+  const { loading: loadingPools, pools } = useCreditDelegationContext();
 
   const sortedPools = useMemo(
     () => handleSortPools(sortDesc, sortName, pools),

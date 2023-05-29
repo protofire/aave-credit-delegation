@@ -13,13 +13,13 @@ import {
   DetailsNumberLine,
   TxModalDetails,
 } from 'src/components/transactions/FlowCommons/TxModalDetails';
+import { useAppDataContext } from 'src/hooks/app-data-provider/useAppDataProvider';
 import { useModalContext } from 'src/hooks/useModal';
 import { useProtocolDataContext } from 'src/hooks/useProtocolDataContext';
 import { getMaxAmountAvailableToBorrow } from 'src/utils/getMaxAmountAvailableToBorrow';
 import { roundToTokenDecimals } from 'src/utils/utils';
 
-import { useAppDataContext } from '../../../hooks/app-data-provider/useAppDataProvider';
-import { useCreditDelegationContext } from '../CreditDelegationContext';
+import { useCreditDelegationContext } from '../../CreditDelegationContext';
 import { CreditDelegationActions } from './CreditDelegationActions';
 
 export enum ErrorType {

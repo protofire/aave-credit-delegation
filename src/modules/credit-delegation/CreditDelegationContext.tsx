@@ -8,15 +8,16 @@ import FACTORY_ABI from './abi/CreditDelegationVaultFactory.json';
 import { client } from './apollo';
 import { CREDIT_DELEGATION_VAULT_FACTORY_ADDRESS } from './consts';
 import { useLendingCapacity } from './hooks/useLendingCapacity';
-import { usePools } from './hooks/usePools';
-import { AtomicaDelegationPool } from './types';
+import { usePoolsAndMarkets } from './hooks/usePoolsAndMarkets';
+import { AtomicaBorrowMarket, AtomicaDelegationPool } from './types';
 
 export interface CreditDelgationData {
-  loadingPools: boolean;
+  loading: boolean;
   pools: AtomicaDelegationPool[];
   lended: string;
   loadingLendingCapacity: boolean;
   lendingCapacity: string;
+  markets: AtomicaBorrowMarket[];
   fetchAllBorrowAllowances: (forceApprovalCheck?: boolean | undefined) => Promise<void>;
   fetchBorrowAllowance: (poolId: string, forceApprovalCheck?: boolean | undefined) => Promise<void>;
   refetchVaults: () => Promise<unknown>;
@@ -29,10 +30,11 @@ export interface CreditDelgationData {
 
 export const CreditDelegationContext = createContext({
   pools: [],
-  loadingPools: true,
   lended: '0',
   loadingLendingCapacity: true,
   lendingCapacity: '0',
+  markets: [],
+  loading: true,
   refetchVaults: () => Promise.reject(),
   fetchAllBorrowAllowances: () => Promise.reject(),
   fetchBorrowAllowance: () => Promise.reject(),
@@ -46,19 +48,14 @@ const CreditDelegationDataProvider = ({
 }: {
   children: ReactNode;
 }): JSX.Element | null => {
-  const {
-    loading: loadingPools,
-    pools,
-    fetchAllBorrowAllowances,
-    fetchBorrowAllowance,
-    refetchVaults,
-  } = usePools();
+  const { loading, pools, markets, fetchAllBorrowAllowances, fetchBorrowAllowance, refetchVaults } =
+    usePoolsAndMarkets();
 
   const {
     lended,
     loading: loadingLendingCapacity,
     lendingCapacity,
-  } = useLendingCapacity(loadingPools ? undefined : pools);
+  } = useLendingCapacity(loading ? undefined : pools);
 
   const account = useRootStore((state) => state.account);
 
@@ -94,11 +91,12 @@ const CreditDelegationDataProvider = ({
   return (
     <CreditDelegationContext.Provider
       value={{
-        loadingPools,
+        loading,
         pools,
         lended,
         loadingLendingCapacity,
         lendingCapacity,
+        markets,
         refetchVaults,
         fetchAllBorrowAllowances,
         fetchBorrowAllowance,

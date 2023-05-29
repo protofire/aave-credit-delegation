@@ -10,8 +10,8 @@ import { useCreditDelegationContext } from 'src/modules/credit-delegation/Credit
 import { useRootStore } from 'src/store/root';
 import { getErrorTextFromError, TxAction } from 'src/ui-config/errorMapping';
 
-import { CREDIT_DELEGATION_DEFAULT_POOL_MANAGER } from '../consts';
-import { AtomicaDelegationPool } from '../types';
+import { CREDIT_DELEGATION_DEFAULT_POOL_MANAGER } from '../../consts';
+import { AtomicaDelegationPool } from '../../types';
 
 export interface CreditDelegationActionProps extends BoxProps {
   poolReserve: ComputedReserveData;

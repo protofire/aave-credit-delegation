@@ -1,10 +1,11 @@
 import { Trans } from '@lingui/macro';
 import { Button } from '@mui/material';
-import { BorrowMarket } from 'src/modules/credit-delegation/types';
+import { ListColumn } from 'src/components/lists/ListColumn';
+import { useModalContext } from 'src/hooks/useModal';
+import { AtomicaBorrowMarket } from 'src/modules/credit-delegation/types';
 
 import { CapsHint } from '../../../../components/caps/CapsHint';
 import { CapType } from '../../../../components/caps/helper';
-import { ListAPRColumn } from '../ListAPRColumn';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListItemWrapper } from '../ListItemWrapper';
 import { ListValueColumn } from '../ListValueColumn';
@@ -12,18 +13,21 @@ import { ListValueColumn } from '../ListValueColumn';
 export const BorrowAssetsListItem = ({
   symbol,
   iconSymbol,
-  name,
+  title,
   availableBorrows,
   availableBorrowsInUSD,
   borrowCap,
   totalBorrows,
-  variableBorrowRate,
-  stableBorrowRate,
-}: BorrowMarket) => {
+  id,
+  underlyingAsset,
+}: AtomicaBorrowMarket) => {
+  const { openRequestLoan } = useModalContext();
+
   const borrowButtonDisable = Number(availableBorrows) <= 0;
 
   return (
-    <ListItemWrapper symbol={symbol} iconSymbol={iconSymbol} name={name}>
+    <ListItemWrapper symbol={symbol} iconSymbol={iconSymbol} name={symbol}>
+      <ListColumn>{title}</ListColumn>
       <ListValueColumn
         symbol={symbol}
         value={Number(availableBorrows)}
@@ -40,12 +44,13 @@ export const BorrowAssetsListItem = ({
         }
       />
 
-      <ListAPRColumn value={Number(variableBorrowRate)} incentives={[]} symbol={symbol} />
-      <ListAPRColumn value={Number(stableBorrowRate)} incentives={[]} symbol={symbol} />
-
       <ListButtonsColumn>
-        <Button disabled={borrowButtonDisable} variant="contained">
-          <Trans>Borrow</Trans>
+        <Button
+          disabled={borrowButtonDisable}
+          variant="contained"
+          onClick={() => openRequestLoan(id, underlyingAsset)}
+        >
+          <Trans>Request loan</Trans>
         </Button>
       </ListButtonsColumn>
     </ListItemWrapper>

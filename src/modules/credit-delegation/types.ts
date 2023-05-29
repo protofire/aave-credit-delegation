@@ -19,7 +19,7 @@ export interface AtomicaSubgraphPool {
   }[];
 }
 
-export interface SubgraphMarket {
+export interface AtomicaSubgraphMarket {
   id: string;
   title: string;
   author: string;
@@ -78,11 +78,11 @@ export interface AtomicaDelegationPool {
   }[];
 }
 
-export interface BorrowMarket {
+export interface AtomicaBorrowMarket {
   id: string;
   symbol: string;
   iconSymbol: string;
-  name: string;
+  title: string;
   walletBalance: string;
   walletBalanceUSD: string;
   borrowCap: string;

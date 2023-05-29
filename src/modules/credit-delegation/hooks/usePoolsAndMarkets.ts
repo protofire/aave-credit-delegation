@@ -1,5 +1,5 @@
 import { API_ETH_MOCK_ADDRESS, InterestRate } from '@aave/contract-helpers';
-import { USD_DECIMALS, valueToBigNumber } from '@aave/math-utils';
+import { normalize, USD_DECIMALS, valueToBigNumber } from '@aave/math-utils';
 import { useQuery } from '@apollo/client';
 import { BigNumber } from 'bignumber.js';
 import { loader } from 'graphql.macro';
@@ -17,7 +17,12 @@ import {
   getMaxAmountAvailableToBorrow,
 } from 'src/utils/getMaxAmountAvailableToBorrow';
 
-import { AtomicaDelegationPool, AtomicaSubgraphPool } from '../types';
+import {
+  AtomicaBorrowMarket,
+  AtomicaDelegationPool,
+  AtomicaSubgraphMarket,
+  AtomicaSubgraphPool,
+} from '../types';
 import { usePoolsMetadata } from './usePoolsMetadata';
 import { useUserVaults } from './useUserVaults';
 
@@ -25,7 +30,7 @@ const MAIN_QUERY = loader('../queries/main.gql');
 
 type ApproveCredit = Record<string, { amount: string; amountUsd: string; amountUsdBig: BigNumber }>;
 
-export const usePools = () => {
+export const usePoolsAndMarkets = () => {
   const {
     user,
     reserves,
@@ -34,10 +39,9 @@ export const usePools = () => {
   } = useAppDataContext();
   const { currentNetworkConfig } = useProtocolDataContext();
   const { walletBalances } = useWalletBalances();
-  const [account, getCreditDelegationApprovedAmount] = useRootStore((state) => [
-    state.account,
-    state.getCreditDelegationApprovedAmount,
-  ]);
+  const getCreditDelegationApprovedAmount = useRootStore(
+    (state) => state.getCreditDelegationApprovedAmount
+  );
   const metadata = usePoolsMetadata();
 
   const [approvedCredit, setApprovedCredit] = useState<ApproveCredit>({});
@@ -102,9 +106,9 @@ export const usePools = () => {
     loading: poolsLoading,
     error,
     data,
-  } = useQuery<{ pools: AtomicaSubgraphPool[] }>(MAIN_QUERY, {
+  } = useQuery<{ pools: AtomicaSubgraphPool[]; markets: AtomicaSubgraphMarket[] }>(MAIN_QUERY, {
     variables: {
-      author: account.toLowerCase(),
+      author: '0x7069c89493E8636cD7D9B83ae214Ca3dbb84103A'.toLowerCase(),
     },
   });
 
@@ -242,8 +246,49 @@ export const usePools = () => {
     });
   }, [data?.pools, suppliedPositions, tokensToBorrow, metadata, approvedCredit]);
 
+  const tokensInPools = useMemo(
+    () =>
+      data?.pools?.map((pool) => ({
+        address: pool.capitalTokenAddress,
+        symbol: pool.capitalTokenSymbol,
+        decimals: pool.capitalTokenDecimals,
+      })) ?? [],
+    [data?.pools]
+  );
+
+  const markets: AtomicaBorrowMarket[] = useMemo(
+    () =>
+      (data?.markets ?? []).map((market: AtomicaSubgraphMarket) => {
+        const token = tokensInPools?.find((token) => token.address === market.capitalToken);
+        const userReserve = suppliedPositions.find(
+          (position) => position.reserve.symbol === token?.symbol
+        );
+
+        return {
+          id: market.id,
+          symbol: token?.symbol ?? '',
+          iconSymbol: token?.symbol ?? '',
+          title: market.title,
+          walletBalance: token ? walletBalances[token.address]?.amount ?? '0.0' : '0.0',
+          walletBalanceUSD: token ? walletBalances[token.address]?.amountUSD ?? '0.0' : '0.0',
+          totalLiquidity: '0.0',
+          underlyingAsset: userReserve?.underlyingAsset ?? '',
+          isActive: true,
+          detailsAddress: '',
+          totalBorrows: '0.0',
+          availableBorrows: token ? normalize(market.desiredCover, token.decimals) : '0.0',
+          availableBorrowsInUSD: token ? normalize(market.desiredCover, token.decimals) : '0.0',
+          stableBorrowRate: '0.0',
+          variableBorrowRate: '0.0',
+          borrowCap: token ? normalize(market.desiredCover, token.decimals) : '0.0',
+        };
+      }),
+    [data?.markets, tokensInPools, walletBalances]
+  );
+
   return {
     pools,
+    markets,
     error,
     loading: poolsLoading || appDataLoading || approvedCreditLoading || loadingVaults,
     fetchBorrowAllowance,
