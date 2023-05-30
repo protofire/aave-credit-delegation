@@ -4,7 +4,7 @@ import { Trans } from '@lingui/macro';
 // import { AddressInput } from '../AddressInput';
 import { Box, Typography } from '@mui/material';
 import React, { useMemo, useState } from 'react';
-import { ProtectionWidget } from 'rm-react-components';
+import { RequestLoanWidget } from 'rm-react-components';
 import { GasEstimationError } from 'src/components/transactions/FlowCommons/GasEstimationError';
 import { ModalWrapperProps } from 'src/components/transactions/FlowCommons/ModalWrapper';
 import { TxSuccessView } from 'src/components/transactions/FlowCommons/Success';
@@ -57,17 +57,13 @@ export const RequestLoanModalContent = React.memo(
         </Box>
 
         <Box sx={{ pt: 5 }} style={{ display: 'flex' }}>
-          <ProtectionWidget
+          <RequestLoanWidget
             provider={provider}
-            protectionAmount={loanAmount}
+            desiredLoanAmount={loanAmount}
             marketId={marketId}
             chainId={currentChainId}
             environment={6}
-            activateProtectionTitle="Request loan at {rate}% per year at '{marketEntity}'"
-            viewProtectionTitle="Loan of {coverage} {coverageCurrency} is approved"
-            noProtectionTitle={'No markets found'}
-            noAssetTitle={'No loans to show'}
-            inlineMode
+            hideLogo
           />
         </Box>
 
