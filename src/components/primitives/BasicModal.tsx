@@ -8,6 +8,7 @@ export interface BasicModalProps {
   setOpen: (value: boolean) => void;
   withCloseButton?: boolean;
   contentMaxWidth?: number;
+  fitContent?: boolean;
 }
 
 export const BasicModal = ({
@@ -15,6 +16,7 @@ export const BasicModal = ({
   setOpen,
   withCloseButton = true,
   contentMaxWidth = 420,
+  fitContent,
   children,
   ...props
 }: BasicModalProps) => {
@@ -44,9 +46,10 @@ export const BasicModal = ({
           position: 'relative',
           margin: '10px',
           overflowY: 'auto',
-          width: '100%',
+          width: fitContent ? 'auto' : '100%',
           maxWidth: { xs: '359px', xsm: `${contentMaxWidth}px` },
           maxHeight: 'calc(100vh - 20px)',
+          minWidth: '500px',
           p: 6,
         }}
       >

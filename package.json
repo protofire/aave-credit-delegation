@@ -87,6 +87,7 @@
     "react-number-format": "^4.9.1",
     "reflect-metadata": "^0.1.13",
     "remark-gfm": "^3.0.1",
+    "rm-react-components": "^1.0.12",
     "web3-ledgerhq-frame-connector": "^1.0.1",
     "zustand": "^4.1.2"
   },
@@ -96,7 +97,7 @@
     "@commitlint/cli": "^17.1.2",
     "@commitlint/config-conventional": "^17.1.0",
     "@ethersproject/experimental": "^5.5.0",
-    "@ethersproject/providers": "^5.5.3",
+    "@ethersproject/providers": "^5.7.2",
     "@lingui/cli": "^3.14.0",
     "@lingui/macro": "^3.14.0",
     "@next/bundle-analyzer": "^12.1.0",

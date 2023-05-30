@@ -3,7 +3,8 @@ import { Box } from '@mui/material';
 import { BorrowAssetsList } from './lists/BorrowAssetsList/BorrowAssetsList';
 import { BorrowedPositionsList } from './lists/BorrowedPositionsList/BorrowedPositionsList';
 import { SupplyAssetsList } from './lists/SupplyAssetsList/SupplyAssetsList';
-import { CreditDelegationModal } from './modals/CreditDelegationModal';
+import { CreditDelegationModal } from './modals/CreditDelegation/CreditDelegationModal';
+import { RequestLoanModal } from './modals/RequestLoan/RequestLoanModal';
 
 interface CreditDelegationContentWrapperProps {
   isBorrow: boolean;
@@ -33,6 +34,7 @@ export const CreditDelegationContentWrapper = ({
         </Box>
       </Box>
       <CreditDelegationModal />
+      <RequestLoanModal />
     </>
   );
 };
