@@ -52,22 +52,6 @@ export const usePoolsAndMarkets = () => {
 
   const { baseAssetSymbol } = currentNetworkConfig;
 
-  const suppliedPositions =
-    user?.userReservesData
-      .filter((userReserve) => userReserve.underlyingBalance !== '0')
-      .map((userReserve) => ({
-        ...userReserve,
-        reserve: {
-          ...userReserve.reserve,
-          ...(userReserve.reserve.isWrappedBaseAsset
-            ? fetchIconSymbolAndName({
-                symbol: currentNetworkConfig.baseAssetSymbol,
-                underlyingAsset: API_ETH_MOCK_ADDRESS.toLowerCase(),
-              })
-            : {}),
-        },
-      })) || [];
-
   const tokensToBorrow = reserves
     .filter((reserve) => assetCanBeBorrowedByUser(reserve, user))
     .map((reserve: ComputedReserveData) => {
@@ -199,9 +183,13 @@ export const usePoolsAndMarkets = () => {
     }
 
     return (data?.pools ?? []).map((pool: AtomicaSubgraphPool) => {
-      const userReserve = suppliedPositions.find(
-        (position) => position.reserve.symbol === pool.capitalTokenSymbol
-      );
+      const userReserve = reserves.find((reserve) => reserve.symbol === pool.capitalTokenSymbol);
+
+      console.log({
+        userReserve,
+        reserves,
+        pool,
+      });
 
       const tokenToBorrow = tokensToBorrow.find(
         (token) => token.symbol === pool.capitalTokenSymbol
@@ -229,8 +217,8 @@ export const usePoolsAndMarkets = () => {
           (userReserve?.underlyingAsset &&
             walletBalances[userReserve?.underlyingAsset]?.amountUSD) ??
           '0.0',
-        supplyCap: userReserve?.reserve.supplyCap ?? '0.0',
-        totalLiquidity: userReserve?.reserve.totalLiquidity ?? '0.0',
+        supplyCap: userReserve?.supplyCap ?? '0.0',
+        totalLiquidity: userReserve?.totalLiquidity ?? '0.0',
         supplyAPY: '0.0',
         underlyingAsset: userReserve?.underlyingAsset ?? '',
         isActive: true,
@@ -244,7 +232,7 @@ export const usePoolsAndMarkets = () => {
         vault,
       };
     });
-  }, [data?.pools, suppliedPositions, tokensToBorrow, metadata, approvedCredit]);
+  }, [data?.pools, reserves, tokensToBorrow, metadata, approvedCredit]);
 
   const tokensInPools = useMemo(
     () =>
@@ -256,35 +244,46 @@ export const usePoolsAndMarkets = () => {
     [data?.pools]
   );
 
-  const markets: AtomicaBorrowMarket[] = useMemo(
-    () =>
-      (data?.markets ?? []).map((market: AtomicaSubgraphMarket) => {
-        const token = tokensInPools?.find((token) => token.address === market.capitalToken);
-        const userReserve = suppliedPositions.find(
-          (position) => position.reserve.symbol === token?.symbol
-        );
+  const markets: AtomicaBorrowMarket[] = useMemo(() => {
+    if (poolsLoading || appDataLoading) {
+      return [];
+    }
 
-        return {
-          id: market.id,
-          symbol: token?.symbol ?? '',
-          iconSymbol: token?.symbol ?? '',
-          title: market.title,
-          walletBalance: token ? walletBalances[token.address]?.amount ?? '0.0' : '0.0',
-          walletBalanceUSD: token ? walletBalances[token.address]?.amountUSD ?? '0.0' : '0.0',
-          totalLiquidity: '0.0',
-          underlyingAsset: userReserve?.underlyingAsset ?? '',
-          isActive: true,
-          detailsAddress: '',
-          totalBorrows: '0.0',
-          availableBorrows: token ? normalize(market.desiredCover, token.decimals) : '0.0',
-          availableBorrowsInUSD: token ? normalize(market.desiredCover, token.decimals) : '0.0',
-          stableBorrowRate: '0.0',
-          variableBorrowRate: '0.0',
-          borrowCap: token ? normalize(market.desiredCover, token.decimals) : '0.0',
-        };
-      }),
-    [data?.markets, tokensInPools, walletBalances]
-  );
+    return (data?.markets ?? []).map((market: AtomicaSubgraphMarket) => {
+      const token = tokensInPools?.find((token) => token.address === market.capitalToken);
+      const userReserve = reserves.find((reserve) => reserve.symbol === token?.symbol);
+
+      console.log({
+        token,
+        userReserve,
+        reserves,
+      });
+
+      return {
+        id: market.id,
+        symbol: token?.symbol ?? '',
+        iconSymbol: token?.symbol ?? '',
+        title: market.title,
+        walletBalance: token ? walletBalances[token.address]?.amount ?? '0.0' : '0.0',
+        walletBalanceUSD: token ? walletBalances[token.address]?.amountUSD ?? '0.0' : '0.0',
+        totalLiquidity: '0.0',
+        underlyingAsset: userReserve?.underlyingAsset ?? '',
+        isActive: true,
+        detailsAddress: '',
+        totalBorrows: '0.0',
+        availableBorrows: token ? normalize(market.desiredCover, token.decimals) : '0.0',
+        availableBorrowsInUSD: token ? normalize(market.desiredCover, token.decimals) : '0.0',
+        stableBorrowRate: '0.0',
+        variableBorrowRate: '0.0',
+        borrowCap: token ? normalize(market.desiredCover, token.decimals) : '0.0',
+      };
+    });
+  }, [data?.markets, tokensInPools, walletBalances, reserves]);
+
+  console.log({
+    pools,
+    markets,
+  });
 
   return {
     pools,
