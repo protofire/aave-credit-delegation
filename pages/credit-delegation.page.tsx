@@ -38,7 +38,7 @@ export default function CreditDelegation() {
           >
             <StyledToggleButton value="delegate" disabled={mode === 'delegate'}>
               <Typography variant="subheader1">
-                <Trans>Delegate</Trans>
+                <Trans>Lend</Trans>
               </Typography>
             </StyledToggleButton>
             <StyledToggleButton value="borrow" disabled={mode === 'borrow'}>

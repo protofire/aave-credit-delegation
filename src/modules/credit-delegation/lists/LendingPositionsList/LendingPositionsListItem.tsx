@@ -10,8 +10,9 @@ import { AtomicaDelegationPool } from '../../types';
 import { ListAPRColumn } from '../ListAPRColumn';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListItemWrapper } from '../ListItemWrapper';
+import { ListValueColumn } from '../ListValueColumn';
 
-export const SupplyAssetsListItem = ({
+export const LendingPositionsListItem = ({
   symbol,
   iconSymbol,
   name,
@@ -20,6 +21,8 @@ export const SupplyAssetsListItem = ({
   underlyingAsset,
   availableBalance,
   metadata,
+  approvedCredit,
+  approvedCreditUsd,
   id,
   manager,
   markets,
@@ -59,6 +62,14 @@ export const SupplyAssetsListItem = ({
         ))}
       </ListColumn>
 
+      <ListValueColumn
+        symbol={symbol}
+        value={Number(approvedCredit)}
+        subValue={approvedCreditUsd}
+        withTooltip
+        disabled={Number(approvedCredit) === 0}
+      />
+
       <ListAPRColumn value={Number(supplyAPY)} incentives={[]} symbol={symbol} />
 
       <ListButtonsColumn>
@@ -67,7 +78,7 @@ export const SupplyAssetsListItem = ({
           variant="contained"
           onClick={() => openCreditDelegation(id, underlyingAsset)}
         >
-          <Trans>Lend</Trans>
+          <Trans>Manage</Trans>
         </Button>
       </ListButtonsColumn>
     </ListItemWrapper>

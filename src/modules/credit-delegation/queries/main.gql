@@ -1,17 +1,23 @@
-query main($author: String!) {
-  markets(where: { author: $author }) {
+query main($productIds: [String]!, $managerIds: [String]!) {
+  markets(where: { productId_in: $productIds }) {
     id
+    marketId
     title
     author
     aggregatedPools {
       id
       poolList
     }
+    productId
+    product {
+      id
+      title
+    }
     desiredCover
     capitalToken
+    premiumToken
   }
-
-  pools(where: { markets_: { id_in: ["0x5cfdd8f4dcbd1ac2d5de1f102fda0b485b3e1f13-33"] } }) {
+  pools(where: { manager_in: $managerIds }) {
     id
     name
     capitalTokenSymbol
@@ -24,6 +30,28 @@ query main($author: String!) {
       product {
         id
         title
+      }
+    }
+  }
+
+  loans: policies(where: { productId_in: $productIds }) {
+    id
+    productId
+    marketId
+    policyId
+    owner
+    balance
+    coverage
+    premiumDeposit
+    totalCharged
+    underlyingCover
+    validFrom
+    validUntil
+    market {
+      id
+      aggregatedPools {
+        id
+        poolList
       }
     }
   }

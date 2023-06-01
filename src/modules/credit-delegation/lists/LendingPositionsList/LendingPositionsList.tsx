@@ -1,6 +1,6 @@
 import { Trans } from '@lingui/macro';
 import { Typography } from '@mui/material';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { ListColumn } from 'src/components/lists/ListColumn';
 import { ListHeaderTitle } from 'src/components/lists/ListHeaderTitle';
 import { ListHeaderWrapper } from 'src/components/lists/ListHeaderWrapper';
@@ -9,32 +9,19 @@ import { useAppDataContext } from 'src/hooks/app-data-provider/useAppDataProvide
 import { CREDIT_DELEGATION_LIST_COLUMN_WIDTHS } from 'src/utils/creditDelegationSortUtils';
 
 import { CreditDelegationContentNoData } from '../../CreditDelegationContentNoData';
-import { AtomicaLoan } from '../../types';
+import { useCreditDelegationContext } from '../../CreditDelegationContext';
+import { handleSortPools } from '../../utils';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListLoader } from '../ListLoader';
-import { BorrowedPositionsListItem } from './BorrowedPositionsListItem';
+import { LendingPositionsListItem } from './LendingPositionsListItem';
 
 const head = [
-  {
-    title: <Trans>Asset</Trans>,
-    sortKey: 'symbol',
-  },
-  {
-    title: <Trans>Name</Trans>,
-    sortKey: 'market.title',
-  },
-  {
-    title: <Trans>Amount</Trans>,
-    sortKey: 'principal',
-  },
-  {
-    title: <Trans>Repaid</Trans>,
-    sortKey: 'repaidPrincpipal',
-  },
-  {
-    title: <Trans>Status</Trans>,
-    sortKey: 'status',
-  },
+  { title: <Trans key="assets">Assets</Trans>, sortKey: 'symbol' },
+  { title: <Trans key="title">Pool Description</Trans>, sortKey: 'metadata.Label' },
+  { title: <Trans key="manager">Pool Manager</Trans>, sortKey: 'manager' },
+  { title: <Trans key="borrowers">Borrowers</Trans>, sortKey: 'borrowers' },
+  { title: <Trans key="lended">Amount</Trans>, sortKey: 'approvedCredit' },
+  { title: <Trans key="APY">APY</Trans>, sortKey: 'supplyAPY' },
 ];
 
 interface HeaderProps {
@@ -76,46 +63,41 @@ const Header: React.FC<HeaderProps> = ({
   );
 };
 
-export const BorrowedPositionsList = () => {
+export const LendingPositionsList = () => {
   const { loading } = useAppDataContext();
   const [sortName, setSortName] = useState('');
   const [sortDesc, setSortDesc] = useState(false);
 
-  const sortedReserves: AtomicaLoan[] = [
-    {
-      id: '0x6b175474e89094c44da98b954eedeac495271d0f',
-      symbol: 'DAI',
-      iconSymbol: 'DAI',
-      market: {
-        id: '0x6b175474e89094c44da98b954eedeac495271d0f',
-        title: 'Polygon Mumbai',
-      },
-      principal: '10000',
-      interest: '1000',
-      repaidPrincipal: '10',
-      repaidInterest: '1',
-      status: 'pending',
-    },
-  ];
+  const { loading: loadingPools, pools } = useCreditDelegationContext();
 
-  if (loading)
+  const sortedPools = useMemo(
+    () =>
+      handleSortPools(
+        sortDesc,
+        sortName,
+        pools.filter((pool) => Number(pool.approvedCredit) > 0)
+      ),
+    [sortDesc, sortName, pools]
+  );
+
+  if (loading || loadingPools)
     return <ListLoader title={<Trans>Your loans</Trans>} head={head.map((c) => c.title)} />;
 
   return (
     <ListWrapper
       titleComponent={
         <Typography component="div" variant="h3" sx={{ mr: 4 }}>
-          <Trans>Your loans</Trans>
+          <Trans>Your positions earning yield</Trans>
         </Typography>
       }
-      localStorageName="borrowedAssetsCreditDelegationTableCollapse"
-      noData={!sortedReserves.length}
+      localStorageName="lendingPositionsCreditDelegationTableCollapse"
+      noData={!sortedPools.length}
     >
-      {!sortedReserves.length && (
+      {!sortedPools.length && (
         <CreditDelegationContentNoData text={<Trans>Nothing borrowed yet</Trans>} />
       )}
 
-      {!!sortedReserves.length && (
+      {!!sortedPools.length && (
         <Header
           setSortDesc={setSortDesc}
           setSortName={setSortName}
@@ -123,8 +105,8 @@ export const BorrowedPositionsList = () => {
           sortName={sortName}
         />
       )}
-      {sortedReserves.map((item) => (
-        <BorrowedPositionsListItem key={item.id} {...item} />
+      {sortedPools.map((item) => (
+        <LendingPositionsListItem key={item.id} {...item} />
       ))}
     </ListWrapper>
   );

@@ -434,7 +434,7 @@ export const Web3ContextProvider: React.FC<{ children: ReactElement }> = ({ chil
           connectWallet,
           connectReadOnlyMode,
           disconnectWallet,
-          provider,
+          provider: provider as JsonRpcProvider | undefined,
           connected: active,
           loading,
           chainId: chainId || 1,

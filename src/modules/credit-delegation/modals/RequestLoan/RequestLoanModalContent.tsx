@@ -24,7 +24,7 @@ interface RequestLoanModalContentProps extends ModalWrapperProps {
 export const RequestLoanModalContent = React.memo(
   ({ underlyingAsset, poolReserve, marketId }: RequestLoanModalContentProps) => {
     const { currentNetworkConfig, currentChainId } = useProtocolDataContext();
-    const { mainTxState: supplyTxState, txError } = useModalContext();
+    const { mainTxState: supplyTxState, txError, close } = useModalContext();
     const { markets } = useCreditDelegationContext();
 
     const market = useMemo(() => markets.find((m) => m.id === marketId), [markets, marketId]);
@@ -63,6 +63,7 @@ export const RequestLoanModalContent = React.memo(
             marketId={marketId}
             chainId={currentChainId}
             environment={6}
+            onRequestSuccess={close}
             hideLogo
           />
         </Box>

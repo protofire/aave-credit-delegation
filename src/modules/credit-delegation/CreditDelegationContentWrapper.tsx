@@ -2,6 +2,8 @@ import { Box } from '@mui/material';
 
 import { BorrowAssetsList } from './lists/BorrowAssetsList/BorrowAssetsList';
 import { BorrowedPositionsList } from './lists/BorrowedPositionsList/BorrowedPositionsList';
+import { LendingPositionsList } from './lists/LendingPositionsList/LendingPositionsList';
+import { LoanPositionsList } from './lists/LoanPositionsList/LoanPositionsList';
 import { SupplyAssetsList } from './lists/SupplyAssetsList/SupplyAssetsList';
 import { CreditDelegationModal } from './modals/CreditDelegation/CreditDelegationModal';
 import { RequestLoanModal } from './modals/RequestLoan/RequestLoanModal';
@@ -25,6 +27,8 @@ export const CreditDelegationContentWrapper = ({
         }}
       >
         <Box style={{ display: isBorrow ? 'none' : 'block' }}>
+          <LendingPositionsList />
+          <LoanPositionsList />
           <SupplyAssetsList />
         </Box>
 

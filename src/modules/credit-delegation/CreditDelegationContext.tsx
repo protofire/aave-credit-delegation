@@ -9,7 +9,7 @@ import { client } from './apollo';
 import { CREDIT_DELEGATION_VAULT_FACTORY_ADDRESS } from './consts';
 import { useLendingCapacity } from './hooks/useLendingCapacity';
 import { usePoolsAndMarkets } from './hooks/usePoolsAndMarkets';
-import { AtomicaBorrowMarket, AtomicaDelegationPool } from './types';
+import { AtomicaBorrowMarket, AtomicaDelegationPool, AtomicaSubgraphLoan } from './types';
 
 export interface CreditDelgationData {
   loading: boolean;
@@ -18,6 +18,7 @@ export interface CreditDelgationData {
   loadingLendingCapacity: boolean;
   lendingCapacity: string;
   markets: AtomicaBorrowMarket[];
+  loans: AtomicaSubgraphLoan[];
   fetchAllBorrowAllowances: (forceApprovalCheck?: boolean | undefined) => Promise<void>;
   fetchBorrowAllowance: (poolId: string, forceApprovalCheck?: boolean | undefined) => Promise<void>;
   refetchVaults: () => Promise<unknown>;
@@ -34,6 +35,7 @@ export const CreditDelegationContext = createContext({
   loadingLendingCapacity: true,
   lendingCapacity: '0',
   markets: [],
+  loans: [],
   loading: true,
   refetchVaults: () => Promise.reject(),
   fetchAllBorrowAllowances: () => Promise.reject(),
@@ -48,8 +50,15 @@ const CreditDelegationDataProvider = ({
 }: {
   children: ReactNode;
 }): JSX.Element | null => {
-  const { loading, pools, markets, fetchAllBorrowAllowances, fetchBorrowAllowance, refetchVaults } =
-    usePoolsAndMarkets();
+  const {
+    loading,
+    pools,
+    markets,
+    loans,
+    fetchAllBorrowAllowances,
+    fetchBorrowAllowance,
+    refetchVaults,
+  } = usePoolsAndMarkets();
 
   const {
     lended,
@@ -97,6 +106,7 @@ const CreditDelegationDataProvider = ({
         loadingLendingCapacity,
         lendingCapacity,
         markets,
+        loans,
         refetchVaults,
         fetchAllBorrowAllowances,
         fetchBorrowAllowance,
