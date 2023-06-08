@@ -6,6 +6,7 @@ import { AtomicaBorrowMarket } from 'src/modules/credit-delegation/types';
 
 import { CapsHint } from '../../../../components/caps/CapsHint';
 import { CapType } from '../../../../components/caps/helper';
+import { ListAPRColumn } from '../ListAPRColumn';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListItemWrapper } from '../ListItemWrapper';
 import { ListValueColumn } from '../ListValueColumn';
@@ -14,20 +15,22 @@ export const BorrowAssetsListItem = ({
   symbol,
   iconSymbol,
   title,
+  product,
   availableBorrows,
   availableBorrowsInUSD,
   borrowCap,
   totalBorrows,
   id,
   underlyingAsset,
+  apr,
 }: AtomicaBorrowMarket) => {
   const { openRequestLoan } = useModalContext();
 
-  const borrowButtonDisable = Number(availableBorrows) <= 0;
-
   return (
     <ListItemWrapper symbol={symbol} iconSymbol={iconSymbol} name={symbol}>
-      <ListColumn>{title}</ListColumn>
+      <ListColumn>
+        {product.title}: {title}
+      </ListColumn>
       <ListValueColumn
         symbol={symbol}
         value={Number(availableBorrows)}
@@ -44,12 +47,10 @@ export const BorrowAssetsListItem = ({
         }
       />
 
+      <ListAPRColumn value={Number(apr)} symbol={symbol} />
+
       <ListButtonsColumn>
-        <Button
-          disabled={borrowButtonDisable}
-          variant="contained"
-          onClick={() => openRequestLoan(id, underlyingAsset)}
-        >
+        <Button variant="contained" onClick={() => openRequestLoan(id, underlyingAsset)}>
           <Trans>Request loan</Trans>
         </Button>
       </ListButtonsColumn>

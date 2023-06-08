@@ -1,4 +1,4 @@
-import { API_ETH_MOCK_ADDRESS, InterestRate } from '@aave/contract-helpers';
+import { API_ETH_MOCK_ADDRESS } from '@aave/contract-helpers';
 import { USD_DECIMALS, valueToBigNumber } from '@aave/math-utils';
 import { Trans } from '@lingui/macro';
 // import { AddressInput } from '../AddressInput';
@@ -16,7 +16,6 @@ import {
 import { useAppDataContext } from 'src/hooks/app-data-provider/useAppDataProvider';
 import { useModalContext } from 'src/hooks/useModal';
 import { useProtocolDataContext } from 'src/hooks/useProtocolDataContext';
-import { getMaxAmountAvailableToBorrow } from 'src/utils/getMaxAmountAvailableToBorrow';
 import { roundToTokenDecimals } from 'src/utils/utils';
 
 import { useCreditDelegationContext } from '../../CreditDelegationContext';
@@ -32,11 +31,11 @@ interface CreditDelegationModalContentProps extends ModalWrapperProps {
 
 export const CreditDelegationModalContent = React.memo(
   ({ poolId, underlyingAsset, poolReserve, isWrongNetwork }: CreditDelegationModalContentProps) => {
-    const { marketReferencePriceInUsd, user } = useAppDataContext();
+    const { marketReferencePriceInUsd } = useAppDataContext();
     const { currentNetworkConfig } = useProtocolDataContext();
     const { mainTxState: supplyTxState, gasLimit, txError } = useModalContext();
 
-    const { pools, lended } = useCreditDelegationContext();
+    const { pools, lended, lendingCapacity } = useCreditDelegationContext();
     const pool = pools.find((p) => p.id === poolId);
 
     // states
@@ -48,9 +47,7 @@ export const CreditDelegationModalContent = React.memo(
 
     const supplyApy = '0.0';
 
-    const maxAmountToDelegate = valueToBigNumber(
-      getMaxAmountAvailableToBorrow(poolReserve, user, InterestRate.Stable)
-    )
+    const maxAmountToDelegate = valueToBigNumber(lendingCapacity)
       .minus(
         valueToBigNumber(lended)
           .shiftedBy(USD_DECIMALS)

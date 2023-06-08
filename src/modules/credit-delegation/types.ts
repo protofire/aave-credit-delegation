@@ -1,3 +1,4 @@
+import { TokenMetadataType } from '@aave/contract-helpers';
 import { BigNumber } from 'bignumber.js';
 
 import { PoolMetadata } from './hooks/usePoolsMetadata';
@@ -21,6 +22,7 @@ export interface AtomicaSubgraphPool {
 
 export interface AtomicaSubgraphMarket {
   id: string;
+  marketId: string;
   title: string;
   author: string;
   aggregatedPools: {
@@ -28,7 +30,12 @@ export interface AtomicaSubgraphMarket {
     poolList: string;
   };
   capitalToken: string;
+  premiumToken: string;
   desiredCover: string;
+  product: {
+    id: string;
+    title: string;
+  };
 }
 
 export interface SubgraphVault {
@@ -46,6 +53,28 @@ export interface SubgraphVault {
   asset: string;
   allowance: string;
   loanAmount: string;
+}
+
+export interface AtomicaSubgraphLoan {
+  id: string;
+  productId: string;
+  marketId: string;
+  policyId: string;
+  owner: string;
+  balance: string;
+  coverage: string;
+  premiumDeposit: string;
+  totalCharged: string;
+  underlyingCover: string;
+  validFrom: string;
+  validUntil: string;
+  market: {
+    id: string;
+    aggregatedPools: {
+      id: string;
+      poolList: string[];
+    }[];
+  };
 }
 
 export interface AtomicaDelegationPool {
@@ -80,6 +109,7 @@ export interface AtomicaDelegationPool {
 
 export interface AtomicaBorrowMarket {
   id: string;
+  marketId: string;
   symbol: string;
   iconSymbol: string;
   title: string;
@@ -95,4 +125,43 @@ export interface AtomicaBorrowMarket {
   availableBorrowsInUSD: string;
   stableBorrowRate: string;
   variableBorrowRate: string;
+  apr: string;
+  product: {
+    id: string;
+    title: string;
+  };
+  asset?: TokenMetadataType;
+}
+
+export interface AtomicaLoan {
+  id: string;
+  symbol: string;
+  iconSymbol: string;
+  market: {
+    id: string;
+    title: string;
+  };
+  principal: string;
+  interest: string;
+  status: string;
+  repaidPrincipal: string;
+  repaidInterest: string;
+}
+
+export interface AtomicaLoanPosition {
+  id: string;
+  productId: string;
+  marketId: string;
+  policyId: string;
+  owner: string;
+  balance: string;
+  coverage: string;
+  premiumDeposit: string;
+  totalCharged: string;
+  underlyingCover: string;
+  validFrom: string;
+  validUntil: string;
+  market?: AtomicaBorrowMarket;
+  pools: AtomicaDelegationPool[];
+  symbol: string;
 }

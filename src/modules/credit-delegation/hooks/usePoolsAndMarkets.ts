@@ -1,4 +1,9 @@
-import { API_ETH_MOCK_ADDRESS, InterestRate } from '@aave/contract-helpers';
+import {
+  API_ETH_MOCK_ADDRESS,
+  ERC20Service,
+  InterestRate,
+  TokenMetadataType,
+} from '@aave/contract-helpers';
 import { normalize, USD_DECIMALS, valueToBigNumber } from '@aave/math-utils';
 import { useQuery } from '@apollo/client';
 import { BigNumber } from 'bignumber.js';
@@ -17,12 +22,17 @@ import {
   getMaxAmountAvailableToBorrow,
 } from 'src/utils/getMaxAmountAvailableToBorrow';
 
+import { MARKET_IDS as MANAGERS_IDS, PRODUCT_IDS } from '../consts';
 import {
   AtomicaBorrowMarket,
   AtomicaDelegationPool,
+  AtomicaSubgraphLoan,
   AtomicaSubgraphMarket,
   AtomicaSubgraphPool,
 } from '../types';
+import useAsyncMemo from './useAsyncMemo';
+import { useMarketsApr } from './useMarketsApr';
+import { usePoolsApy } from './usePoolsApy';
 import { usePoolsMetadata } from './usePoolsMetadata';
 import { useUserVaults } from './useUserVaults';
 
@@ -37,12 +47,14 @@ export const usePoolsAndMarkets = () => {
     marketReferencePriceInUsd,
     loading: appDataLoading,
   } = useAppDataContext();
-  const { currentNetworkConfig } = useProtocolDataContext();
+  const { currentNetworkConfig, jsonRpcProvider } = useProtocolDataContext();
   const { walletBalances } = useWalletBalances();
   const getCreditDelegationApprovedAmount = useRootStore(
     (state) => state.getCreditDelegationApprovedAmount
   );
   const metadata = usePoolsMetadata();
+  const marketsApr = useMarketsApr();
+  const poolsApy = usePoolsApy();
 
   const [approvedCredit, setApprovedCredit] = useState<ApproveCredit>({});
   const [approvedCreditLoading, setApprovedCreditLoading] = useState<boolean>(false);
@@ -90,11 +102,36 @@ export const usePoolsAndMarkets = () => {
     loading: poolsLoading,
     error,
     data,
-  } = useQuery<{ pools: AtomicaSubgraphPool[]; markets: AtomicaSubgraphMarket[] }>(MAIN_QUERY, {
+  } = useQuery<{
+    pools: AtomicaSubgraphPool[];
+    markets: AtomicaSubgraphMarket[];
+    loans: AtomicaSubgraphLoan[];
+  }>(MAIN_QUERY, {
     variables: {
-      author: '0x7069c89493E8636cD7D9B83ae214Ca3dbb84103A'.toLowerCase(),
+      productIds: PRODUCT_IDS,
+      managerIds: MANAGERS_IDS,
     },
   });
+
+  const [marketTokens, { loading: loadingMarketTokens }] = useAsyncMemo<TokenMetadataType[]>(
+    async () => {
+      const tokens = Array.from(
+        new Set([
+          ...(data?.markets.map((market) => market.capitalToken) ?? []),
+          ...(data?.markets.map((market) => market.premiumToken) ?? []),
+        ])
+      );
+
+      const erc20Service = new ERC20Service(jsonRpcProvider());
+      const tokensData = await Promise.all(
+        tokens.map(async (token) => erc20Service.getTokenData(token))
+      );
+
+      return tokensData;
+    },
+    [],
+    [data?.markets]
+  );
 
   const fetchBorrowAllowance = useCallback(
     async (poolId: string, forceApprovalCheck?: boolean) => {
@@ -185,12 +222,6 @@ export const usePoolsAndMarkets = () => {
     return (data?.pools ?? []).map((pool: AtomicaSubgraphPool) => {
       const userReserve = reserves.find((reserve) => reserve.symbol === pool.capitalTokenSymbol);
 
-      console.log({
-        userReserve,
-        reserves,
-        pool,
-      });
-
       const tokenToBorrow = tokensToBorrow.find(
         (token) => token.symbol === pool.capitalTokenSymbol
       );
@@ -202,6 +233,10 @@ export const usePoolsAndMarkets = () => {
       const vault = vaults?.find(
         (vault) => vault.atomicaPool.toLowerCase() === pool.id.toLowerCase()
       );
+
+      const supplyAPY =
+        poolsApy?.find((poolApy) => poolApy.id?.toLowerCase() === pool.id?.toLowerCase())
+          ?.baseApy ?? '0.0';
 
       return {
         id: pool.id,
@@ -219,7 +254,7 @@ export const usePoolsAndMarkets = () => {
           '0.0',
         supplyCap: userReserve?.supplyCap ?? '0.0',
         totalLiquidity: userReserve?.totalLiquidity ?? '0.0',
-        supplyAPY: '0.0',
+        supplyAPY,
         underlyingAsset: userReserve?.underlyingAsset ?? '',
         isActive: true,
         availableBalance: tokenToBorrow?.availableBorrows ?? '0.0',
@@ -245,22 +280,23 @@ export const usePoolsAndMarkets = () => {
   );
 
   const markets: AtomicaBorrowMarket[] = useMemo(() => {
-    if (poolsLoading || appDataLoading) {
+    if (poolsLoading || appDataLoading || loadingMarketTokens) {
       return [];
     }
 
     return (data?.markets ?? []).map((market: AtomicaSubgraphMarket) => {
-      const token = tokensInPools?.find((token) => token.address === market.capitalToken);
+      const token = marketTokens?.find(
+        (token) => token.address.toLowerCase() === market.capitalToken.toLowerCase()
+      );
       const userReserve = reserves.find((reserve) => reserve.symbol === token?.symbol);
 
-      console.log({
-        token,
-        userReserve,
-        reserves,
-      });
+      const apr =
+        marketsApr?.find((marketApr) => marketApr.id?.toLowerCase() === market.id?.toLowerCase())
+          ?.apy ?? '0.0';
 
       return {
         id: market.id,
+        marketId: market.id,
         symbol: token?.symbol ?? '',
         iconSymbol: token?.symbol ?? '',
         title: market.title,
@@ -276,18 +312,25 @@ export const usePoolsAndMarkets = () => {
         stableBorrowRate: '0.0',
         variableBorrowRate: '0.0',
         borrowCap: token ? normalize(market.desiredCover, token.decimals) : '0.0',
+        apr,
+        product: market.product,
+        asset: token,
       };
     });
-  }, [data?.markets, tokensInPools, walletBalances, reserves]);
-
-  console.log({
-    pools,
-    markets,
-  });
+  }, [
+    data?.markets,
+    tokensInPools,
+    walletBalances,
+    reserves,
+    marketsApr,
+    marketTokens,
+    loadingMarketTokens,
+  ]);
 
   return {
     pools,
     markets,
+    loans: data?.loans ?? [],
     error,
     loading: poolsLoading || appDataLoading || approvedCreditLoading || loadingVaults,
     fetchBorrowAllowance,

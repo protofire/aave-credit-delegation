@@ -1,6 +1,6 @@
 import { Trans } from '@lingui/macro';
 import { Typography, useMediaQuery, useTheme } from '@mui/material';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { ListColumn } from 'src/components/lists/ListColumn';
 import { ListHeaderTitle } from 'src/components/lists/ListHeaderTitle';
 import { ListHeaderWrapper } from 'src/components/lists/ListHeaderWrapper';
@@ -10,6 +10,7 @@ import { CapType } from '../../../../components/caps/helper';
 import { AvailableTooltip } from '../../../../components/infoTooltips/AvailableTooltip';
 import { ListWrapper } from '../../../../components/lists/ListWrapper';
 import { useCreditDelegationContext } from '../../CreditDelegationContext';
+import { handleSortMarkets } from '../../utils';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListLoader } from '../ListLoader';
 import { BorrowAssetsListItem } from './BorrowAssetsListItem';
@@ -33,6 +34,10 @@ const head = [
       />
     ),
     sortKey: 'availableBorrows',
+  },
+  {
+    title: <Trans>APR</Trans>,
+    sortKey: 'apr',
   },
 ];
 
@@ -81,6 +86,11 @@ export const BorrowAssetsList = () => {
 
   const borrowDisabled = !markets.length;
 
+  const sortedMarkets = useMemo(
+    () => handleSortMarkets(sortDesc, sortName, markets),
+    [sortDesc, sortName, markets]
+  );
+
   if (loading)
     return (
       <ListLoader
@@ -102,7 +112,7 @@ export const BorrowAssetsList = () => {
       noData={borrowDisabled}
     >
       <>
-        {!downToXSM && !!markets.length && (
+        {!downToXSM && !!sortedMarkets.length && (
           <Header
             setSortDesc={setSortDesc}
             setSortName={setSortName}
@@ -110,7 +120,7 @@ export const BorrowAssetsList = () => {
             sortName={sortName}
           />
         )}
-        {markets?.map((item) => (
+        {sortedMarkets?.map((item) => (
           <BorrowAssetsListItem key={item.id} {...item} />
         ))}
       </>

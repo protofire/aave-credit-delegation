@@ -65,7 +65,7 @@ export const CreditDelegationActions = React.memo(
 
           const response = await sendTx(approveDelegationTxData);
 
-          await response.wait(1);
+          await response.wait(4);
 
           if (pool) {
             await fetchBorrowAllowance(pool.id, true);
@@ -111,7 +111,7 @@ export const CreditDelegationActions = React.memo(
 
           const response = await sendTx(deployVaultTxData);
 
-          await response.wait(1);
+          await response.wait(4);
 
           await refetchVaults();
 

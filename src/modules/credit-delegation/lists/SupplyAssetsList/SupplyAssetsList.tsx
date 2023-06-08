@@ -19,7 +19,6 @@ const head = [
   { title: <Trans key="title">Pool Description</Trans>, sortKey: 'metadata.Label' },
   { title: <Trans key="manager">Pool Manager</Trans>, sortKey: 'manager' },
   { title: <Trans key="borrowers">Borrowers</Trans>, sortKey: 'borrowers' },
-  { title: <Trans key="lended">Lended</Trans>, sortKey: 'approvedCredit' },
   { title: <Trans key="APY">APY</Trans>, sortKey: 'supplyAPY' },
 ];
 
@@ -95,7 +94,7 @@ export const SupplyAssetsList = () => {
       withTopMargin
     >
       <>
-        {!downToXSM && (
+        {!downToXSM && !!sortedPools.length && (
           <Header
             sortName={sortName}
             setSortName={setSortName}
