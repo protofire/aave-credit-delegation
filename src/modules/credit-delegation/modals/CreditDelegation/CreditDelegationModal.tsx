@@ -14,7 +14,11 @@ export const CreditDelegationModal = () => {
 
   return (
     <BasicModal open={type === ModalType.CreditDelegation} setOpen={close}>
-      <ModalWrapper title={<Trans>Delegate credit</Trans>} underlyingAsset={args.underlyingAsset}>
+      <ModalWrapper
+        title={<Trans>Lend to pool</Trans>}
+        underlyingAsset={args.underlyingAsset}
+        hideTitleSymbol
+      >
         {(params) => <CreditDelegationModalContent {...params} poolId={args.poolId} />}
       </ModalWrapper>
     </BasicModal>

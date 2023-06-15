@@ -22,7 +22,7 @@ import {
   getMaxAmountAvailableToBorrow,
 } from 'src/utils/getMaxAmountAvailableToBorrow';
 
-import { MARKET_IDS as MANAGERS_IDS, PRODUCT_IDS } from '../consts';
+import { MARKET_MANAGER_IDS, PRODUCT_IDS } from '../consts';
 import {
   AtomicaBorrowMarket,
   AtomicaDelegationPool,
@@ -49,11 +49,12 @@ export const usePoolsAndMarkets = () => {
   } = useAppDataContext();
   const { currentNetworkConfig, jsonRpcProvider } = useProtocolDataContext();
   const { walletBalances } = useWalletBalances();
-  const getCreditDelegationApprovedAmount = useRootStore(
-    (state) => state.getCreditDelegationApprovedAmount
-  );
+  const [account, getCreditDelegationApprovedAmount] = useRootStore((state) => [
+    state.account,
+    state.getCreditDelegationApprovedAmount,
+  ]);
   const metadata = usePoolsMetadata();
-  const marketsApr = useMarketsApr();
+  const [marketsApr] = useMarketsApr();
   const poolsApy = usePoolsApy();
 
   const [approvedCredit, setApprovedCredit] = useState<ApproveCredit>({});
@@ -106,11 +107,14 @@ export const usePoolsAndMarkets = () => {
     pools: AtomicaSubgraphPool[];
     markets: AtomicaSubgraphMarket[];
     loans: AtomicaSubgraphLoan[];
+    myLoans: AtomicaSubgraphLoan[];
   }>(MAIN_QUERY, {
     variables: {
       productIds: PRODUCT_IDS,
-      managerIds: MANAGERS_IDS,
+      managerIds: MARKET_MANAGER_IDS,
+      owner: account,
     },
+    skip: !account,
   });
 
   const [marketTokens, { loading: loadingMarketTokens }] = useAsyncMemo<TokenMetadataType[]>(
@@ -265,9 +269,11 @@ export const usePoolsAndMarkets = () => {
         approvedCreditUsdBig:
           approvedCredit[pool.id.toLowerCase()]?.amountUsdBig ?? valueToBigNumber(0),
         vault,
+        stableDebtTokenAddress: userReserve?.stableDebtTokenAddress ?? '',
+        variableDebtTokenAddress: userReserve?.variableDebtTokenAddress ?? '',
       };
     });
-  }, [data?.pools, reserves, tokensToBorrow, metadata, approvedCredit]);
+  }, [data?.pools, reserves, tokensToBorrow, metadata, approvedCredit, vaults, poolsApy]);
 
   const tokensInPools = useMemo(
     () =>
@@ -325,12 +331,15 @@ export const usePoolsAndMarkets = () => {
     marketsApr,
     marketTokens,
     loadingMarketTokens,
+    poolsLoading,
+    appDataLoading,
   ]);
 
   return {
     pools,
     markets,
     loans: data?.loans ?? [],
+    myLoans: data?.myLoans ?? [],
     error,
     loading: poolsLoading || appDataLoading || approvedCreditLoading || loadingVaults,
     fetchBorrowAllowance,

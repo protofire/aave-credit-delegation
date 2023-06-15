@@ -1,4 +1,4 @@
-query main($productIds: [String]!, $managerIds: [String]!) {
+query main($productIds: [String]!, $managerIds: [String]!, $owner: String!) {
   markets(where: { productId_in: $productIds }) {
     id
     marketId
@@ -17,6 +17,7 @@ query main($productIds: [String]!, $managerIds: [String]!) {
     capitalToken
     premiumToken
   }
+
   pools(where: { manager_in: $managerIds }) {
     id
     name
@@ -35,6 +36,28 @@ query main($productIds: [String]!, $managerIds: [String]!) {
   }
 
   loans: policies(where: { productId_in: $productIds }) {
+    id
+    productId
+    marketId
+    policyId
+    owner
+    balance
+    coverage
+    premiumDeposit
+    totalCharged
+    underlyingCover
+    validFrom
+    validUntil
+    market {
+      id
+      aggregatedPools {
+        id
+        poolList
+      }
+    }
+  }
+
+  myLoans: policies(where: { productId_in: $productIds, owner: $owner }) {
     id
     productId
     marketId

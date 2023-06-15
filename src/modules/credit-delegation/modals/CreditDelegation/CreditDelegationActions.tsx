@@ -10,7 +10,6 @@ import { useCreditDelegationContext } from 'src/modules/credit-delegation/Credit
 import { useRootStore } from 'src/store/root';
 import { getErrorTextFromError, TxAction } from 'src/ui-config/errorMapping';
 
-import { CREDIT_DELEGATION_DEFAULT_POOL_MANAGER } from '../../consts';
 import { AtomicaDelegationPool } from '../../types';
 
 export interface CreditDelegationActionProps extends BoxProps {
@@ -101,10 +100,11 @@ export const CreditDelegationActions = React.memo(
     const deployVault = useCallback(async () => {
       if (pool?.id) {
         try {
-          const deployVaultTxData = generateDeployVault({
-            managerAddress: CREDIT_DELEGATION_DEFAULT_POOL_MANAGER,
-            poolId: pool?.id,
-            debtTokenAddress: poolReserve.stableDebtTokenAddress,
+          const deployVaultTxData = await generateDeployVault({
+            manager: pool.manager,
+            atomicaPool: pool?.id,
+            debtToken: poolReserve.stableDebtTokenAddress,
+            value: parseUnits(amount, decimals).toString(),
           });
 
           setMainTxState({ ...mainTxState, loading: true });
@@ -118,6 +118,8 @@ export const CreditDelegationActions = React.memo(
           setMainTxState({});
         } catch (error) {
           const parsedError = getErrorTextFromError(error, TxAction.GAS_ESTIMATION, false);
+
+          console.error(error);
           setTxError(parsedError);
           setMainTxState({
             txHash: undefined,
@@ -133,6 +135,10 @@ export const CreditDelegationActions = React.memo(
       setMainTxState,
       sendTx,
       refetchVaults,
+      getErrorTextFromError,
+      setTxError,
+      amount,
+      decimals,
     ]);
 
     const action = useCallback(async () => {

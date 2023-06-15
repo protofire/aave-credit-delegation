@@ -18,6 +18,7 @@ import { TopInfoPanel } from '../../components/TopInfoPanel/TopInfoPanel';
 import { TopInfoPanelItem } from '../../components/TopInfoPanel/TopInfoPanelItem';
 import { useAppDataContext } from '../../hooks/app-data-provider/useAppDataProvider';
 import { useCreditDelegationContext } from './CreditDelegationContext';
+import { LendingCapacityTooltip } from './LendingCapacityTooltip';
 
 export const CreditDelegationTopPanel = () => {
   const { currentNetworkConfig, currentMarket } = useProtocolDataContext();
@@ -79,7 +80,12 @@ export const CreditDelegationTopPanel = () => {
       >
         <TopInfoPanelItem
           icon={<WalletIcon />}
-          title={<Trans>Your lending capacity</Trans>}
+          title={
+            <div style={{ display: 'flex' }}>
+              <Trans>Your lending capacity</Trans>
+              <LendingCapacityTooltip />
+            </div>
+          }
           loading={loadingLendingCapacity}
         >
           {currentAccount ? (

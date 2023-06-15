@@ -22,7 +22,7 @@ const head = [
   { title: <Trans key="manager">Pool Manager</Trans>, sortKey: 'manager' },
   { title: <Trans key="borrowers">Borrower</Trans>, sortKey: 'market.title' },
   { title: <Trans key="lended">Loan amount</Trans>, sortKey: 'coverage' },
-  { title: <Trans key="APY">Interest</Trans>, sortKey: 'balance' },
+  { title: <Trans key="APY">Balance</Trans>, sortKey: 'balance' },
 ];
 
 interface HeaderProps {

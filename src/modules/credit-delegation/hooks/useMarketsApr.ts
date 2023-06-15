@@ -9,8 +9,9 @@ export interface MarketApr {
   quotePerSecond: string;
 }
 
-export const useMarketsApr = (): MarketApr[] | undefined => {
+export const useMarketsApr = (): [MarketApr[] | undefined, string | undefined] => {
   const [marketsApr, setMarketsApr] = useState<MarketApr[]>();
+  const [error, setError] = useState<string | undefined>();
 
   useEffect(() => {
     let isNotCancelled = true;
@@ -28,9 +29,12 @@ export const useMarketsApr = (): MarketApr[] | undefined => {
 
           if (isNotCancelled) {
             setMarketsApr(json[0].markets);
+            setError(undefined);
           }
         }
-      } catch {}
+      } catch (error) {
+        setError(error.message);
+      }
     }
 
     getApr();
@@ -40,5 +44,5 @@ export const useMarketsApr = (): MarketApr[] | undefined => {
     };
   }, []);
 
-  return marketsApr;
+  return [marketsApr, error];
 };
