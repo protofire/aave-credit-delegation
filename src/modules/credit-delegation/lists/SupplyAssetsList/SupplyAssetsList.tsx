@@ -19,6 +19,7 @@ const head = [
   { title: <Trans key="title">Pool Description</Trans>, sortKey: 'metadata.Label' },
   { title: <Trans key="manager">Pool Manager</Trans>, sortKey: 'manager' },
   { title: <Trans key="borrowers">Borrowers</Trans>, sortKey: 'borrowers' },
+  { title: <Trans key="capacity">Lending Capacity</Trans>, sortKey: 'capacity' },
   { title: <Trans key="APY">APY</Trans>, sortKey: 'supplyAPY' },
 ];
 
@@ -78,7 +79,7 @@ export const SupplyAssetsList = () => {
     return (
       <ListLoader
         head={head.map((col) => col.title)}
-        title={<Trans>Pools to delegate to</Trans>}
+        title={<Trans>Pools to lend to using your line of credit</Trans>}
         withTopMargin
       />
     );
@@ -87,7 +88,7 @@ export const SupplyAssetsList = () => {
     <ListWrapper
       titleComponent={
         <Typography component="div" variant="h3" sx={{ mr: 4 }}>
-          <Trans>Pools to delegate to</Trans>
+          <Trans>Pools to lend to using your line of credit</Trans>
         </Typography>
       }
       localStorageName="delegateAssetsTableCollapse"

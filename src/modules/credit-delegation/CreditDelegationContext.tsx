@@ -1,10 +1,12 @@
 import { ApolloProvider } from '@apollo/client';
-import { PopulatedTransaction } from 'ethers';
+import { Contract, PopulatedTransaction, utils } from 'ethers';
 import { Interface } from 'ethers/lib/utils';
 import { createContext, ReactNode, useCallback, useContext } from 'react';
+import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
 import { useRootStore } from 'src/store/root';
 
 import FACTORY_ABI from './abi/CreditDelegationVaultFactory.json';
+import STABLE_DEBT_TOKEN_ABI from './abi/StabeDebtTokenABI.json';
 import { client } from './apollo';
 import { CREDIT_DELEGATION_VAULT_FACTORY_ADDRESS } from './consts';
 import { useLendingCapacity } from './hooks/useLendingCapacity';
@@ -19,14 +21,17 @@ export interface CreditDelgationData {
   lendingCapacity: string;
   markets: AtomicaBorrowMarket[];
   loans: AtomicaSubgraphLoan[];
+  myLoans: AtomicaSubgraphLoan[];
   fetchAllBorrowAllowances: (forceApprovalCheck?: boolean | undefined) => Promise<void>;
   fetchBorrowAllowance: (poolId: string, forceApprovalCheck?: boolean | undefined) => Promise<void>;
   refetchVaults: () => Promise<unknown>;
   generateDeployVault: (args: {
-    managerAddress: string;
-    poolId: string;
-    debtTokenAddress: string;
-  }) => PopulatedTransaction;
+    manager: string;
+    atomicaPool: string;
+    debtToken: string;
+    value: string;
+    delegationPercentage?: number;
+  }) => Promise<PopulatedTransaction>;
 }
 
 export const CreditDelegationContext = createContext({
@@ -36,6 +41,7 @@ export const CreditDelegationContext = createContext({
   lendingCapacity: '0',
   markets: [],
   loans: [],
+  myLoans: [],
   loading: true,
   refetchVaults: () => Promise.reject(),
   fetchAllBorrowAllowances: () => Promise.reject(),
@@ -55,46 +61,121 @@ const CreditDelegationDataProvider = ({
     pools,
     markets,
     loans,
+    myLoans,
     fetchAllBorrowAllowances,
     fetchBorrowAllowance,
     refetchVaults,
   } = usePoolsAndMarkets();
+
+  console.log({ pools });
 
   const {
     lended,
     loading: loadingLendingCapacity,
     lendingCapacity,
   } = useLendingCapacity(loading ? undefined : pools);
+  const { provider } = useWeb3Context();
+  const [account, chainId, getProvider, generateDelegationSignatureRequest] = useRootStore(
+    (state) => [
+      state.account,
+      state.currentChainId,
+      state.jsonRpcProvider,
+      state.generateDelegationSignatureRequest,
+    ]
+  );
 
-  const account = useRootStore((state) => state.account);
+  const { signTxData } = useWeb3Context();
+
+  const getUserDebtTokenNonce = useCallback(
+    async (debtToken: string): Promise<string | undefined> => {
+      if (account) {
+        const debtTokenContract = new Contract(debtToken, STABLE_DEBT_TOKEN_ABI, getProvider());
+
+        const nonce = await debtTokenContract.nonces(account);
+
+        return nonce?.toString();
+      }
+      return undefined;
+    },
+    [getProvider, account]
+  );
+
+  const getVaultAddress = useCallback(async () => {
+    if (account) {
+      const factoryContract = new Contract(
+        CREDIT_DELEGATION_VAULT_FACTORY_ADDRESS,
+        FACTORY_ABI,
+        provider?.getSigner()
+      );
+
+      if (provider) {
+        factoryContract.connect(provider?.getSigner());
+      }
+
+      return factoryContract.predictVaultAddress(account.toLowerCase());
+    }
+
+    return undefined;
+  }, [getProvider, account]);
 
   const generateDeployVault = useCallback(
-    ({
-      managerAddress,
-      poolId,
-      debtTokenAddress,
+    async ({
+      atomicaPool,
+      value,
+      delegationPercentage = 0,
     }: {
-      managerAddress: string;
-      poolId: string;
-      debtTokenAddress: string;
+      atomicaPool: string;
+      value: string;
+      delegationPercentage?: number;
     }) => {
-      const jsonInterface = new Interface(FACTORY_ABI);
+      const pool = pools.find((pool) => pool.id.toLowerCase() === atomicaPool.toLowerCase());
 
-      const txData = jsonInterface.encodeFunctionData('deployVault', [
-        managerAddress,
-        poolId,
-        debtTokenAddress,
-      ]);
+      if (pool && account) {
+        const nonce = await getUserDebtTokenNonce(pool.variableDebtTokenAddress);
 
-      const deployVaultTx: PopulatedTransaction = {
-        data: txData,
-        to: CREDIT_DELEGATION_VAULT_FACTORY_ADDRESS,
-        from: account,
-      };
+        const deadline = Date.now() + 1000 * 60 * 50;
 
-      return deployVaultTx;
+        const vaultAddress = await getVaultAddress();
+
+        const dataToSign = await generateDelegationSignatureRequest({
+          debtToken: pool.variableDebtTokenAddress.toLowerCase(),
+          delegatee: vaultAddress.toLowerCase(),
+          value,
+          deadline: deadline,
+          nonce: Number(nonce),
+        });
+
+        const sig = await signTxData(dataToSign);
+
+        const { v, r, s } = utils.splitSignature(sig);
+
+        const jsonInterface = new Interface(FACTORY_ABI);
+
+        const txData = jsonInterface.encodeFunctionData('deployVault', [
+          pool.manager,
+          atomicaPool,
+          pool.variableDebtTokenAddress,
+          value,
+          deadline,
+          v,
+          r,
+          s,
+          (delegationPercentage * 100).toString(),
+          '2',
+        ]);
+
+        const deployVaultTx: PopulatedTransaction = {
+          data: txData,
+          to: CREDIT_DELEGATION_VAULT_FACTORY_ADDRESS,
+          from: account,
+        };
+
+        return deployVaultTx;
+      }
+
+      throw new Error('Pool not found');
     },
-    [account]
+    [account, chainId, getProvider, getUserDebtTokenNonce, getVaultAddress, pools, signTxData]
   );
 
   return (
@@ -107,6 +188,7 @@ const CreditDelegationDataProvider = ({
         lendingCapacity,
         markets,
         loans,
+        myLoans,
         refetchVaults,
         fetchAllBorrowAllowances,
         fetchBorrowAllowance,

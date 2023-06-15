@@ -104,6 +104,13 @@ export interface PoolSlice {
     deadline: string;
     spender: string;
   }) => Promise<string>;
+  generateDelegationSignatureRequest: (args: {
+    debtToken: string;
+    value: string;
+    deadline: number;
+    delegatee: string;
+    nonce: number;
+  }) => Promise<string>;
   // PoolBundle and LendingPoolBundle methods
   generateApproval: (args: ApproveType) => PopulatedTransaction;
   supply: (args: Omit<LPSupplyParamsType, 'user'>) => PopulatedTransaction;
@@ -629,6 +636,51 @@ export const createPoolSlice: StateCreator<
           deadline,
         },
       };
+      return JSON.stringify(typeData);
+    },
+
+    generateDelegationSignatureRequest: async ({
+      debtToken,
+      value,
+      nonce,
+      deadline,
+      delegatee,
+    }) => {
+      const provider = get().jsonRpcProvider();
+      const tokenERC20Service = new ERC20Service(provider);
+      const { name } = await tokenERC20Service.getTokenData(debtToken);
+      const { chainId } = await provider.getNetwork();
+
+      const typeData = {
+        types: {
+          EIP712Domain: [
+            { name: 'name', type: 'string' },
+            { name: 'version', type: 'string' },
+            { name: 'chainId', type: 'uint256' },
+            { name: 'verifyingContract', type: 'address' },
+          ],
+          DelegationWithSig: [
+            { name: 'delegatee', type: 'address' },
+            { name: 'value', type: 'uint256' },
+            { name: 'nonce', type: 'uint256' },
+            { name: 'deadline', type: 'uint256' },
+          ],
+        },
+        primaryType: 'DelegationWithSig',
+        domain: {
+          name,
+          version: '1',
+          chainId,
+          verifyingContract: debtToken,
+        },
+        message: {
+          delegatee,
+          value,
+          nonce,
+          deadline,
+        },
+      };
+
       return JSON.stringify(typeData);
     },
   };

@@ -1,6 +1,6 @@
 import { Trans } from '@lingui/macro';
 import { Typography } from '@mui/material';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { ListColumn } from 'src/components/lists/ListColumn';
 import { ListHeaderTitle } from 'src/components/lists/ListHeaderTitle';
 import { ListHeaderWrapper } from 'src/components/lists/ListHeaderWrapper';
@@ -9,7 +9,8 @@ import { useAppDataContext } from 'src/hooks/app-data-provider/useAppDataProvide
 import { CREDIT_DELEGATION_LIST_COLUMN_WIDTHS } from 'src/utils/creditDelegationSortUtils';
 
 import { CreditDelegationContentNoData } from '../../CreditDelegationContentNoData';
-import { AtomicaLoan } from '../../types';
+import { useCreditDelegationContext } from '../../CreditDelegationContext';
+import { AtomicaLoanPosition } from '../../types';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListLoader } from '../ListLoader';
 import { BorrowedPositionsListItem } from './BorrowedPositionsListItem';
@@ -81,22 +82,33 @@ export const BorrowedPositionsList = () => {
   const [sortName, setSortName] = useState('');
   const [sortDesc, setSortDesc] = useState(false);
 
-  const sortedReserves: AtomicaLoan[] = [
-    {
-      id: '0x6b175474e89094c44da98b954eedeac495271d0f',
-      symbol: 'DAI',
-      iconSymbol: 'DAI',
-      market: {
-        id: '0x6b175474e89094c44da98b954eedeac495271d0f',
-        title: 'Polygon Mumbai',
-      },
-      principal: '10000',
-      interest: '1000',
-      repaidPrincipal: '10',
-      repaidInterest: '1',
-      status: 'pending',
-    },
-  ];
+  const { myLoans, pools, markets } = useCreditDelegationContext();
+
+  const loanPositions: AtomicaLoanPosition[] = useMemo(() => {
+    const poolIds = pools.map((pool) => pool.id);
+
+    return myLoans
+      .filter((loan) =>
+        poolIds.some((id) =>
+          loan.market.aggregatedPools.some((pool) => pool.poolList?.includes(id.toLowerCase()))
+        )
+      )
+      .map((loan) => {
+        const market = markets.find(
+          (market) => market.marketId.toLowerCase() === loan.market.id.toLowerCase()
+        );
+        const loanPools = pools.filter((pool) =>
+          loan.market.aggregatedPools.some((agg) => agg.poolList?.includes(pool.id.toLowerCase()))
+        );
+
+        return {
+          ...loan,
+          pools: loanPools,
+          market,
+          symbol: market?.symbol ?? pools[0].symbol,
+        };
+      });
+  }, [pools, myLoans]);
 
   if (loading)
     return <ListLoader title={<Trans>Your loans</Trans>} head={head.map((c) => c.title)} />;
@@ -109,13 +121,13 @@ export const BorrowedPositionsList = () => {
         </Typography>
       }
       localStorageName="borrowedAssetsCreditDelegationTableCollapse"
-      noData={!sortedReserves.length}
+      noData={!loanPositions.length}
     >
-      {!sortedReserves.length && (
+      {!loanPositions.length && (
         <CreditDelegationContentNoData text={<Trans>Nothing borrowed yet</Trans>} />
       )}
 
-      {!!sortedReserves.length && (
+      {!!loanPositions.length && (
         <Header
           setSortDesc={setSortDesc}
           setSortName={setSortName}
@@ -123,7 +135,7 @@ export const BorrowedPositionsList = () => {
           sortName={sortName}
         />
       )}
-      {sortedReserves.map((item) => (
+      {loanPositions.map((item) => (
         <BorrowedPositionsListItem key={item.id} {...item} />
       ))}
     </ListWrapper>

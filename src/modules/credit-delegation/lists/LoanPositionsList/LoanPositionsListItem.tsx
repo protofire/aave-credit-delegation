@@ -4,6 +4,7 @@ import { Button } from '@mui/material';
 import { ListColumn } from 'src/components/lists/ListColumn';
 import { Link } from 'src/components/primitives/Link';
 import { Row } from 'src/components/primitives/Row';
+import { useModalContext } from 'src/hooks/useModal';
 
 import { useManagerDetails } from '../../hooks/useManagerDetails';
 import { AtomicaLoanPosition } from '../../types';
@@ -18,6 +19,8 @@ export const LoanPositionsListItem = ({
   coverage,
   market,
 }: AtomicaLoanPosition) => {
+  const { openCreditDelegation } = useModalContext();
+
   const pool = pools[0];
 
   const { managerDetails } = useManagerDetails(pool.manager);
@@ -71,7 +74,10 @@ export const LoanPositionsListItem = ({
       />
 
       <ListButtonsColumn>
-        <Button variant="contained">
+        <Button
+          variant="contained"
+          onClick={() => openCreditDelegation(pool.id, pool.underlyingAsset)}
+        >
           <Trans>Manage</Trans>
         </Button>
       </ListButtonsColumn>

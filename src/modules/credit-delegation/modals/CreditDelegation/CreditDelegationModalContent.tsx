@@ -91,7 +91,7 @@ export const CreditDelegationModalContent = React.memo(
     if (supplyTxState.success)
       return (
         <TxSuccessView
-          action={<Trans>delegated</Trans>}
+          action={<Trans>Lent</Trans>}
           amount={amount}
           symbol={supplyUnWrapped ? currentNetworkConfig.baseAssetSymbol : poolReserve.symbol}
         />
@@ -107,7 +107,11 @@ export const CreditDelegationModalContent = React.memo(
         /> */}
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
           <Typography color="text.secondary">
-            <Trans>Delegating to pool ({pool?.name})</Trans>
+            <Trans>
+              This transaction will use credit delegation to deposit into the pool{' '}
+              <b>({pool?.metadata?.Label ?? pool?.name})</b> and in exchange you will receive pool
+              tokens.
+            </Trans>
           </Typography>
         </Box>
 

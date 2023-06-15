@@ -10,6 +10,7 @@ import { AtomicaDelegationPool } from '../../types';
 import { ListAPRColumn } from '../ListAPRColumn';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListItemWrapper } from '../ListItemWrapper';
+import { ListValueColumn } from '../ListValueColumn';
 
 export const SupplyAssetsListItem = ({
   symbol,
@@ -19,6 +20,7 @@ export const SupplyAssetsListItem = ({
   isActive,
   underlyingAsset,
   availableBalance,
+  availableBalanceUsd,
   metadata,
   id,
   manager,
@@ -58,6 +60,14 @@ export const SupplyAssetsListItem = ({
           </Row>
         ))}
       </ListColumn>
+
+      <ListValueColumn
+        symbol={symbol}
+        value={Number(availableBalance)}
+        subValue={Number(availableBalanceUsd)}
+        withTooltip
+        disabled={Number(availableBalance) === 0}
+      />
 
       <ListAPRColumn value={Number(supplyAPY)} incentives={[]} symbol={symbol} />
 

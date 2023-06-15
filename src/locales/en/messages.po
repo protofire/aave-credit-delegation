@@ -353,6 +353,7 @@ msgstr "Back to Dashboard"
 
 #: src/components/transactions/AssetInput.tsx
 #: src/components/transactions/ClaimRewards/ClaimRewardsModalContent.tsx
+#: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
 #: src/modules/dashboard/lists/BorrowedPositionsList/BorrowedPositionsList.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsList.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsList.tsx
@@ -729,17 +730,9 @@ msgstr "Debt ceiling is not zero"
 msgid "Debt ceiling limits the amount possible to borrow against this asset by protocol users. Debt ceiling is specific to assets in isolation mode and is denoted in USD."
 msgstr "Debt ceiling limits the amount possible to borrow against this asset by protocol users. Debt ceiling is specific to assets in isolation mode and is denoted in USD."
 
-#: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationModal.tsx
-msgid "Delegate credit"
-msgstr "Delegate credit"
-
 #: src/modules/governance/DelegatedInfoPanel.tsx
 msgid "Delegated power"
 msgstr "Delegated power"
-
-#: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationModalContent.tsx
-msgid "Delegating to pool ({0})"
-msgstr "Delegating to pool ({0})"
 
 #: src/modules/dashboard/lists/BorrowAssetsList/BorrowAssetsListItem.tsx
 #: src/modules/dashboard/lists/BorrowAssetsList/BorrowAssetsListMobileItem.tsx
@@ -1057,10 +1050,6 @@ msgstr "In Isolation mode, you cannot supply other assets as collateral. A globa
 msgid "Inconsistent flashloan parameters"
 msgstr "Inconsistent flashloan parameters"
 
-#: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
-msgid "Interest"
-msgstr "Interest"
-
 #: src/ui-config/errorMapping.tsx
 msgid "Interest rate rebalance conditions were not met"
 msgstr "Interest rate rebalance conditions were not met"
@@ -1150,9 +1139,21 @@ msgstr "Learn more."
 msgid "Lend"
 msgstr "Lend"
 
+#: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationModal.tsx
+msgid "Lend to pool"
+msgstr "Lend to pool"
+
 #: src/modules/credit-delegation/CreditDelegationTopPanel.tsx
 msgid "Lended"
 msgstr "Lended"
+
+#: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsList.tsx
+msgid "Lending Capacity"
+msgstr "Lending Capacity"
+
+#: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationModalContent.tsx
+msgid "Lent"
+msgstr "Lent"
 
 #: src/layouts/MobileMenu.tsx
 msgid "Links"
@@ -1507,8 +1508,8 @@ msgstr "Pool addresses provider is not registered"
 
 #: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsList.tsx
 #: src/modules/credit-delegation/lists/SupplyAssetsList/SupplyAssetsList.tsx
-msgid "Pools to delegate to"
-msgstr "Pools to delegate to"
+msgid "Pools to lend to using your line of credit"
+msgstr "Pools to lend to using your line of credit"
 
 #: src/modules/dashboard/lists/SlippageList.tsx
 msgid "Powered by"
@@ -2214,6 +2215,10 @@ msgstr "This is the total amount that you are able to supply to in this reserve.
 msgid "This represents the threshold at which a borrow position will be considered undercollateralized and subject to liquidation for each collateral. For example, if a collateral has a liquidation threshold of 80%, it means that the position will be liquidated when the debt value is worth 80% of the collateral value."
 msgstr "This represents the threshold at which a borrow position will be considered undercollateralized and subject to liquidation for each collateral. For example, if a collateral has a liquidation threshold of 80%, it means that the position will be liquidated when the debt value is worth 80% of the collateral value."
 
+#: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationModalContent.tsx
+msgid "This transaction will use credit delegation to deposit into the pool <0>({0})</0> and in exchange you will receive pool tokens."
+msgstr "This transaction will use credit delegation to deposit into the pool <0>({0})</0> and in exchange you will receive pool tokens."
+
 #: src/modules/staking/StakingPanel.tsx
 msgid "Time left to be able to withdraw your staked asset."
 msgstr "Time left to be able to withdraw your staked asset."
@@ -2557,6 +2562,10 @@ msgstr "You are entering Isolation mode"
 msgid "You can borrow this asset with a stable rate only if you borrow more than the amount you are supplying as collateral."
 msgstr "You can borrow this asset with a stable rate only if you borrow more than the amount you are supplying as collateral."
 
+#: src/modules/credit-delegation/LendingCapacityTooltip.tsx
+msgid "You can lend any token in AAVE using your credit line. The value of your credit line is calculated in US dollars and depends on the value of the collateral you have deposited."
+msgstr "You can lend any token in AAVE using your credit line. The value of your credit line is calculated in US dollars and depends on the value of the collateral you have deposited."
+
 #: src/components/transactions/RateSwitch/RateSwitchModalContent.tsx
 msgid "You can not change Interest Type to stable as your borrowings are higher than your collateral"
 msgstr "You can not change Interest Type to stable as your borrowings are higher than your collateral"
@@ -2728,10 +2737,6 @@ msgstr "blocked activities"
 #: src/components/transactions/FlowCommons/GasEstimationError.tsx
 msgid "copy the error"
 msgstr "copy the error"
-
-#: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationModalContent.tsx
-msgid "delegated"
-msgstr "delegated"
 
 #: src/modules/governance/GovernanceTopPanel.tsx
 msgid "documentation"

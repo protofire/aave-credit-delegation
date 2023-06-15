@@ -105,6 +105,8 @@ export interface AtomicaDelegationPool {
       title: string;
     };
   }[];
+  stableDebtTokenAddress: string;
+  variableDebtTokenAddress: string;
 }
 
 export interface AtomicaBorrowMarket {
@@ -131,21 +133,6 @@ export interface AtomicaBorrowMarket {
     title: string;
   };
   asset?: TokenMetadataType;
-}
-
-export interface AtomicaLoan {
-  id: string;
-  symbol: string;
-  iconSymbol: string;
-  market: {
-    id: string;
-    title: string;
-  };
-  principal: string;
-  interest: string;
-  status: string;
-  repaidPrincipal: string;
-  repaidInterest: string;
 }
 
 export interface AtomicaLoanPosition {
