@@ -1,0 +1,18 @@
+query policies($ids: [String]!) {
+  policies(where: { policyId_in: $ids }) {
+    id
+    productId
+    marketId
+    policyId
+    owner
+    issuer
+    balance
+    coverage
+    premiumDeposit
+    underlyingCover
+    market {
+      capitalToken
+      premiumToken
+    }
+  }
+}

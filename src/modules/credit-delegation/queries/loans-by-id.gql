@@ -1,0 +1,10 @@
+query loansById($loanIds: [String]!) {
+  loans(where: { id_in: $loanIds }) {
+    id
+    loanRequestId
+    policyId
+    data
+    borrowedAmount
+    requiredRepayAmount
+  }
+}

@@ -14,8 +14,10 @@ interface ManagerDetails {
   description: string;
 }
 
-export const useManagerDetails = (managerAddress: string) => {
+export const useManagerDetails = (managerAddress?: string) => {
   const getManagerDetails = useCallback(async () => {
+    if (!managerAddress) return {} as ManagerDetails;
+
     const conn = await GoogleSheetsApiService.getSheet('ManagerDetails');
 
     if (!conn?.rows) {

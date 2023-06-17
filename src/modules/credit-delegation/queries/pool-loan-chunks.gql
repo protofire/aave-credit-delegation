@@ -1,0 +1,11 @@
+query poolLoanChunks($poolIds: [String]!) {
+  loanChunks(where: { poolId_in: $poolIds }) {
+    id
+    loanId
+    poolId
+    rate
+    repaidAmount
+    chunkIndex
+    borrowedAmount
+  }
+}

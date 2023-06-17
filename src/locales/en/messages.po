@@ -37,6 +37,8 @@ msgstr "ACTIVATE COOLDOWN"
 #: src/components/incentives/IncentivesTooltipContent.tsx
 #: src/components/incentives/IncentivesTooltipContent.tsx
 #: src/modules/credit-delegation/lists/BorrowAssetsList/BorrowAssetsList.tsx
+#: src/modules/credit-delegation/lists/BorrowedPositionsList/BorrowedPositionsList.tsx
+#: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
 msgid "APR"
 msgstr "APR"
 
@@ -353,7 +355,6 @@ msgstr "Back to Dashboard"
 
 #: src/components/transactions/AssetInput.tsx
 #: src/components/transactions/ClaimRewards/ClaimRewardsModalContent.tsx
-#: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
 #: src/modules/dashboard/lists/BorrowedPositionsList/BorrowedPositionsList.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsList.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsList.tsx
@@ -1625,7 +1626,6 @@ msgid "Remaining supply"
 msgstr "Remaining supply"
 
 #: src/components/transactions/Repay/CollateralRepayModalContent.tsx
-#: src/modules/credit-delegation/lists/BorrowedPositionsList/BorrowedPositionsList.tsx
 msgid "Repaid"
 msgstr "Repaid"
 
@@ -2670,8 +2670,8 @@ msgstr "Your lending capacity"
 
 #: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
 #: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
-msgid "Your loan positiond (payouts made)"
-msgstr "Your loan positiond (payouts made)"
+msgid "Your lending positiond (payouts made)"
+msgstr "Your lending positiond (payouts made)"
 
 #: src/modules/credit-delegation/lists/BorrowedPositionsList/BorrowedPositionsList.tsx
 #: src/modules/credit-delegation/lists/BorrowedPositionsList/BorrowedPositionsList.tsx

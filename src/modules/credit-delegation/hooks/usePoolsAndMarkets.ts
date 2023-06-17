@@ -21,19 +21,28 @@ import {
   assetCanBeBorrowedByUser,
   getMaxAmountAvailableToBorrow,
 } from 'src/utils/getMaxAmountAvailableToBorrow';
+import { amountToUsd } from 'src/utils/utils';
 
-import { MARKET_MANAGER_IDS, PRODUCT_IDS } from '../consts';
+import {
+  LOAN_CHUNK_RATE_DECIMALS,
+  MARKET_MANAGER_IDS,
+  PRODUCT_IDS,
+  SECONDS_IN_A_YEAR,
+} from '../consts';
 import {
   AtomicaBorrowMarket,
   AtomicaDelegationPool,
-  AtomicaSubgraphLoan,
+  AtomicaLendingPosition,
   AtomicaSubgraphMarket,
+  AtomicaSubgraphPolicy,
   AtomicaSubgraphPool,
 } from '../types';
 import useAsyncMemo from './useAsyncMemo';
+import { useLendingPositions as usePoolLoanChunks } from './useLendingPositions';
 import { useMarketsApr } from './useMarketsApr';
 import { usePoolsApy } from './usePoolsApy';
 import { usePoolsMetadata } from './usePoolsMetadata';
+import { useUserLoans } from './useUserLoans';
 import { useUserVaults } from './useUserVaults';
 
 const MAIN_QUERY = loader('../queries/main.gql');
@@ -80,6 +89,7 @@ export const usePoolsAndMarkets = () => {
 
       return {
         ...reserve,
+        address: reserve.underlyingAsset,
         reserve,
         totalBorrows: reserve.totalDebt,
         availableBorrows,
@@ -106,16 +116,21 @@ export const usePoolsAndMarkets = () => {
   } = useQuery<{
     pools: AtomicaSubgraphPool[];
     markets: AtomicaSubgraphMarket[];
-    loans: AtomicaSubgraphLoan[];
-    myLoans: AtomicaSubgraphLoan[];
+    myPolicies: AtomicaSubgraphPolicy[];
   }>(MAIN_QUERY, {
     variables: {
       productIds: PRODUCT_IDS,
       managerIds: MARKET_MANAGER_IDS,
-      owner: account,
+      owner: account.toLowerCase(),
     },
     skip: !account,
   });
+
+  const { loading: loansLoading, loans, loanRequests } = useUserLoans(data?.myPolicies);
+
+  const { loading: loadingPoolLoanChunks, data: poolLoanChunks } = usePoolLoanChunks(
+    data?.pools.map((pool) => pool.id)
+  );
 
   const [marketTokens, { loading: loadingMarketTokens }] = useAsyncMemo<TokenMetadataType[]>(
     async () => {
@@ -243,6 +258,7 @@ export const usePoolsAndMarkets = () => {
           ?.baseApy ?? '0.0';
 
       return {
+        asset: tokenToBorrow,
         id: pool.id,
         symbol: pool.capitalTokenSymbol,
         iconSymbol: pool.capitalTokenSymbol,
@@ -302,7 +318,7 @@ export const usePoolsAndMarkets = () => {
 
       return {
         id: market.id,
-        marketId: market.id,
+        marketId: market.marketId,
         symbol: token?.symbol ?? '',
         iconSymbol: token?.symbol ?? '',
         title: market.title,
@@ -335,13 +351,72 @@ export const usePoolsAndMarkets = () => {
     appDataLoading,
   ]);
 
+  const effectiveLendingPositions: AtomicaLendingPosition[] = useMemo(() => {
+    if (
+      poolsLoading ||
+      appDataLoading ||
+      approvedCreditLoading ||
+      loadingVaults ||
+      loadingPoolLoanChunks
+    ) {
+      return [];
+    }
+
+    return (
+      poolLoanChunks?.map((chunk) => {
+        const pool = pools.find((pool) => pool.id.toLowerCase() === chunk.poolId.toLowerCase());
+        const borrowedAmount = normalize(chunk.borrowedAmount, pool?.asset?.decimals ?? 18);
+        const rate = normalize(chunk.rate, LOAN_CHUNK_RATE_DECIMALS);
+        const apr = valueToBigNumber(rate).times(SECONDS_IN_A_YEAR).toNumber();
+        const market = markets.find(
+          (market) => market.marketId.toLowerCase() === chunk.policy?.marketId.toLowerCase()
+        );
+
+        const token = marketTokens?.find(
+          (token) => token.symbol === (pool?.symbol ?? market?.symbol)
+        );
+
+        const reserve = reserves.find((reserve) => {
+          if (token?.symbol.toLowerCase() === 'eth') return reserve.isWrappedBaseAsset;
+
+          return reserve.symbol.toLowerCase() === token?.symbol.toLowerCase();
+        });
+
+        const borrowedAmountUsd = amountToUsd(
+          borrowedAmount,
+          reserve?.formattedPriceInMarketReferenceCurrency ?? '1',
+          marketReferencePriceInUsd
+        ).toString();
+
+        return {
+          ...chunk,
+          borrowedAmount,
+          borrowedAmountUsd,
+          rate,
+          apr,
+          pool,
+          market,
+          symbol: pool?.symbol ?? market?.symbol ?? '',
+        };
+      }) ?? []
+    );
+  }, [poolsLoading, appDataLoading, approvedCreditLoading, loadingVaults, loadingPoolLoanChunks]);
+
   return {
     pools,
     markets,
-    loans: data?.loans ?? [],
-    myLoans: data?.myLoans ?? [],
+    loans,
+    loanRequests,
+    lendingPositions: effectiveLendingPositions,
     error,
     loading: poolsLoading || appDataLoading || approvedCreditLoading || loadingVaults,
+    loansLoading,
+    loadingLendingPositions:
+      poolsLoading ||
+      appDataLoading ||
+      approvedCreditLoading ||
+      loadingVaults ||
+      loadingPoolLoanChunks,
     fetchBorrowAllowance,
     fetchAllBorrowAllowances,
     refetchVaults,

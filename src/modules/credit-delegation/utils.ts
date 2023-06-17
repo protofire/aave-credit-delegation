@@ -1,6 +1,6 @@
 import { orderBy } from 'lodash';
 
-import { AtomicaBorrowMarket, AtomicaDelegationPool, AtomicaLoanPosition } from './types';
+import { AtomicaBorrowMarket, AtomicaDelegationPool, AtomicaLendingPosition } from './types';
 
 const handleSymbolSort = <T extends { symbol: string }>(sortDesc: boolean, pools: T[]) => {
   if (sortDesc) {
@@ -36,11 +36,11 @@ export const handleSortMarkets = (
 export const handleSortLoans = (
   sortDesc: boolean,
   sortName: string,
-  loans: AtomicaLoanPosition[]
-): AtomicaLoanPosition[] => {
+  positions: AtomicaLendingPosition[]
+): AtomicaLendingPosition[] => {
   if (sortName === 'symbol') {
-    return handleSymbolSort(true, loans);
+    return handleSymbolSort(true, positions);
   } else {
-    return orderBy(loans, sortName, sortDesc ? 'desc' : 'asc');
+    return orderBy(positions, sortName, sortDesc ? 'desc' : 'asc');
   }
 };
