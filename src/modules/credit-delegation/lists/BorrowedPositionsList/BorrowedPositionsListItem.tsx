@@ -15,9 +15,6 @@ export const BorrowedPositionsListItem = ({
   asset,
   market,
 }: AtomicaLoan) => {
-  console.log({
-    apr,
-  });
   return (
     <ListItemWrapper
       symbol={asset?.symbol ?? 'unknown'}

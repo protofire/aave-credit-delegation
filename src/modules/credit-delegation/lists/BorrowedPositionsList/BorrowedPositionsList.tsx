@@ -102,13 +102,6 @@ export const BorrowedPositionsList = () => {
     });
   }, [pools, loans]);
 
-  console.log({
-    loanPositions,
-    loans,
-    pools,
-    markets,
-  });
-
   if (loading)
     return <ListLoader title={<Trans>Your loans</Trans>} head={head.map((c) => c.title)} />;
 
