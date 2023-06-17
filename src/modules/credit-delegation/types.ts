@@ -38,6 +38,61 @@ export interface AtomicaSubgraphMarket {
   };
 }
 
+export interface AtomicaSubgraphPolicy {
+  id: string;
+  policyId: string;
+  productId: string;
+  marketId: string;
+  owner: string;
+  issuer: string;
+  coverage: string;
+  underlyingCover: string;
+  balance: string;
+  premiumDeposit: string;
+  market: {
+    capitalToken: string;
+    premiumToken: string;
+  };
+}
+
+export interface AtomicaSubgraphLoanRequest {
+  id: string;
+  policyId: string;
+  amount: string;
+  status: number;
+}
+
+export interface AtomicaSubgraphLoan {
+  id: string;
+  policyId: string;
+  data: string | null;
+  borrowedAmount: string;
+  loanRequestId: string;
+  requiredRepayAmount: string;
+}
+
+export interface AtomicaSubgraphLoanChunk {
+  id: string;
+  loanId: string;
+  poolId: string;
+  rate: string;
+  repaidAmount: string;
+  chunkIndex: number;
+  borrowedAmount: string;
+}
+
+export interface AtomicaSubgraphPoolLoanChunk {
+  id: string;
+  loanId: string;
+  poolId: string;
+  rate: string;
+  repaidAmount: string;
+  chunkIndex: number;
+  borrowedAmount: string;
+  loan?: AtomicaSubgraphLoan;
+  policy?: AtomicaSubgraphPolicy;
+}
+
 export interface SubgraphVault {
   id: string;
   vault: string;
@@ -55,32 +110,11 @@ export interface SubgraphVault {
   loanAmount: string;
 }
 
-export interface AtomicaSubgraphLoan {
-  id: string;
-  productId: string;
-  marketId: string;
-  policyId: string;
-  owner: string;
-  balance: string;
-  coverage: string;
-  premiumDeposit: string;
-  totalCharged: string;
-  underlyingCover: string;
-  validFrom: string;
-  validUntil: string;
-  market: {
-    id: string;
-    aggregatedPools: {
-      id: string;
-      poolList: string[];
-    }[];
-  };
-}
-
 export interface AtomicaDelegationPool {
   id: string;
   symbol: string;
   iconSymbol: string;
+  asset?: TokenMetadataType;
   name: string;
   walletBalance: string;
   walletBalanceUSD: string;
@@ -135,20 +169,34 @@ export interface AtomicaBorrowMarket {
   asset?: TokenMetadataType;
 }
 
-export interface AtomicaLoanPosition {
+export interface AtomicaLoan {
   id: string;
-  productId: string;
-  marketId: string;
   policyId: string;
-  owner: string;
-  balance: string;
-  coverage: string;
-  premiumDeposit: string;
-  totalCharged: string;
-  underlyingCover: string;
-  validFrom: string;
-  validUntil: string;
+  data: string | null;
+  borrowedAmount: string;
+  borrowedAmountUsd: string;
+  loanRequestId: string;
+  requiredRepayAmount: string;
+  apr: number;
+  policy?: AtomicaSubgraphPolicy;
+  asset?: TokenMetadataType;
+  chunks: AtomicaSubgraphLoanChunk[];
   market?: AtomicaBorrowMarket;
-  pools: AtomicaDelegationPool[];
+}
+
+export interface AtomicaLendingPosition {
+  id: string;
+  loanId: string;
+  poolId: string;
+  rate: string;
+  repaidAmount: string;
+  chunkIndex: number;
+  borrowedAmount: string;
+  borrowedAmountUsd: string;
+  apr: number;
+  pool?: AtomicaDelegationPool;
+  loan?: AtomicaSubgraphLoan;
+  policy?: AtomicaSubgraphPolicy;
+  market?: AtomicaBorrowMarket;
   symbol: string;
 }

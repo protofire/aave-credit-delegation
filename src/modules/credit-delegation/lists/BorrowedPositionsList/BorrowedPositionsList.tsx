@@ -10,7 +10,7 @@ import { CREDIT_DELEGATION_LIST_COLUMN_WIDTHS } from 'src/utils/creditDelegation
 
 import { CreditDelegationContentNoData } from '../../CreditDelegationContentNoData';
 import { useCreditDelegationContext } from '../../CreditDelegationContext';
-import { AtomicaLoanPosition } from '../../types';
+import { AtomicaLoan } from '../../types';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListLoader } from '../ListLoader';
 import { BorrowedPositionsListItem } from './BorrowedPositionsListItem';
@@ -26,11 +26,11 @@ const head = [
   },
   {
     title: <Trans>Amount</Trans>,
-    sortKey: 'principal',
+    sortKey: 'borrowedAmount',
   },
   {
-    title: <Trans>Repaid</Trans>,
-    sortKey: 'repaidPrincpipal',
+    title: <Trans>APR</Trans>,
+    sortKey: 'apr',
   },
   {
     title: <Trans>Status</Trans>,
@@ -82,33 +82,32 @@ export const BorrowedPositionsList = () => {
   const [sortName, setSortName] = useState('');
   const [sortDesc, setSortDesc] = useState(false);
 
-  const { myLoans, pools, markets } = useCreditDelegationContext();
+  const { loans, pools, markets } = useCreditDelegationContext();
 
-  const loanPositions: AtomicaLoanPosition[] = useMemo(() => {
-    const poolIds = pools.map((pool) => pool.id);
+  const loanPositions: AtomicaLoan[] = useMemo(() => {
+    return loans.map((loan) => {
+      const market = markets.find(
+        (market) => market.marketId.toLowerCase() === loan.policy?.marketId.toLowerCase()
+      );
 
-    return myLoans
-      .filter((loan) =>
-        poolIds.some((id) =>
-          loan.market.aggregatedPools.some((pool) => pool.poolList?.includes(id.toLowerCase()))
-        )
-      )
-      .map((loan) => {
-        const market = markets.find(
-          (market) => market.marketId.toLowerCase() === loan.market.id.toLowerCase()
-        );
-        const loanPools = pools.filter((pool) =>
-          loan.market.aggregatedPools.some((agg) => agg.poolList?.includes(pool.id.toLowerCase()))
-        );
+      const loanPools = loan.chunks.map((chunk) =>
+        pools.find((pool) => pool.id.toLowerCase() === chunk.poolId.toLowerCase())
+      );
 
-        return {
-          ...loan,
-          pools: loanPools,
-          market,
-          symbol: market?.symbol ?? pools[0].symbol,
-        };
-      });
-  }, [pools, myLoans]);
+      return {
+        ...loan,
+        pools: loanPools,
+        market,
+      };
+    });
+  }, [pools, loans]);
+
+  console.log({
+    loanPositions,
+    loans,
+    pools,
+    markets,
+  });
 
   if (loading)
     return <ListLoader title={<Trans>Your loans</Trans>} head={head.map((c) => c.title)} />;

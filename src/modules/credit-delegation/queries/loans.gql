@@ -1,0 +1,17 @@
+query loans($policyIds: [String]!) {
+  loanRequests(where: { policyId_in: $policyIds }) {
+    id
+    policyId
+    amount
+    status
+  }
+
+  loans(where: { policyId_in: $policyIds }) {
+    id
+    loanRequestId
+    policyId
+    data
+    borrowedAmount
+    requiredRepayAmount
+  }
+}

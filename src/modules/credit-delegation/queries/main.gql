@@ -35,47 +35,20 @@ query main($productIds: [String]!, $managerIds: [String]!, $owner: String!) {
     }
   }
 
-  loans: policies(where: { productId_in: $productIds }) {
+  myPolicies: policies(where: { productId_in: $productIds, owner: $owner }) {
     id
     productId
     marketId
     policyId
     owner
+    issuer
     balance
     coverage
     premiumDeposit
-    totalCharged
     underlyingCover
-    validFrom
-    validUntil
     market {
-      id
-      aggregatedPools {
-        id
-        poolList
-      }
-    }
-  }
-
-  myLoans: policies(where: { productId_in: $productIds, owner: $owner }) {
-    id
-    productId
-    marketId
-    policyId
-    owner
-    balance
-    coverage
-    premiumDeposit
-    totalCharged
-    underlyingCover
-    validFrom
-    validUntil
-    market {
-      id
-      aggregatedPools {
-        id
-        poolList
-      }
+      capitalToken
+      premiumToken
     }
   }
 }

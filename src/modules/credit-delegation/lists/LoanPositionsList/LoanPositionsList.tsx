@@ -10,7 +10,6 @@ import { CREDIT_DELEGATION_LIST_COLUMN_WIDTHS } from 'src/utils/creditDelegation
 
 import { CreditDelegationContentNoData } from '../../CreditDelegationContentNoData';
 import { useCreditDelegationContext } from '../../CreditDelegationContext';
-import { AtomicaLoanPosition } from '../../types';
 import { handleSortLoans } from '../../utils';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListLoader } from '../ListLoader';
@@ -18,11 +17,11 @@ import { LoanPositionsListItem } from './LoanPositionsListItem';
 
 const head = [
   { title: <Trans key="assets">Assets</Trans>, sortKey: 'symbol' },
-  { title: <Trans key="title">Pool Description</Trans>, sortKey: 'metadata.Label' },
-  { title: <Trans key="manager">Pool Manager</Trans>, sortKey: 'manager' },
+  { title: <Trans key="title">Pool Description</Trans>, sortKey: 'pool.metadata.Label' },
+  { title: <Trans key="manager">Pool Manager</Trans>, sortKey: 'pool.manager' },
   { title: <Trans key="borrowers">Borrower</Trans>, sortKey: 'market.title' },
-  { title: <Trans key="lended">Loan amount</Trans>, sortKey: 'coverage' },
-  { title: <Trans key="APY">Balance</Trans>, sortKey: 'balance' },
+  { title: <Trans key="lended">Loan amount</Trans>, sortKey: 'borrowedAmount' },
+  { title: <Trans key="APR">APR</Trans>, sortKey: 'apr' },
 ];
 
 interface HeaderProps {
@@ -69,43 +68,17 @@ export const LoanPositionsList = () => {
   const [sortName, setSortName] = useState('');
   const [sortDesc, setSortDesc] = useState(false);
 
-  const { loading: loadingPools, pools, loans, markets } = useCreditDelegationContext();
+  const { lendingPositions, loadingLendingPositions } = useCreditDelegationContext();
 
-  const loanPositions: AtomicaLoanPosition[] = useMemo(() => {
-    const poolIds = pools.map((pool) => pool.id);
-
-    return loans
-      .filter((loan) =>
-        poolIds.some((id) =>
-          loan.market.aggregatedPools.some((pool) => pool.poolList?.includes(id.toLowerCase()))
-        )
-      )
-      .map((loan) => {
-        const market = markets.find(
-          (market) => market.marketId.toLowerCase() === loan.market.id.toLowerCase()
-        );
-        const loanPools = pools.filter((pool) =>
-          loan.market.aggregatedPools.some((agg) => agg.poolList?.includes(pool.id.toLowerCase()))
-        );
-
-        return {
-          ...loan,
-          pools: loanPools,
-          market,
-          symbol: market?.symbol ?? pools[0].symbol,
-        };
-      });
-  }, [pools, loans]);
-
-  const sortedLoanPositions = useMemo(
-    () => handleSortLoans(sortDesc, sortName, loanPositions),
-    [sortDesc, sortName, loanPositions]
+  const sortedLendingPositions = useMemo(
+    () => handleSortLoans(sortDesc, sortName, lendingPositions),
+    [sortDesc, sortName, lendingPositions]
   );
 
-  if (loading || loadingPools)
+  if (loading || loadingLendingPositions)
     return (
       <ListLoader
-        title={<Trans>Your loan positiond (payouts made)</Trans>}
+        title={<Trans>Your lending positiond (payouts made)</Trans>}
         head={head.map((c) => c.title)}
         withTopMargin
       />
@@ -115,18 +88,18 @@ export const LoanPositionsList = () => {
     <ListWrapper
       titleComponent={
         <Typography component="div" variant="h3" sx={{ mr: 4 }}>
-          <Trans>Your loan positiond (payouts made)</Trans>
+          <Trans>Your lending positiond (payouts made)</Trans>
         </Typography>
       }
       localStorageName="loanPositionsCreditDelegationTableCollapse"
-      noData={!sortedLoanPositions.length}
+      noData={!sortedLendingPositions.length}
       withTopMargin
     >
-      {!sortedLoanPositions.length && (
+      {!sortedLendingPositions.length && (
         <CreditDelegationContentNoData text={<Trans>Nothing borrowed yet</Trans>} />
       )}
 
-      {!!sortedLoanPositions.length && (
+      {!!sortedLendingPositions.length && (
         <Header
           setSortDesc={setSortDesc}
           setSortName={setSortName}
@@ -134,7 +107,7 @@ export const LoanPositionsList = () => {
           sortName={sortName}
         />
       )}
-      {sortedLoanPositions.map((item) => (
+      {sortedLendingPositions.map((item) => (
         <LoanPositionsListItem key={item.id} {...item} />
       ))}
     </ListWrapper>
