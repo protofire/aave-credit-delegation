@@ -62,7 +62,7 @@ export const RequestLoanModalContent = React.memo(
             desiredLoanAmount={loanAmount}
             marketId={marketId}
             chainId={currentChainId}
-            environment={6}
+            environment={4}
             onRequestSuccess={close}
             hideLogo
           />
