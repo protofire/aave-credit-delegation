@@ -60,6 +60,12 @@ export interface AtomicaSubgraphLoanRequest {
   policyId: string;
   amount: string;
   status: number;
+  minAmount: string;
+  approvedAmount: string;
+  filledAmount: string;
+  loanId: string | null;
+  maxPremiumRatePerSec: string;
+  receiveOnApprove: boolean;
 }
 
 export interface AtomicaSubgraphLoan {
@@ -68,7 +74,6 @@ export interface AtomicaSubgraphLoan {
   data: string | null;
   borrowedAmount: string;
   loanRequestId: string;
-  requiredRepayAmount: string;
 }
 
 export interface AtomicaSubgraphLoanChunk {
@@ -199,4 +204,44 @@ export interface AtomicaLendingPosition {
   policy?: AtomicaSubgraphPolicy;
   market?: AtomicaBorrowMarket;
   symbol: string;
+}
+
+export interface AtomicaLoanRequest {
+  id: string;
+  policyId: string;
+  amount: string;
+  amountUsd: BigNumber;
+  status: number;
+  asset?: TokenMetadataType;
+  policy?: AtomicaSubgraphPolicy;
+}
+
+export interface LoanRequest {
+  id: string;
+  policyId: string;
+  loanApproved?: number;
+  amount: string;
+  status: number;
+  market?: AtomicaBorrowMarket;
+  policy?: AtomicaSubgraphPolicy;
+  asset?: TokenMetadataType;
+  amountUsd: BigNumber;
+}
+
+export interface PoliciesAndLoanRequest {
+  id: string;
+  policyId: string;
+  amount: string;
+  amountUsd: BigNumber;
+  marketId: string;
+  status?: number;
+  market?: AtomicaBorrowMarket;
+  asset?: TokenMetadataType;
+  loanRequestId?: string;
+  signedAgreement?: string;
+  minAmount?: string;
+  approvedAmount?: string;
+  filledAmount?: string;
+  maxPremiumRatePerSec?: string;
+  receiveOnApprove?: boolean;
 }

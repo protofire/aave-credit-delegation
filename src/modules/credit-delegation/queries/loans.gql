@@ -4,6 +4,12 @@ query loans($policyIds: [String]!) {
     policyId
     amount
     status
+    minAmount
+    approvedAmount
+    filledAmount
+    loanId
+    maxPremiumRatePerSec
+    receiveOnApprove
   }
 
   loans(where: { policyId_in: $policyIds }) {
@@ -12,6 +18,5 @@ query loans($policyIds: [String]!) {
     policyId
     data
     borrowedAmount
-    requiredRepayAmount
   }
 }

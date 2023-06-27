@@ -1,5 +1,5 @@
 import { Trans } from '@lingui/macro';
-import { Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Button, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { ListColumn } from 'src/components/lists/ListColumn';
 import { ListHeaderTitle } from 'src/components/lists/ListHeaderTitle';
@@ -108,7 +108,6 @@ export const BorrowAssetsList = () => {
         </Typography>
       }
       localStorageName="borrowAssetsCreditDelegationTableCollapse"
-      withTopMargin
       noData={borrowDisabled}
     >
       <>
@@ -123,6 +122,23 @@ export const BorrowAssetsList = () => {
         {sortedMarkets?.map((item) => (
           <BorrowAssetsListItem key={item.id} {...item} />
         ))}
+        {!sortedMarkets.length && (
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              px: { xs: 4, xsm: 6 },
+              pt: { xs: 3.5, xsm: 5.5 },
+              pb: { xs: 6, sxm: 7 },
+            }}
+          >
+            <Button variant="contained" size="medium">
+              <Trans>Create Market</Trans>
+            </Button>
+          </Box>
+        )}
       </>
     </ListWrapper>
   );

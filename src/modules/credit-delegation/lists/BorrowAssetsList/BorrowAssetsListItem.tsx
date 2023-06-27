@@ -51,7 +51,7 @@ export const BorrowAssetsListItem = ({
 
       <ListButtonsColumn>
         <Button variant="contained" onClick={() => openRequestLoan(id, underlyingAsset)}>
-          <Trans>Request loan</Trans>
+          <Trans>Apply for loan</Trans>
         </Button>
       </ListButtonsColumn>
     </ListItemWrapper>

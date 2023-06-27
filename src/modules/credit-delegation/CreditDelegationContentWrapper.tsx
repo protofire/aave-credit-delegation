@@ -2,10 +2,12 @@ import { Box } from '@mui/material';
 
 import { BorrowAssetsList } from './lists/BorrowAssetsList/BorrowAssetsList';
 import { BorrowedPositionsList } from './lists/BorrowedPositionsList/BorrowedPositionsList';
+import { BorrowRequestsList } from './lists/BorrowRequestsList/BorrowRequestsList';
 import { LendingPositionsList } from './lists/LendingPositionsList/LendingPositionsList';
 import { LoanPositionsList } from './lists/LoanPositionsList/LoanPositionsList';
 import { SupplyAssetsList } from './lists/SupplyAssetsList/SupplyAssetsList';
 import { CreditDelegationModal } from './modals/CreditDelegation/CreditDelegationModal';
+import { ManageLoanModal } from './modals/ManageLoanRequest/ManageLoanModal';
 import { RequestLoanModal } from './modals/RequestLoan/RequestLoanModal';
 
 interface CreditDelegationContentWrapperProps {
@@ -33,12 +35,14 @@ export const CreditDelegationContentWrapper = ({
         </Box>
 
         <Box style={{ display: isBorrow ? 'block' : 'none' }}>
-          <BorrowedPositionsList />
           <BorrowAssetsList />
+          <BorrowRequestsList />
+          <BorrowedPositionsList />
         </Box>
       </Box>
       <CreditDelegationModal />
       <RequestLoanModal />
+      <ManageLoanModal />
     </>
   );
 };
