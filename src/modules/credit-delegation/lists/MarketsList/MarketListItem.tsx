@@ -11,7 +11,7 @@ import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListItemWrapper } from '../ListItemWrapper';
 import { ListValueColumn } from '../ListValueColumn';
 
-export const BorrowAssetsListItem = ({
+export const MarketListItem = ({
   symbol,
   iconSymbol,
   title,
@@ -51,7 +51,7 @@ export const BorrowAssetsListItem = ({
 
       <ListButtonsColumn>
         <Button variant="contained" onClick={() => openRequestLoan(id, underlyingAsset)}>
-          <Trans>Request loan</Trans>
+          <Trans>Apply for loan</Trans>
         </Button>
       </ListButtonsColumn>
     </ListItemWrapper>

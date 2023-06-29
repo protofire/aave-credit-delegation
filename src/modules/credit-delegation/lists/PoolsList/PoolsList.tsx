@@ -12,7 +12,7 @@ import { useCreditDelegationContext } from '../../CreditDelegationContext';
 import { handleSortPools } from '../../utils';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListLoader } from '../ListLoader';
-import { SupplyAssetsListItem } from './SupplyAssetsListItem';
+import { PoolListItem } from './PoolListItem';
 
 const head = [
   { title: <Trans key="assets">Assets</Trans>, sortKey: 'symbol' },
@@ -59,7 +59,7 @@ const Header: React.FC<HeaderProps> = ({
   </ListHeaderWrapper>
 );
 
-export const SupplyAssetsList = () => {
+export const PoolsList = () => {
   const { loading } = useWalletBalances();
   const theme = useTheme();
 
@@ -104,7 +104,7 @@ export const SupplyAssetsList = () => {
           />
         )}
         {sortedPools.map((item) => (
-          <SupplyAssetsListItem {...item} key={item.id} />
+          <PoolListItem {...item} key={item.id} />
         ))}
       </>
     </ListWrapper>

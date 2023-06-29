@@ -37,7 +37,7 @@ export const RequestLoanModalContent = React.memo(
 
     const supplyUnWrapped = underlyingAsset.toLowerCase() === API_ETH_MOCK_ADDRESS.toLowerCase();
 
-    if (supplyTxState.success)
+    if (supplyTxState.success) {
       return (
         <TxSuccessView
           action={<Trans>Requested</Trans>}
@@ -45,6 +45,7 @@ export const RequestLoanModalContent = React.memo(
           symbol={supplyUnWrapped ? currentNetworkConfig.baseAssetSymbol : poolReserve.symbol}
         />
       );
+    }
 
     return (
       <>
@@ -62,7 +63,7 @@ export const RequestLoanModalContent = React.memo(
             desiredLoanAmount={loanAmount}
             marketId={marketId}
             chainId={currentChainId}
-            environment={4}
+            environment={4} // 4-dev 6-staging
             onRequestSuccess={close}
             hideLogo
           />

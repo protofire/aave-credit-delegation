@@ -13,7 +13,7 @@ import { useCreditDelegationContext } from '../../CreditDelegationContext';
 import { AtomicaLoan } from '../../types';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListLoader } from '../ListLoader';
-import { BorrowedPositionsListItem } from './BorrowedPositionsListItem';
+import { LoanListItem } from './LoanListItem';
 
 const head = [
   {
@@ -77,7 +77,7 @@ const Header: React.FC<HeaderProps> = ({
   );
 };
 
-export const BorrowedPositionsList = () => {
+export const YourLoansList = () => {
   const { loading } = useAppDataContext();
   const [sortName, setSortName] = useState('');
   const [sortDesc, setSortDesc] = useState(false);
@@ -112,7 +112,7 @@ export const BorrowedPositionsList = () => {
           <Trans>Your loans</Trans>
         </Typography>
       }
-      localStorageName="borrowedAssetsCreditDelegationTableCollapse"
+      localStorageName="yourLoansCreditDelegationTableCollapse"
       noData={!loanPositions.length}
     >
       {!loanPositions.length && (
@@ -128,7 +128,7 @@ export const BorrowedPositionsList = () => {
         />
       )}
       {loanPositions.map((item) => (
-        <BorrowedPositionsListItem key={item.id} {...item} />
+        <LoanListItem key={item.id} {...item} />
       ))}
     </ListWrapper>
   );

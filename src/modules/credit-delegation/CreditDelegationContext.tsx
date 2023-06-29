@@ -16,7 +16,9 @@ import {
   AtomicaDelegationPool,
   AtomicaLendingPosition,
   AtomicaLoan,
-  AtomicaSubgraphLoanRequest,
+  AtomicaLoanRequest,
+  AtomicaSubgraphPolicy,
+  PoliciesAndLoanRequest,
 } from './types';
 
 export interface CreditDelgationData {
@@ -28,9 +30,11 @@ export interface CreditDelgationData {
   lendingCapacity: string;
   markets: AtomicaBorrowMarket[];
   loans: AtomicaLoan[];
-  loanRequests: AtomicaSubgraphLoanRequest[];
+  loanRequests: AtomicaLoanRequest[];
   lendingPositions: AtomicaLendingPosition[];
   loadingLendingPositions: boolean;
+  myPolicies: AtomicaSubgraphPolicy[];
+  myRequests: PoliciesAndLoanRequest[];
   fetchAllBorrowAllowances: (forceApprovalCheck?: boolean | undefined) => Promise<void>;
   fetchBorrowAllowance: (poolId: string, forceApprovalCheck?: boolean | undefined) => Promise<void>;
   refetchVaults: () => Promise<unknown>;
@@ -55,6 +59,8 @@ export const CreditDelegationContext = createContext({
   loansLoading: true,
   lendingPositions: [],
   loadingLendingPositions: true,
+  myPolicies: [],
+  myRequests: [],
   refetchVaults: () => Promise.reject(),
   fetchAllBorrowAllowances: () => Promise.reject(),
   fetchBorrowAllowance: () => Promise.reject(),
@@ -80,6 +86,8 @@ const CreditDelegationDataProvider = ({
     fetchAllBorrowAllowances,
     fetchBorrowAllowance,
     refetchVaults,
+    myPolicies,
+    myRequests,
   } = usePoolsAndMarkets();
 
   const {
@@ -209,6 +217,8 @@ const CreditDelegationDataProvider = ({
         fetchAllBorrowAllowances,
         fetchBorrowAllowance,
         generateDeployVault,
+        myPolicies,
+        myRequests,
       }}
     >
       {children}
