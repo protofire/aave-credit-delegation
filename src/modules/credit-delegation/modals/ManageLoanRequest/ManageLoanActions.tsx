@@ -1,12 +1,12 @@
 import { TokenMetadataType } from '@aave/contract-helpers';
-import { Web3Provider } from '@ethersproject/providers';
 import { Trans } from '@lingui/macro';
 import { BoxProps } from '@mui/material';
 import { Contract } from 'ethers';
 import { parseUnits } from 'ethers/lib/utils';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { TxActionsWrapper } from 'src/components/transactions/TxActionsWrapper';
 import { useModalContext } from 'src/hooks/useModal';
+import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
 import { getErrorTextFromError, TxAction } from 'src/ui-config/errorMapping';
 
 import RISK_POOL_CONTROLLER_ABI from '../../abi/RiskPoolController.json';
@@ -35,8 +35,7 @@ export const ManageLoanActions = React.memo(
     const { mainTxState, loadingTxns, setMainTxState, setGasLimit, setTxError, close } =
       useModalContext();
 
-    // eslint-disable-next-line
-    const provider = useMemo(() => new Web3Provider((window as any).ethereum), []);
+    const { provider } = useWeb3Context();
 
     // Update gas estimation
     useEffect(() => {

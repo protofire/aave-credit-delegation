@@ -11,7 +11,7 @@ import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListItemWrapper } from '../ListItemWrapper';
 import { ListValueColumn } from '../ListValueColumn';
 
-export const BorrowAssetsListItem = ({
+export const MarketListItem = ({
   symbol,
   iconSymbol,
   title,

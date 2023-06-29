@@ -8,7 +8,7 @@ import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListItemWrapper } from '../ListItemWrapper';
 import { ListValueColumn } from '../ListValueColumn';
 
-export const BorrowedPositionsListItem = ({
+export const LoanListItem = ({
   apr,
   borrowedAmount,
   borrowedAmountUsd,

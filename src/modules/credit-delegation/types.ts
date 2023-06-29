@@ -55,6 +55,14 @@ export interface AtomicaSubgraphPolicy {
   };
 }
 
+export enum LoanRequestStatus {
+  Pending = 0,
+  Approved = 1,
+  Rejected = 2,
+  Canceled = 3,
+  Filled = 4,
+}
+
 export interface AtomicaSubgraphLoanRequest {
   id: string;
   policyId: string;
@@ -182,6 +190,9 @@ export interface AtomicaLoan {
   borrowedAmountUsd: string;
   loanRequestId: string;
   requiredRepayAmount: string;
+  requiredRepayAmountUsd: string;
+  repaidAmount: string;
+  repaidAmountUsd: string;
   apr: number;
   policy?: AtomicaSubgraphPolicy;
   asset?: TokenMetadataType;

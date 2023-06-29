@@ -13,7 +13,7 @@ import { useCreditDelegationContext } from '../../CreditDelegationContext';
 import { handleSortMarkets } from '../../utils';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListLoader } from '../ListLoader';
-import { BorrowAssetsListItem } from './BorrowAssetsListItem';
+import { MarketListItem } from './MarketListItem';
 
 const head = [
   {
@@ -77,7 +77,7 @@ const Header: React.FC<HeaderProps> = ({
   </ListHeaderWrapper>
 );
 
-export const BorrowAssetsList = () => {
+export const MarketsList = () => {
   const { markets, loading } = useCreditDelegationContext();
   const theme = useTheme();
   const downToXSM = useMediaQuery(theme.breakpoints.down('xsm'));
@@ -107,8 +107,9 @@ export const BorrowAssetsList = () => {
           <Trans>Markets</Trans>
         </Typography>
       }
-      localStorageName="borrowAssetsCreditDelegationTableCollapse"
+      localStorageName="marketsListCreditDelegationTableCollapse"
       noData={borrowDisabled}
+      withTopMargin
     >
       <>
         {!downToXSM && !!sortedMarkets.length && (
@@ -120,7 +121,7 @@ export const BorrowAssetsList = () => {
           />
         )}
         {sortedMarkets?.map((item) => (
-          <BorrowAssetsListItem key={item.id} {...item} />
+          <MarketListItem key={item.id} {...item} />
         ))}
         {!sortedMarkets.length && (
           <Box

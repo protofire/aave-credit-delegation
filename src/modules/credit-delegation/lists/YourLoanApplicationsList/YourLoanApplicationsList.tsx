@@ -1,5 +1,5 @@
 import { Trans } from '@lingui/macro';
-import { Typography } from '@mui/material';
+import { Typography, useMediaQuery, useTheme } from '@mui/material';
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { ListColumn } from 'src/components/lists/ListColumn';
 import { ListHeaderTitle } from 'src/components/lists/ListHeaderTitle';
@@ -10,10 +10,9 @@ import { CREDIT_DELEGATION_LIST_COLUMN_WIDTHS } from 'src/utils/creditDelegation
 
 import { CreditDelegationContentNoData } from '../../CreditDelegationContentNoData';
 import { useCreditDelegationContext } from '../../CreditDelegationContext';
-import { AtomicaLoan } from '../../types';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListLoader } from '../ListLoader';
-import { BorrowedPositionsListItem } from './BorrowedPositionsListItem';
+import { LoanApplicationListItem } from './LoanApplicationListItem';
 
 const head = [
   {
@@ -22,15 +21,19 @@ const head = [
   },
   {
     title: <Trans>Name</Trans>,
-    sortKey: 'market.title',
+    sortKey: 'title',
   },
   {
-    title: <Trans>Amount</Trans>,
-    sortKey: 'borrowedAmount',
+    title: <Trans>Loan Requested</Trans>,
+    sortKey: 'amount',
   },
   {
     title: <Trans>APR</Trans>,
     sortKey: 'apr',
+  },
+  {
+    title: <Trans>Available</Trans>,
+    sortKey: 'amountAvailable',
   },
   {
     title: <Trans>Status</Trans>,
@@ -60,6 +63,7 @@ const Header: React.FC<HeaderProps> = ({
             col.sortKey === 'symbol' ? CREDIT_DELEGATION_LIST_COLUMN_WIDTHS.ASSET : undefined
           }
           key={col.sortKey}
+          overFlow={'visible'}
         >
           <ListHeaderTitle
             sortName={sortName}
@@ -77,60 +81,60 @@ const Header: React.FC<HeaderProps> = ({
   );
 };
 
-export const BorrowedPositionsList = () => {
+export const YourLoanApplicationsList = () => {
   const { loading } = useAppDataContext();
+  const theme = useTheme();
   const [sortName, setSortName] = useState('');
   const [sortDesc, setSortDesc] = useState(false);
 
-  const { loans, pools, markets } = useCreditDelegationContext();
+  const downToXSM = useMediaQuery(theme.breakpoints.down('xsm'));
 
-  const loanPositions: AtomicaLoan[] = useMemo(() => {
-    return loans.map((loan) => {
-      const market = markets.find(
-        (market) => market.marketId.toLowerCase() === loan.policy?.marketId.toLowerCase()
-      );
+  const { markets, myRequests } = useCreditDelegationContext();
 
-      const loanPools = loan.chunks.map((chunk) =>
-        pools.find((pool) => pool.id.toLowerCase() === chunk.poolId.toLowerCase())
+  const filteredRequests = useMemo(() => {
+    return myRequests.filter((request) => {
+      if (request.status === 1) return;
+      request.market = markets.find(
+        (market) => market.marketId.toLowerCase() === request.marketId.toLowerCase()
       );
 
       return {
-        ...loan,
-        pools: loanPools,
-        market,
+        ...request,
       };
     });
-  }, [pools, loans]);
+  }, [markets, myRequests]);
 
   if (loading)
-    return <ListLoader title={<Trans>Your loans</Trans>} head={head.map((c) => c.title)} />;
+    return <ListLoader title={<Trans>Your loan requests</Trans>} head={head.map((c) => c.title)} />;
 
   return (
-    <ListWrapper
-      titleComponent={
-        <Typography component="div" variant="h3" sx={{ mr: 4 }}>
-          <Trans>Your loans</Trans>
-        </Typography>
-      }
-      localStorageName="borrowedAssetsCreditDelegationTableCollapse"
-      withTopMargin
-      noData={!loanPositions.length}
-    >
-      {!loanPositions.length && (
-        <CreditDelegationContentNoData text={<Trans>Nothing borrowed yet</Trans>} />
-      )}
+    <>
+      <ListWrapper
+        titleComponent={
+          <Typography component="div" variant="h3" sx={{ mr: 4 }}>
+            <Trans>Your loan applications</Trans>
+          </Typography>
+        }
+        localStorageName="yourLoanApplicationsCreditDelegationTableCollapse"
+        withTopMargin
+        noData={!filteredRequests.length}
+      >
+        {!filteredRequests.length && (
+          <CreditDelegationContentNoData text={<Trans>Nothing requested yet</Trans>} />
+        )}
 
-      {!!loanPositions.length && (
-        <Header
-          setSortDesc={setSortDesc}
-          setSortName={setSortName}
-          sortDesc={sortDesc}
-          sortName={sortName}
-        />
-      )}
-      {loanPositions.map((item) => (
-        <BorrowedPositionsListItem key={item.id} {...item} />
-      ))}
-    </ListWrapper>
+        {!downToXSM && !!filteredRequests.length && (
+          <Header
+            setSortDesc={setSortDesc}
+            setSortName={setSortName}
+            sortDesc={sortDesc}
+            sortName={sortName}
+          />
+        )}
+        {filteredRequests.map((item) => (
+          <LoanApplicationListItem key={item.id} {...item} />
+        ))}
+      </ListWrapper>
+    </>
   );
 };

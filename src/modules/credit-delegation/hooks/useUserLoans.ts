@@ -1,5 +1,5 @@
 import { ERC20Service, TokenMetadataType } from '@aave/contract-helpers';
-import { normalize, valueToBigNumber } from '@aave/math-utils';
+import { normalize, normalizeBN, valueToBigNumber } from '@aave/math-utils';
 import { useQuery } from '@apollo/client';
 import { loader } from 'graphql.macro';
 import { useMemo } from 'react';
@@ -80,17 +80,39 @@ export const useUserLoans = (policies?: AtomicaSubgraphPolicy[]) => {
 
       const asset = tokenData?.find((token) => token.address === policy?.market.capitalToken);
 
-      const borrowedAmount = normalize(loan.borrowedAmount, asset?.decimals ?? 18);
-      // fix this
-      const requiredRepayAmount = normalize(0, asset?.decimals ?? 18);
+      const reserve = reserves.find((reserve) => {
+        if (asset?.symbol.toLowerCase() === 'eth') return reserve.isWrappedBaseAsset;
+
+        return reserve.symbol.toLowerCase() === asset?.symbol.toLowerCase();
+      });
+
+      const borrowedAmount = normalizeBN(loan.borrowedAmount, asset?.decimals ?? 18);
 
       const chunks = chunksData.loanChunks
         .filter((chunk) => chunk.loanId === loan.id)
         .map((chunk) => ({
           ...chunk,
           borrowedAmount: normalize(chunk.borrowedAmount, asset?.decimals ?? 18),
+          repaidAmount: normalize(chunk.repaidAmount, asset?.decimals ?? 18),
           rate: normalize(chunk.rate, LOAN_CHUNK_RATE_DECIMALS),
         }));
+
+      const repaidAmount = chunks.reduce((acc, chunk) => {
+        return acc.plus(valueToBigNumber(chunk.repaidAmount));
+      }, valueToBigNumber(0));
+
+      const repaidAmountUsd = amountToUsd(
+        repaidAmount,
+        reserve?.formattedPriceInMarketReferenceCurrency ?? '1',
+        marketReferencePriceInUsd
+      );
+
+      const requiredRepayAmount = borrowedAmount.minus(repaidAmount);
+      const requiredRepayAmountUsd = amountToUsd(
+        requiredRepayAmount,
+        reserve?.formattedPriceInMarketReferenceCurrency ?? '1',
+        marketReferencePriceInUsd
+      );
 
       const apr = chunks.reduce((acc, chunk) => {
         return acc.plus(
@@ -99,12 +121,6 @@ export const useUserLoans = (policies?: AtomicaSubgraphPolicy[]) => {
             .times(valueToBigNumber(chunk.borrowedAmount).div(borrowedAmount))
         );
       }, valueToBigNumber(0));
-
-      const reserve = reserves.find((reserve) => {
-        if (asset?.symbol.toLowerCase() === 'eth') return reserve.isWrappedBaseAsset;
-
-        return reserve.symbol.toLowerCase() === asset?.symbol.toLowerCase();
-      });
 
       const borrowedAmountUsd = amountToUsd(
         borrowedAmount,
@@ -117,10 +133,13 @@ export const useUserLoans = (policies?: AtomicaSubgraphPolicy[]) => {
         policy,
         asset,
         chunks,
-        borrowedAmount,
+        borrowedAmount: borrowedAmount.toString(),
         borrowedAmountUsd: borrowedAmountUsd.toString(),
         apr: apr.toNumber(),
-        requiredRepayAmount,
+        repaidAmount: repaidAmount.toString(),
+        repaidAmountUsd: repaidAmountUsd.toString(),
+        requiredRepayAmount: requiredRepayAmount.toString(),
+        requiredRepayAmountUsd: requiredRepayAmountUsd.toString(),
       };
     });
   }, [data?.loans, chunksData?.loanChunks]);
@@ -131,9 +150,13 @@ export const useUserLoans = (policies?: AtomicaSubgraphPolicy[]) => {
     }
 
     return data.loanRequests.map((loanRequest) => {
-      const policy = policies?.find((policy) => policy.policyId === loanRequest.policyId);
+      const policy = policies?.find(
+        (policy) => policy.policyId.toLowerCase() === loanRequest.policyId.toLowerCase()
+      );
 
-      const asset = tokenData?.find((token) => token.address === policy?.market.capitalToken);
+      const asset = tokenData?.find(
+        (token) => token.address.toLowerCase() === policy?.market.capitalToken.toLowerCase()
+      );
 
       const reserve = reserves.find((reserve) => {
         if (asset?.symbol.toLowerCase() === 'eth') return reserve.isWrappedBaseAsset;
@@ -162,9 +185,13 @@ export const useUserLoans = (policies?: AtomicaSubgraphPolicy[]) => {
     }
 
     return policies?.map((policy) => {
-      const loanRequest = data?.loanRequests.find((loan) => policy.policyId === loan.policyId);
+      const loanRequest = data?.loanRequests.find(
+        (loan) => policy.policyId.toLowerCase() === loan.policyId.toLowerCase()
+      );
 
-      const asset = tokenData?.find((token) => token.address === policy?.market.capitalToken);
+      const asset = tokenData?.find(
+        (token) => token.address.toLowerCase() === policy?.market.capitalToken.toLowerCase()
+      );
 
       const reserve = reserves.find((reserve) => {
         if (asset?.symbol.toLowerCase() === 'eth') return reserve.isWrappedBaseAsset;
@@ -194,7 +221,7 @@ export const useUserLoans = (policies?: AtomicaSubgraphPolicy[]) => {
         receiveOnApprove: loanRequest?.receiveOnApprove,
       };
     });
-  }, [policies, reserves, tokenData]);
+  }, [policies, reserves, tokenData, data?.loanRequests, marketReferencePriceInUsd]);
 
   return {
     loading: loading || loadingChunks,

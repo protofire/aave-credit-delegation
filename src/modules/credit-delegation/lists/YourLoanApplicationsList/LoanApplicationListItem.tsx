@@ -1,12 +1,11 @@
 import { normalize } from '@aave/math-utils';
-import { Web3Provider } from '@ethersproject/providers';
 import { Trans } from '@lingui/macro';
 import { Box, Button, CircularProgress } from '@mui/material';
 import { Contract } from 'ethers';
-// import { parseUnits } from 'ethers/lib/utils';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { ListColumn } from 'src/components/lists/ListColumn';
 import { useModalContext } from 'src/hooks/useModal';
+import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
 import { getErrorTextFromError, TxAction } from 'src/ui-config/errorMapping';
 import { CREDIT_DELEGATION_LIST_COLUMN_WIDTHS } from 'src/utils/creditDelegationSortUtils';
 
@@ -17,7 +16,7 @@ import { ListAPRColumn } from '../ListAPRColumn';
 import { ListItemWrapper } from '../ListItemWrapper';
 import { ListValueColumn } from '../ListValueColumn';
 
-export const BorrowRequestsListItem = ({
+export const LoanApplicationListItem = ({
   amount,
   policyId,
   status,
@@ -30,9 +29,7 @@ export const BorrowRequestsListItem = ({
 }: PoliciesAndLoanRequest) => {
   const { setTxError, setMainTxState, openManageLoan } = useModalContext();
   const [loadingTxns, setLoadingTxns] = useState(false);
-
-  // eslint-disable-next-line
-  const provider = useMemo(() => new Web3Provider((window as any).ethereum), []);
+  const { provider } = useWeb3Context();
 
   const requestLoan = useCallback(
     async ({ policyId, amount }: { policyId: string; amount: string }) => {
@@ -49,8 +46,6 @@ export const BorrowRequestsListItem = ({
           }
 
           setLoadingTxns(true);
-
-          // const amount = parseUnits(loanAmount, market?.asset?.decimals || 0).toString();
 
           const response = await riskPoolController.requestLoan(policyId, amount);
 

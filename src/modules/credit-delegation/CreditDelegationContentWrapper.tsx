@@ -1,11 +1,11 @@
 import { Box } from '@mui/material';
 
-import { BorrowAssetsList } from './lists/BorrowAssetsList/BorrowAssetsList';
-import { BorrowedPositionsList } from './lists/BorrowedPositionsList/BorrowedPositionsList';
-import { BorrowRequestsList } from './lists/BorrowRequestsList/BorrowRequestsList';
 import { LendingPositionsList } from './lists/LendingPositionsList/LendingPositionsList';
 import { LoanPositionsList } from './lists/LoanPositionsList/LoanPositionsList';
-import { SupplyAssetsList } from './lists/SupplyAssetsList/SupplyAssetsList';
+import { MarketsList } from './lists/MarketsList/MarketsList';
+import { PoolsList } from './lists/PoolsList/PoolsList';
+import { YourLoanApplicationsList } from './lists/YourLoanApplicationsList/YourLoanApplicationsList';
+import { YourLoansList } from './lists/YourLoansList/YourLoansList';
 import { CreditDelegationModal } from './modals/CreditDelegation/CreditDelegationModal';
 import { ManageLoanModal } from './modals/ManageLoanRequest/ManageLoanModal';
 import { RequestLoanModal } from './modals/RequestLoan/RequestLoanModal';
@@ -31,13 +31,13 @@ export const CreditDelegationContentWrapper = ({
         <Box style={{ display: isBorrow ? 'none' : 'block' }}>
           <LendingPositionsList />
           <LoanPositionsList />
-          <SupplyAssetsList />
+          <PoolsList />
         </Box>
 
         <Box style={{ display: isBorrow ? 'block' : 'none' }}>
-          <BorrowAssetsList />
-          <BorrowRequestsList />
-          <BorrowedPositionsList />
+          <YourLoansList />
+          <MarketsList />
+          <YourLoanApplicationsList />
         </Box>
       </Box>
       <CreditDelegationModal />
