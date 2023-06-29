@@ -2,7 +2,7 @@ import { ERC20Service, TokenMetadataType } from '@aave/contract-helpers';
 import { normalize, normalizeBN, valueToBigNumber } from '@aave/math-utils';
 import { useQuery } from '@apollo/client';
 import { loader } from 'graphql.macro';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useAppDataContext } from 'src/hooks/app-data-provider/useAppDataProvider';
 import { useProtocolDataContext } from 'src/hooks/useProtocolDataContext';
 import { amountToUsd } from 'src/utils/utils';
@@ -10,11 +10,11 @@ import { amountToUsd } from 'src/utils/utils';
 import { LOAN_CHUNK_RATE_DECIMALS, SECONDS_IN_A_YEAR } from '../consts';
 import {
   AtomicaLoan,
-  AtomicaLoanRequest,
   AtomicaSubgraphLoan,
   AtomicaSubgraphLoanChunk,
   AtomicaSubgraphLoanRequest,
   AtomicaSubgraphPolicy,
+  LoanApplicationStatus,
   PoliciesAndLoanRequest,
 } from '../types';
 import useAsyncMemo from './useAsyncMemo';
@@ -28,7 +28,7 @@ export const useUserLoans = (policies?: AtomicaSubgraphPolicy[]) => {
 
   const policyIds = useMemo(() => policies?.map((policy) => policy.policyId), [policies]);
 
-  const { loading, error, data } = useQuery<{
+  const { loading, error, data, refetch } = useQuery<{
     loans: AtomicaSubgraphLoan[];
     loanRequests: AtomicaSubgraphLoanRequest[];
   }>(LOANS_QUERY, {
@@ -44,6 +44,7 @@ export const useUserLoans = (policies?: AtomicaSubgraphPolicy[]) => {
     loading: loadingChunks,
     error: chunksError,
     data: chunksData,
+    refetch: refetchChunks,
   } = useQuery<{ loanChunks: AtomicaSubgraphLoanChunk[] }>(LOAN_CHUNKS_QUERY, {
     skip: !policyIds?.length || !loanIds?.length,
     variables: {
@@ -144,42 +145,7 @@ export const useUserLoans = (policies?: AtomicaSubgraphPolicy[]) => {
     });
   }, [data?.loans, chunksData?.loanChunks]);
 
-  const loanRequests: AtomicaLoanRequest[] = useMemo(() => {
-    if (!data?.loanRequests) {
-      return [];
-    }
-
-    return data.loanRequests.map((loanRequest) => {
-      const policy = policies?.find(
-        (policy) => policy.policyId.toLowerCase() === loanRequest.policyId.toLowerCase()
-      );
-
-      const asset = tokenData?.find(
-        (token) => token.address.toLowerCase() === policy?.market.capitalToken.toLowerCase()
-      );
-
-      const reserve = reserves.find((reserve) => {
-        if (asset?.symbol.toLowerCase() === 'eth') return reserve.isWrappedBaseAsset;
-
-        return reserve.symbol.toLowerCase() === asset?.symbol.toLowerCase();
-      });
-
-      const amountUsd = amountToUsd(
-        loanRequest.amount,
-        reserve?.formattedPriceInMarketReferenceCurrency ?? '1',
-        marketReferencePriceInUsd
-      );
-
-      return {
-        ...loanRequest,
-        amountUsd,
-        policy,
-        asset,
-      };
-    });
-  }, [data?.loanRequests, policies, reserves, marketReferencePriceInUsd, tokenData]);
-
-  const myRequests: PoliciesAndLoanRequest[] = useMemo(() => {
+  const loanRequests: PoliciesAndLoanRequest[] = useMemo(() => {
     if (!policies) {
       return [];
     }
@@ -211,7 +177,10 @@ export const useUserLoans = (policies?: AtomicaSubgraphPolicy[]) => {
         amount: policy.coverage,
         amountUsd,
         marketId: policy.marketId,
-        status: loanRequest?.status,
+        status:
+          loanRequest === undefined
+            ? LoanApplicationStatus.Available
+            : LoanApplicationStatus.Requested,
         asset,
         loanRequestId: loanRequest?.id,
         minAmount: loanRequest?.minAmount,
@@ -223,11 +192,16 @@ export const useUserLoans = (policies?: AtomicaSubgraphPolicy[]) => {
     });
   }, [policies, reserves, tokenData, data?.loanRequests, marketReferencePriceInUsd]);
 
+  const refetchLoans = useCallback(async () => {
+    await refetch();
+    await refetchChunks();
+  }, []);
+
   return {
     loading: loading || loadingChunks,
     error: error || chunksError,
     loans,
-    loanRequests: loanRequests ?? [],
-    myRequests: myRequests ?? [],
+    loanRequests,
+    refetchLoans,
   };
 };

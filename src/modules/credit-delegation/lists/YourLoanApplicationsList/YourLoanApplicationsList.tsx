@@ -89,10 +89,10 @@ export const YourLoanApplicationsList = () => {
 
   const downToXSM = useMediaQuery(theme.breakpoints.down('xsm'));
 
-  const { markets, myRequests } = useCreditDelegationContext();
+  const { markets, loanRequests } = useCreditDelegationContext();
 
   const filteredRequests = useMemo(() => {
-    return myRequests.filter((request) => {
+    return loanRequests.filter((request) => {
       if (request.status === 1) return;
       request.market = markets.find(
         (market) => market.marketId.toLowerCase() === request.marketId.toLowerCase()
@@ -102,7 +102,7 @@ export const YourLoanApplicationsList = () => {
         ...request,
       };
     });
-  }, [markets, myRequests]);
+  }, [markets, loanRequests]);
 
   if (loading)
     return <ListLoader title={<Trans>Your loan requests</Trans>} head={head.map((c) => c.title)} />;

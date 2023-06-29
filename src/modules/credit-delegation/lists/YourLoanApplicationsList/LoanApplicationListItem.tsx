@@ -11,7 +11,8 @@ import { CREDIT_DELEGATION_LIST_COLUMN_WIDTHS } from 'src/utils/creditDelegation
 
 import RISK_POOL_CONTROLLER_ABI from '../../abi/RiskPoolController.json';
 import { RISK_POOL_CONTROLLER_ADDRESS } from '../../consts';
-import { PoliciesAndLoanRequest } from '../../types';
+import { useCreditDelegationContext } from '../../CreditDelegationContext';
+import { LoanApplicationStatus, PoliciesAndLoanRequest } from '../../types';
 import { ListAPRColumn } from '../ListAPRColumn';
 import { ListItemWrapper } from '../ListItemWrapper';
 import { ListValueColumn } from '../ListValueColumn';
@@ -30,41 +31,55 @@ export const LoanApplicationListItem = ({
   const { setTxError, setMainTxState, openManageLoan } = useModalContext();
   const [loadingTxns, setLoadingTxns] = useState(false);
   const { provider } = useWeb3Context();
+  const { refetchLoans } = useCreditDelegationContext();
 
-  const requestLoan = useCallback(
-    async ({ policyId, amount }: { policyId: string; amount: string }) => {
-      try {
-        if (policyId) {
-          const riskPoolController = new Contract(
-            RISK_POOL_CONTROLLER_ADDRESS,
-            RISK_POOL_CONTROLLER_ABI,
-            provider?.getSigner()
-          );
-
-          if (provider) {
-            riskPoolController.connect(provider?.getSigner());
-          }
-
-          setLoadingTxns(true);
-
-          const response = await riskPoolController.requestLoan(policyId, amount);
-
-          await response.wait(4);
-
-          setLoadingTxns(false);
-        }
-      } catch (error) {
-        const parsedError = getErrorTextFromError(error, TxAction.GAS_ESTIMATION, false);
-        setTxError(parsedError);
-        setMainTxState({
-          txHash: undefined,
-          loading: false,
-        });
-        setLoadingTxns(false);
+  const requestLoan = useCallback(async () => {
+    try {
+      if (provider === undefined) {
+        throw new Error('Wallet not connected');
       }
-    },
-    [provider, setMainTxState, setTxError, setLoadingTxns, market]
-  );
+
+      const riskPoolController = new Contract(
+        RISK_POOL_CONTROLLER_ADDRESS,
+        RISK_POOL_CONTROLLER_ABI,
+        provider?.getSigner()
+      );
+
+      setLoadingTxns(true);
+
+      const response = await riskPoolController.requestLoan(
+        policyId,
+        amount,
+        minAmount ?? '0',
+        maxPremiumRatePerSec ?? '0',
+        1
+      );
+
+      await response.wait(4);
+
+      await refetchLoans();
+
+      setLoadingTxns(false);
+    } catch (error) {
+      const parsedError = getErrorTextFromError(error, TxAction.GAS_ESTIMATION, false);
+      setTxError(parsedError);
+      setMainTxState({
+        txHash: undefined,
+        loading: false,
+      });
+      setLoadingTxns(false);
+    }
+  }, [
+    provider,
+    setMainTxState,
+    setTxError,
+    setLoadingTxns,
+    market,
+    amount,
+    policyId,
+    minAmount,
+    maxPremiumRatePerSec,
+  ]);
 
   return (
     <ListItemWrapper
@@ -86,7 +101,9 @@ export const LoanApplicationListItem = ({
 
       <ListValueColumn symbol={asset?.symbol} value={0} subValue={0} disabled={false} />
 
-      <ListColumn>{status === undefined ? 'Auction period' : 'Pending'}</ListColumn>
+      <ListColumn>
+        {status === LoanApplicationStatus.Available ? 'Available' : 'Pending approval'}
+      </ListColumn>
 
       <ListColumn maxWidth={CREDIT_DELEGATION_LIST_COLUMN_WIDTHS.BUTTONS}>
         <Box
@@ -100,38 +117,30 @@ export const LoanApplicationListItem = ({
             },
           }}
         >
-          <Button
-            variant="contained"
-            disabled={status === 1 || status === 2}
-            onClick={() =>
-              openManageLoan({
-                loanRequestId: loanRequestId || '',
-                amount,
-                minAmount: minAmount || '0',
-                maxPemiumRatePerSec: maxPremiumRatePerSec || '0',
-                asset,
-                amountUsd,
-              })
-            }
-          >
-            <Trans>Manage</Trans>
-          </Button>
-          <Button
-            variant="contained"
-            disabled={loadingTxns || status === undefined || status === 2 || status === 0}
-            onClick={() => requestLoan({ policyId, amount })}
-          >
-            {loadingTxns && <CircularProgress color="inherit" size="16px" sx={{ mr: 2 }} />}
-            <Trans>
-              {status === undefined
-                ? 'Request'
-                : status === 0
-                ? 'Requested'
-                : status === 1
-                ? 'Withdraw'
-                : 'Declined'}
-            </Trans>
-          </Button>
+          {status === LoanApplicationStatus.Requested && (
+            <Button
+              variant="contained"
+              disabled={loadingTxns}
+              onClick={() =>
+                openManageLoan({
+                  loanRequestId: loanRequestId || '',
+                  amount,
+                  minAmount: minAmount || '0',
+                  maxPemiumRatePerSec: maxPremiumRatePerSec || '0',
+                  asset,
+                  amountUsd,
+                })
+              }
+            >
+              <Trans>Manage</Trans>
+            </Button>
+          )}
+          {status === LoanApplicationStatus.Available && (
+            <Button variant="contained" disabled={loadingTxns} onClick={requestLoan}>
+              {loadingTxns && <CircularProgress color="inherit" size="16px" sx={{ mr: 2 }} />}
+              <Trans>Request</Trans>
+            </Button>
+          )}
         </Box>
         {/* <Box
           sx={{

@@ -126,7 +126,12 @@ export const usePoolsAndMarkets = () => {
     skip: !account,
   });
 
-  const { loading: loansLoading, loans, loanRequests, myRequests } = useUserLoans(data?.myPolicies);
+  const {
+    loading: loansLoading,
+    loans,
+    loanRequests,
+    refetchLoans,
+  } = useUserLoans(data?.myPolicies);
 
   const { loading: loadingPoolLoanChunks, data: poolLoanChunks } = usePoolLoanChunks(
     data?.pools.map((pool) => pool.id)
@@ -406,7 +411,6 @@ export const usePoolsAndMarkets = () => {
     pools,
     markets,
     loans,
-    loanRequests,
     myPolicies: data?.myPolicies || [],
     lendingPositions: effectiveLendingPositions,
     error,
@@ -421,6 +425,7 @@ export const usePoolsAndMarkets = () => {
     fetchBorrowAllowance,
     fetchAllBorrowAllowances,
     refetchVaults,
-    myRequests,
+    loanRequests,
+    refetchLoans,
   };
 };

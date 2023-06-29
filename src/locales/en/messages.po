@@ -1684,6 +1684,10 @@ msgstr "Repay {symbol}"
 msgid "Repaying {symbol}"
 msgstr "Repaying {symbol}"
 
+#: src/modules/credit-delegation/lists/YourLoanApplicationsList/LoanApplicationListItem.tsx
+msgid "Request"
+msgstr "Request"
+
 #: src/modules/credit-delegation/modals/RequestLoan/RequestLoanModal.tsx
 msgid "Request loan"
 msgstr "Request loan"
@@ -2855,7 +2859,6 @@ msgstr "withdrew"
 #: src/components/transactions/GovDelegation/GovDelegationModalContent.tsx
 #: src/components/transactions/StakeCooldown/StakeCooldownModalContent.tsx
 #: src/components/transactions/StakeCooldown/StakeCooldownModalContent.tsx
-#: src/modules/credit-delegation/lists/YourLoanApplicationsList/LoanApplicationListItem.tsx
 #: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationActions.tsx
 #: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationActions.tsx
 #: src/modules/dashboard/DashboardEModeButton.tsx
