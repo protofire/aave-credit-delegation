@@ -27,6 +27,7 @@ export const LoanApplicationListItem = ({
   loanRequestId,
   maxPremiumRatePerSec,
   minAmount,
+  title,
 }: PoliciesAndLoanRequest) => {
   const { setTxError, setMainTxState, openManageLoan } = useModalContext();
   const [loadingTxns, setLoadingTxns] = useState(false);
@@ -87,9 +88,7 @@ export const LoanApplicationListItem = ({
       iconSymbol={asset?.symbol ?? 'unknown'}
       name={asset?.name ?? 'unknown'}
     >
-      <ListColumn>
-        {market?.product.title}: {market?.title}
-      </ListColumn>
+      <ListColumn>{title}</ListColumn>
 
       <ListValueColumn
         symbol={asset?.symbol}
@@ -99,7 +98,11 @@ export const LoanApplicationListItem = ({
       />
       <ListAPRColumn symbol={asset?.symbol ?? 'unknown'} value={Number(market?.apr || 0) / 100} />
 
-      <ListValueColumn symbol={asset?.symbol} value={0} subValue={0} disabled={false} />
+      <ListValueColumn
+        symbol={asset?.symbol}
+        value={market?.availableBorrows ?? 0}
+        subValue={market?.availableBorrowsInUSD ?? 0}
+      />
 
       <ListColumn>
         {status === LoanApplicationStatus.Available ? 'Available' : 'Pending approval'}

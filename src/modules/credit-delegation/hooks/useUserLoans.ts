@@ -9,6 +9,7 @@ import { amountToUsd } from 'src/utils/utils';
 
 import { LOAN_CHUNK_RATE_DECIMALS, SECONDS_IN_A_YEAR } from '../consts';
 import {
+  AtomicaBorrowMarket,
   AtomicaLoan,
   AtomicaSubgraphLoan,
   AtomicaSubgraphLoanChunk,
@@ -22,7 +23,10 @@ import useAsyncMemo from './useAsyncMemo';
 const LOANS_QUERY = loader('../queries/loans.gql');
 const LOAN_CHUNKS_QUERY = loader('../queries/loan-chunks.gql');
 
-export const useUserLoans = (policies?: AtomicaSubgraphPolicy[]) => {
+export const useUserLoans = (
+  policies?: AtomicaSubgraphPolicy[],
+  markets: AtomicaBorrowMarket[] = []
+) => {
   const { jsonRpcProvider } = useProtocolDataContext();
   const { marketReferencePriceInUsd, reserves } = useAppDataContext();
 
@@ -171,17 +175,24 @@ export const useUserLoans = (policies?: AtomicaSubgraphPolicy[]) => {
         marketReferencePriceInUsd
       );
 
+      const market = markets.find(
+        (market) => market.marketId.toLowerCase() === policy.marketId.toLowerCase()
+      );
+
       return {
         id: policy.id,
         policyId: policy.policyId,
         amount: policy.coverage,
         amountUsd,
         marketId: policy.marketId,
+        market,
+        title: `${market?.product.title}:${market?.title}`,
         status:
           loanRequest === undefined
             ? LoanApplicationStatus.Available
             : LoanApplicationStatus.Requested,
         asset,
+        symbol: asset?.symbol ?? '',
         loanRequestId: loanRequest?.id,
         minAmount: loanRequest?.minAmount,
         approvedAmount: loanRequest?.approvedAmount,

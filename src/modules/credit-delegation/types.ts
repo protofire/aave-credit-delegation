@@ -242,4 +242,6 @@ export interface PoliciesAndLoanRequest {
   filledAmount?: string;
   maxPremiumRatePerSec?: string;
   receiveOnApprove?: boolean;
+  symbol: string;
+  title: string;
 }

@@ -10,6 +10,7 @@ import { CREDIT_DELEGATION_LIST_COLUMN_WIDTHS } from 'src/utils/creditDelegation
 
 import { CreditDelegationContentNoData } from '../../CreditDelegationContentNoData';
 import { useCreditDelegationContext } from '../../CreditDelegationContext';
+import { handleSortLoanRequests } from '../../utils';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListLoader } from '../ListLoader';
 import { LoanApplicationListItem } from './LoanApplicationListItem';
@@ -25,15 +26,15 @@ const head = [
   },
   {
     title: <Trans>Loan Requested</Trans>,
-    sortKey: 'amount',
+    sortKey: 'amountUsd',
   },
   {
     title: <Trans>APR</Trans>,
-    sortKey: 'apr',
+    sortKey: 'market.apr',
   },
   {
     title: <Trans>Available</Trans>,
-    sortKey: 'amountAvailable',
+    sortKey: 'market.availableBorrowsInUSD',
   },
   {
     title: <Trans>Status</Trans>,
@@ -89,20 +90,12 @@ export const YourLoanApplicationsList = () => {
 
   const downToXSM = useMediaQuery(theme.breakpoints.down('xsm'));
 
-  const { markets, loanRequests } = useCreditDelegationContext();
+  const { loanRequests } = useCreditDelegationContext();
 
-  const filteredRequests = useMemo(() => {
-    return loanRequests.filter((request) => {
-      if (request.status === 1) return;
-      request.market = markets.find(
-        (market) => market.marketId.toLowerCase() === request.marketId.toLowerCase()
-      );
-
-      return {
-        ...request,
-      };
-    });
-  }, [markets, loanRequests]);
+  const sortedLoanRequests = useMemo(
+    () => handleSortLoanRequests(sortDesc, sortName, loanRequests),
+    [sortDesc, sortName, loanRequests]
+  );
 
   if (loading)
     return <ListLoader title={<Trans>Your loan requests</Trans>} head={head.map((c) => c.title)} />;
@@ -117,13 +110,13 @@ export const YourLoanApplicationsList = () => {
         }
         localStorageName="yourLoanApplicationsCreditDelegationTableCollapse"
         withTopMargin
-        noData={!filteredRequests.length}
+        noData={!sortedLoanRequests.length}
       >
-        {!filteredRequests.length && (
+        {!sortedLoanRequests.length && (
           <CreditDelegationContentNoData text={<Trans>Nothing requested yet</Trans>} />
         )}
 
-        {!downToXSM && !!filteredRequests.length && (
+        {!downToXSM && !!sortedLoanRequests.length && (
           <Header
             setSortDesc={setSortDesc}
             setSortName={setSortName}
@@ -131,7 +124,7 @@ export const YourLoanApplicationsList = () => {
             sortName={sortName}
           />
         )}
-        {filteredRequests.map((item) => (
+        {sortedLoanRequests.map((item) => (
           <LoanApplicationListItem key={item.id} {...item} />
         ))}
       </ListWrapper>
