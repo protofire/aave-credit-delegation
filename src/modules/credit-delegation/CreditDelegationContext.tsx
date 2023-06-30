@@ -16,7 +16,6 @@ import {
   AtomicaDelegationPool,
   AtomicaLendingPosition,
   AtomicaLoan,
-  AtomicaLoanRequest,
   AtomicaSubgraphPolicy,
   PoliciesAndLoanRequest,
 } from './types';
@@ -30,11 +29,10 @@ export interface CreditDelgationData {
   lendingCapacity: string;
   markets: AtomicaBorrowMarket[];
   loans: AtomicaLoan[];
-  loanRequests: AtomicaLoanRequest[];
   lendingPositions: AtomicaLendingPosition[];
   loadingLendingPositions: boolean;
   myPolicies: AtomicaSubgraphPolicy[];
-  myRequests: PoliciesAndLoanRequest[];
+  loanRequests: PoliciesAndLoanRequest[];
   fetchAllBorrowAllowances: (forceApprovalCheck?: boolean | undefined) => Promise<void>;
   fetchBorrowAllowance: (poolId: string, forceApprovalCheck?: boolean | undefined) => Promise<void>;
   refetchVaults: () => Promise<unknown>;
@@ -45,6 +43,7 @@ export interface CreditDelgationData {
     value: string;
     delegationPercentage?: number;
   }) => Promise<PopulatedTransaction>;
+  refetchLoans: () => Promise<void>;
 }
 
 export const CreditDelegationContext = createContext({
@@ -54,19 +53,19 @@ export const CreditDelegationContext = createContext({
   lendingCapacity: '0',
   markets: [],
   loans: [],
-  loanRequests: [],
   loading: true,
   loansLoading: true,
   lendingPositions: [],
   loadingLendingPositions: true,
   myPolicies: [],
-  myRequests: [],
+  loanRequests: [],
   refetchVaults: () => Promise.reject(),
   fetchAllBorrowAllowances: () => Promise.reject(),
   fetchBorrowAllowance: () => Promise.reject(),
   generateDeployVault: () => {
     throw new Error('Method not implemented');
   },
+  refetchLoans: () => Promise.reject(),
 } as CreditDelgationData);
 
 const CreditDelegationDataProvider = ({
@@ -80,14 +79,14 @@ const CreditDelegationDataProvider = ({
     pools,
     markets,
     loans,
-    loanRequests,
     lendingPositions,
     loadingLendingPositions,
     fetchAllBorrowAllowances,
     fetchBorrowAllowance,
     refetchVaults,
     myPolicies,
-    myRequests,
+    loanRequests,
+    refetchLoans,
   } = usePoolsAndMarkets();
 
   const {
@@ -210,7 +209,6 @@ const CreditDelegationDataProvider = ({
         lendingCapacity,
         markets,
         loans,
-        loanRequests,
         lendingPositions,
         loadingLendingPositions,
         refetchVaults,
@@ -218,7 +216,8 @@ const CreditDelegationDataProvider = ({
         fetchBorrowAllowance,
         generateDeployVault,
         myPolicies,
-        myRequests,
+        loanRequests,
+        refetchLoans,
       }}
     >
       {children}

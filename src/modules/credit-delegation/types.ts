@@ -55,12 +55,9 @@ export interface AtomicaSubgraphPolicy {
   };
 }
 
-export enum LoanRequestStatus {
-  Pending = 0,
-  Approved = 1,
-  Rejected = 2,
-  Canceled = 3,
-  Filled = 4,
+export enum LoanApplicationStatus {
+  Available = 0,
+  Requested = 1,
 }
 
 export interface AtomicaSubgraphLoanRequest {
@@ -217,16 +214,6 @@ export interface AtomicaLendingPosition {
   symbol: string;
 }
 
-export interface AtomicaLoanRequest {
-  id: string;
-  policyId: string;
-  amount: string;
-  amountUsd: BigNumber;
-  status: number;
-  asset?: TokenMetadataType;
-  policy?: AtomicaSubgraphPolicy;
-}
-
 export interface LoanRequest {
   id: string;
   policyId: string;
@@ -245,7 +232,7 @@ export interface PoliciesAndLoanRequest {
   amount: string;
   amountUsd: BigNumber;
   marketId: string;
-  status?: number;
+  status: LoanApplicationStatus;
   market?: AtomicaBorrowMarket;
   asset?: TokenMetadataType;
   loanRequestId?: string;
@@ -255,4 +242,6 @@ export interface PoliciesAndLoanRequest {
   filledAmount?: string;
   maxPremiumRatePerSec?: string;
   receiveOnApprove?: boolean;
+  symbol: string;
+  title: string;
 }
