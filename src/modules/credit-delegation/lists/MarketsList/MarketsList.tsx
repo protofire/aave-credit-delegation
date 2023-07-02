@@ -1,5 +1,5 @@
 import { Trans } from '@lingui/macro';
-import { Box, Button, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Typography, useMediaQuery, useTheme } from '@mui/material';
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { ListColumn } from 'src/components/lists/ListColumn';
 import { ListHeaderTitle } from 'src/components/lists/ListHeaderTitle';
@@ -13,6 +13,7 @@ import { useCreditDelegationContext } from '../../CreditDelegationContext';
 import { handleSortMarkets } from '../../utils';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListLoader } from '../ListLoader';
+import { CreateMarketButton } from './CreateMarketButton';
 import { MarketListItem } from './MarketListItem';
 
 const head = [
@@ -110,6 +111,7 @@ export const MarketsList = () => {
       localStorageName="marketsListCreditDelegationTableCollapse"
       noData={borrowDisabled}
       withTopMargin
+      subChildrenComponent={<CreateMarketButton />}
     >
       <>
         {!downToXSM && !!sortedMarkets.length && (
@@ -123,23 +125,6 @@ export const MarketsList = () => {
         {sortedMarkets?.map((item) => (
           <MarketListItem key={item.id} {...item} />
         ))}
-        {!sortedMarkets.length && (
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-              px: { xs: 4, xsm: 6 },
-              pt: { xs: 3.5, xsm: 5.5 },
-              pb: { xs: 6, sxm: 7 },
-            }}
-          >
-            <Button variant="contained" size="medium">
-              <Trans>Create Market</Trans>
-            </Button>
-          </Box>
-        )}
       </>
     </ListWrapper>
   );
