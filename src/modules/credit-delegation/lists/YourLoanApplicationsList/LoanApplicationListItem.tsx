@@ -1,7 +1,6 @@
 import { normalize } from '@aave/math-utils';
 import { Trans } from '@lingui/macro';
 import { Box, Button, CircularProgress } from '@mui/material';
-import { Contract } from 'ethers';
 import { useCallback, useState } from 'react';
 import { ListColumn } from 'src/components/lists/ListColumn';
 import { useModalContext } from 'src/hooks/useModal';
@@ -9,9 +8,8 @@ import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
 import { getErrorTextFromError, TxAction } from 'src/ui-config/errorMapping';
 import { CREDIT_DELEGATION_LIST_COLUMN_WIDTHS } from 'src/utils/creditDelegationSortUtils';
 
-import RISK_POOL_CONTROLLER_ABI from '../../abi/RiskPoolController.json';
-import { RISK_POOL_CONTROLLER_ADDRESS } from '../../consts';
 import { useCreditDelegationContext } from '../../CreditDelegationContext';
+import { useControllerAddress } from '../../hooks/useControllerAddress';
 import { LoanApplicationStatus, PoliciesAndLoanRequest } from '../../types';
 import { ListAPRColumn } from '../ListAPRColumn';
 import { ListItemWrapper } from '../ListItemWrapper';
@@ -34,17 +32,13 @@ export const LoanApplicationListItem = ({
   const { provider } = useWeb3Context();
   const { refetchLoans } = useCreditDelegationContext();
 
+  const { contract: riskPoolController } = useControllerAddress();
+
   const requestLoan = useCallback(async () => {
     try {
-      if (provider === undefined) {
+      if (provider === undefined || riskPoolController === undefined) {
         throw new Error('Wallet not connected');
       }
-
-      const riskPoolController = new Contract(
-        RISK_POOL_CONTROLLER_ADDRESS,
-        RISK_POOL_CONTROLLER_ABI,
-        provider?.getSigner()
-      );
 
       setLoadingTxns(true);
 

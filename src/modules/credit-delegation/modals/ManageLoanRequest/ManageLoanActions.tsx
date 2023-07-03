@@ -1,7 +1,6 @@
 import { TokenMetadataType } from '@aave/contract-helpers';
 import { Trans } from '@lingui/macro';
 import { BoxProps } from '@mui/material';
-import { Contract } from 'ethers';
 import { parseUnits } from 'ethers/lib/utils';
 import React, { useCallback, useEffect } from 'react';
 import { TxActionsWrapper } from 'src/components/transactions/TxActionsWrapper';
@@ -9,8 +8,7 @@ import { useModalContext } from 'src/hooks/useModal';
 import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
 import { getErrorTextFromError, TxAction } from 'src/ui-config/errorMapping';
 
-import RISK_POOL_CONTROLLER_ABI from '../../abi/RiskPoolController.json';
-import { RISK_POOL_CONTROLLER_ADDRESS } from '../../consts';
+import { useControllerAddress } from '../../hooks/useControllerAddress';
 
 export interface ManageLoanActionProps extends BoxProps {
   loanRequestId: string;
@@ -36,6 +34,7 @@ export const ManageLoanActions = React.memo(
       useModalContext();
 
     const { provider } = useWeb3Context();
+    const { contract: riskPoolController } = useControllerAddress();
 
     // Update gas estimation
     useEffect(() => {
@@ -44,14 +43,8 @@ export const ManageLoanActions = React.memo(
 
     const modifyLoanRequest = useCallback(async () => {
       try {
-        const riskPoolController = new Contract(
-          RISK_POOL_CONTROLLER_ADDRESS,
-          RISK_POOL_CONTROLLER_ABI,
-          provider?.getSigner()
-        );
-
-        if (provider) {
-          riskPoolController.connect(provider?.getSigner());
+        if (provider === undefined || riskPoolController === undefined) {
+          throw new Error('Wallet not connected');
         }
 
         setMainTxState({ ...mainTxState, loading: true });

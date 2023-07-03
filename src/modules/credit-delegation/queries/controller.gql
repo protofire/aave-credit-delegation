@@ -1,0 +1,5 @@
+query controller {
+  systems {
+    id
+  }
+}
