@@ -162,9 +162,9 @@
             },
             {
                 "indexed": false,
-                "internalType": "bytes4",
-                "name": "msgSig",
-                "type": "bytes4"
+                "internalType": "bytes32",
+                "name": "key",
+                "type": "bytes32"
             },
             {
                 "indexed": false,
@@ -175,27 +175,21 @@
         ],
         "name": "LogExecuted",
         "type": "event",
-        "signature": "0x8f5cb45f7b4868c91dd22c88b06012d2e1bcfbcb74118c71130adc86fada07df"
+        "signature": "0x5cd45fa61a6c9a3cf7876b990371a6ac6eb6b76989d19cc5bd1c2279f4454232"
     },
     {
         "anonymous": false,
         "inputs": [
             {
                 "indexed": false,
-                "internalType": "bytes4",
-                "name": "msgSig",
-                "type": "bytes4"
-            },
-            {
-                "indexed": false,
-                "internalType": "bytes",
-                "name": "msgData",
-                "type": "bytes"
+                "internalType": "bytes32",
+                "name": "key",
+                "type": "bytes32"
             }
         ],
         "name": "LogExecutionDeclined",
         "type": "event",
-        "signature": "0xdc370acb2b07e45073d29b87f6e310f016469d7b1e141d5157588ab459c78e7a"
+        "signature": "0xf02c111583254b38e79a601e930957ad5c5bc63ac52f63e831ae6c5864ea0a13"
     },
     {
         "anonymous": false,
@@ -208,20 +202,26 @@
             },
             {
                 "indexed": false,
-                "internalType": "bytes4",
-                "name": "msgSig",
-                "type": "bytes4"
+                "internalType": "bytes32",
+                "name": "key",
+                "type": "bytes32"
             },
             {
                 "indexed": false,
                 "internalType": "bytes",
                 "name": "msgData",
                 "type": "bytes"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "delayedAt",
+                "type": "uint256"
             }
         ],
         "name": "LogExecutionDelayed",
         "type": "event",
-        "signature": "0x9da4b2e03356f32e916a82509993c0740505b959e30721760621564194b3203b"
+        "signature": "0xca7b583b466bb324b4f0e8bc650a8f5e87f50f9ce802fd46c30e86e7134ee5b2"
     },
     {
         "anonymous": false,
@@ -473,17 +473,11 @@
                 "internalType": "uint256",
                 "name": "loanRequestId",
                 "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "loanId",
-                "type": "uint256"
             }
         ],
         "name": "LogLoanApproved",
         "type": "event",
-        "signature": "0xddb8fb92bc5ebf4326b5f6f361497746fbe6cf8c1a951ca71a4684a297cf2d34"
+        "signature": "0x99f5f8224a9678009c484d4d0ad68045c72018a2ef7d58127a94968cfbfc8f97"
     },
     {
         "anonymous": false,
@@ -593,9 +587,75 @@
                 "type": "uint256"
             }
         ],
+        "name": "LogLoanRequestClosed",
+        "type": "event",
+        "signature": "0x50a8bf212ea7a9489bbab65701407ac837d4673d5974969032bb66323d40ea7a"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "loanRequestId",
+                "type": "uint256"
+            }
+        ],
         "name": "LogLoanRequestDeclined",
         "type": "event",
         "signature": "0x0273bbb51350eae270cd732383d09767e9a8fdcd7729e454a527ee6bf6a3b3fc"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "loanRequestId",
+                "type": "uint256"
+            }
+        ],
+        "name": "LogLoanRequestFullfiled",
+        "type": "event",
+        "signature": "0x2e52f504904d67ac66f36bb854163ac45f0b81d38107c0eeb4fb6666554d4d25"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "loanRequestId",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "minAmount",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "maxPremiumRatePerSec",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "bool",
+                "name": "receiveOnApprove",
+                "type": "bool"
+            }
+        ],
+        "name": "LogLoanRequestModified",
+        "type": "event",
+        "signature": "0xcac99497e0aaaf99b1915a7c878da025f2fa34aed8e846b7656b0c4377557c5e"
     },
     {
         "anonymous": false,
@@ -617,11 +677,29 @@
                 "internalType": "uint256",
                 "name": "amount",
                 "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "minAmount",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "maxPremiumRatePerSec",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "bool",
+                "name": "receiveOnApprove",
+                "type": "bool"
             }
         ],
         "name": "LogLoanRequested",
         "type": "event",
-        "signature": "0x416ab226887602bee45c9b70b03ee2ef91e3d9f2cf25a430e3dfc9e24c9534d0"
+        "signature": "0x5cef21080098a9ea7791db0de92061ef0352fcf7702e737ab7f2fd615a5670ea"
     },
     {
         "anonymous": false,
@@ -641,13 +719,19 @@
             {
                 "indexed": false,
                 "internalType": "uint256",
-                "name": "amount",
+                "name": "assetTokenAmount",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "capitalTokenAmount",
                 "type": "uint256"
             }
         ],
         "name": "LogLoanTransferred",
         "type": "event",
-        "signature": "0xcb859444bddfdca5f3bef4d6a0b79db687a704d1f0f326fc639f0a5172672aae"
+        "signature": "0x655cd1864fe289f2a3ea3317ba592a3612f1abbefab24e724dc962ea082abac9"
     },
     {
         "anonymous": false,
@@ -2238,10 +2322,21 @@
             }
         ],
         "name": "approveLoanRequest",
-        "outputs": [],
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "loanId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "filledAmount",
+                "type": "uint256"
+            }
+        ],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0xbf6cde8c"
+        "signature": "0xca3cf364"
     },
     {
         "inputs": [
@@ -2677,6 +2772,20 @@
         "stateMutability": "nonpayable",
         "type": "function",
         "signature": "0x86bb8f37"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "loanRequestId",
+                "type": "uint256"
+            }
+        ],
+        "name": "closeLoanRequest",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x7e6a1c01"
     },
     {
         "inputs": [
@@ -3218,6 +3327,16 @@
                         "internalType": "string",
                         "name": "agreement",
                         "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "details",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "data",
+                        "type": "string"
                     }
                 ],
                 "internalType": "struct IRiskPoolCreatorImpl.CreateRiskPoolParams",
@@ -3235,7 +3354,7 @@
         ],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0xcebeff55"
+        "signature": "0xb9fbc39b"
     },
     {
         "inputs": [
@@ -3285,21 +3404,16 @@
     {
         "inputs": [
             {
-                "internalType": "bytes4",
-                "name": "msgSig",
-                "type": "bytes4"
-            },
-            {
-                "internalType": "bytes",
-                "name": "msgData",
-                "type": "bytes"
+                "internalType": "bytes32",
+                "name": "key",
+                "type": "bytes32"
             }
         ],
         "name": "declineExecution",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0xa6664ae1"
+        "signature": "0x54680259"
     },
     {
         "inputs": [
@@ -3377,7 +3491,7 @@
         "inputs": [
             {
                 "internalType": "bytes32",
-                "name": "hash",
+                "name": "key",
                 "type": "bytes32"
             }
         ],
@@ -3387,6 +3501,11 @@
                 "internalType": "uint256",
                 "name": "delayedAt",
                 "type": "uint256"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "dataHash",
+                "type": "bytes32"
             }
         ],
         "stateMutability": "view",
@@ -4284,6 +4403,36 @@
                 "internalType": "uint256",
                 "name": "amount",
                 "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "minAmount",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "maxPremiumRatePerSec",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "approvedAmount",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "filledAmount",
+                "type": "uint256"
+            },
+            {
+                "internalType": "bool",
+                "name": "receiveOnApprove",
+                "type": "bool"
+            },
+            {
+                "internalType": "enum IRiskPoolsControllerStorageModel.LoanRequestStatus",
+                "name": "status",
+                "type": "uint8"
             }
         ],
         "stateMutability": "view",
@@ -4308,12 +4457,12 @@
             },
             {
                 "internalType": "uint256",
-                "name": "borrowedAmount",
+                "name": "loanRequestId",
                 "type": "uint256"
             },
             {
                 "internalType": "uint256",
-                "name": "requiredRepayAmount",
+                "name": "borrowedAmount",
                 "type": "uint256"
             },
             {
@@ -4797,6 +4946,40 @@
         "type": "function",
         "constant": true,
         "signature": "0x6a8b14fa"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "loanRequestId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "minAmount",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "maxPremiumRatePerSec",
+                "type": "uint256"
+            },
+            {
+                "internalType": "bool",
+                "name": "recieveOnApprove",
+                "type": "bool"
+            }
+        ],
+        "name": "modifyLoanRequest",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0xdbf32fae"
     },
     {
         "inputs": [],
@@ -5617,6 +5800,31 @@
     {
         "inputs": [
             {
+                "internalType": "uint256",
+                "name": "loanRequestId",
+                "type": "uint256"
+            }
+        ],
+        "name": "receiveLoan",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "loanId_",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "amount_",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x78e81cbe"
+    },
+    {
+        "inputs": [
+            {
                 "internalType": "address",
                 "name": "frontendOperator",
                 "type": "address"
@@ -5791,9 +5999,9 @@
                 "type": "uint256"
             },
             {
-               "internalType": "uint256",
+                "internalType": "uint256",
                 "name": "maxPremiumRatePerSec",
-                "type": "uint256" 
+                "type": "uint256"
             },
             {
                 "internalType": "bool",
@@ -5802,10 +6010,16 @@
             }
         ],
         "name": "requestLoan",
-        "outputs": [],
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "loanRequestId",
+                "type": "uint256"
+            }
+        ],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0xaa452fa6"
+        "signature": "0xc40f9816"
     },
     {
         "inputs": [
@@ -6209,6 +6423,16 @@
             {
                 "internalType": "string",
                 "name": "agreement",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "details",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "data",
                 "type": "string"
             }
         ],
@@ -7235,6 +7459,44 @@
                 "type": "address"
             },
             {
+                "internalType": "string",
+                "name": "data",
+                "type": "string"
+            }
+        ],
+        "name": "setRiskPoolData",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x31c6b641"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "riskPool",
+                "type": "address"
+            },
+            {
+                "internalType": "string",
+                "name": "details",
+                "type": "string"
+            }
+        ],
+        "name": "setRiskPoolDetails",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x5e700f9e"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "riskPool",
+                "type": "address"
+            },
+            {
                 "internalType": "uint256",
                 "name": "allowlistId",
                 "type": "uint256"
@@ -7845,39 +8107,5 @@
         "stateMutability": "nonpayable",
         "type": "function",
         "signature": "0xa3a63d85"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "loanRequestId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "minAmount",
-                "type": "uint256"
-            },
-            {
-               "internalType": "uint256",
-                "name": "maxPremiumRatePerSec",
-                "type": "uint256" 
-            },
-            {
-                "internalType": "bool",
-                "name": "receiveOnApprove",
-                "type": "bool"
-            }
-        ],
-        "name": "modifyLoanRequest",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function",
-        "signature": "0xdbf32fae"
     }
 ]
