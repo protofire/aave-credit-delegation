@@ -1,4 +1,3 @@
-import { useQuery } from '@apollo/client';
 import { loader } from 'graphql.macro';
 import { useMemo } from 'react';
 
@@ -8,6 +7,7 @@ import {
   AtomicaSubgraphPolicy,
   AtomicaSubgraphPoolLoanChunk,
 } from '../types';
+import { useSubgraph } from './useSubgraph';
 
 const POOL_LOAN_CHUNKS_QUERY = loader('../queries/pool-loan-chunks.gql');
 const LOANS_BY_ID_QUERY = loader('../queries/loans-by-id.gql');
@@ -15,7 +15,7 @@ const LOANS_BY_ID_QUERY = loader('../queries/loans-by-id.gql');
 const POLICIES_QUERY = loader('../queries/policies.gql');
 
 export const useLendingPositions = (poolIds?: string[]) => {
-  const { loading, error, data } = useQuery<{
+  const { loading, error, data } = useSubgraph<{
     loanChunks: AtomicaSubgraphLoanChunk[];
     loans: AtomicaSubgraphLoan[];
   }>(POOL_LOAN_CHUNKS_QUERY, {
@@ -31,7 +31,7 @@ export const useLendingPositions = (poolIds?: string[]) => {
     loading: loadingLoans,
     error: loansError,
     data: loansData,
-  } = useQuery<{
+  } = useSubgraph<{
     loans: AtomicaSubgraphLoan[];
   }>(LOANS_BY_ID_QUERY, {
     skip: !loanIds?.length,
@@ -49,7 +49,7 @@ export const useLendingPositions = (poolIds?: string[]) => {
     loading: loadingPolicies,
     error: policiesError,
     data: policiesData,
-  } = useQuery<{
+  } = useSubgraph<{
     policies: AtomicaSubgraphPolicy[];
   }>(POLICIES_QUERY, {
     skip: !policyIds?.length,

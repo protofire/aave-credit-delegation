@@ -8,33 +8,24 @@ import { useModalContext } from 'src/hooks/useModal';
 import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
 import { getErrorTextFromError, TxAction } from 'src/ui-config/errorMapping';
 
+import { useCreditDelegationContext } from '../../CreditDelegationContext';
 import { useControllerAddress } from '../../hooks/useControllerAddress';
 
 export interface ManageLoanActionProps extends BoxProps {
-  loanRequestId: string;
+  policyId: string;
   amount: string;
-  minAmount: string;
-  maxPemiumRatePerSec: string;
   isWrongNetwork: boolean;
   asset?: TokenMetadataType;
 }
 
 export const ManageLoanActions = React.memo(
-  ({
-    loanRequestId,
-    amount,
-    minAmount,
-    maxPemiumRatePerSec,
-    isWrongNetwork,
-    asset,
-    sx,
-    ...props
-  }: ManageLoanActionProps) => {
+  ({ policyId, amount, isWrongNetwork, asset, sx, ...props }: ManageLoanActionProps) => {
     const { mainTxState, loadingTxns, setMainTxState, setGasLimit, setTxError, close } =
       useModalContext();
 
     const { provider } = useWeb3Context();
     const { contract: riskPoolController } = useControllerAddress();
+    const { refetchLoans } = useCreditDelegationContext();
 
     // Update gas estimation
     useEffect(() => {
@@ -49,15 +40,16 @@ export const ManageLoanActions = React.memo(
 
         setMainTxState({ ...mainTxState, loading: true });
 
-        const response = await riskPoolController.modifyLoanRequest(
-          loanRequestId,
+        const response = await riskPoolController.changePolicyCover(
+          policyId,
           parseUnits(amount, asset?.decimals || 18).toString(),
-          minAmount,
-          maxPemiumRatePerSec,
-          true
+          0,
+          0
         );
 
-        await response.wait(4);
+        const receipt = await response.wait();
+
+        await refetchLoans(receipt.blockNumber);
 
         setMainTxState({
           txHash: response.hash,
@@ -73,17 +65,7 @@ export const ManageLoanActions = React.memo(
           loading: false,
         });
       }
-    }, [
-      amount,
-      loanRequestId,
-      mainTxState,
-      minAmount,
-      maxPemiumRatePerSec,
-      setMainTxState,
-      provider,
-      setTxError,
-      close,
-    ]);
+    }, [amount, policyId, mainTxState, setMainTxState, provider, setTxError, close]);
 
     return (
       <TxActionsWrapper

@@ -1,6 +1,5 @@
 import { ERC20Service, TokenMetadataType } from '@aave/contract-helpers';
 import { normalize, normalizeBN, valueToBigNumber } from '@aave/math-utils';
-import { useQuery } from '@apollo/client';
 import { loader } from 'graphql.macro';
 import { useCallback, useMemo } from 'react';
 import { useAppDataContext } from 'src/hooks/app-data-provider/useAppDataProvider';
@@ -19,6 +18,7 @@ import {
   PoliciesAndLoanRequest,
 } from '../types';
 import useAsyncMemo from './useAsyncMemo';
+import { useSubgraph } from './useSubgraph';
 
 const LOANS_QUERY = loader('../queries/loans.gql');
 const LOAN_CHUNKS_QUERY = loader('../queries/loan-chunks.gql');
@@ -32,7 +32,7 @@ export const useUserLoans = (
 
   const policyIds = useMemo(() => policies?.map((policy) => policy.policyId), [policies]);
 
-  const { loading, error, data, refetch } = useQuery<{
+  const { loading, error, data, sync } = useSubgraph<{
     loans: AtomicaSubgraphLoan[];
     loanRequests: AtomicaSubgraphLoanRequest[];
   }>(LOANS_QUERY, {
@@ -48,8 +48,8 @@ export const useUserLoans = (
     loading: loadingChunks,
     error: chunksError,
     data: chunksData,
-    refetch: refetchChunks,
-  } = useQuery<{ loanChunks: AtomicaSubgraphLoanChunk[] }>(LOAN_CHUNKS_QUERY, {
+    sync: syncChunks,
+  } = useSubgraph<{ loanChunks: AtomicaSubgraphLoanChunk[] }>(LOAN_CHUNKS_QUERY, {
     skip: !policyIds?.length || !loanIds?.length,
     variables: {
       loanIds,
@@ -137,6 +137,11 @@ export const useUserLoans = (
         ...loan,
         policy,
         asset,
+        usdRate: amountToUsd(
+          1,
+          reserve?.formattedPriceInMarketReferenceCurrency ?? '1',
+          marketReferencePriceInUsd
+        ).toString(),
         chunks,
         borrowedAmount: borrowedAmount.toString(),
         borrowedAmountUsd: borrowedAmountUsd.toString(),
@@ -169,11 +174,13 @@ export const useUserLoans = (
         return reserve.symbol.toLowerCase() === asset?.symbol.toLowerCase();
       });
 
+      const amount = normalize(policy.coverage, asset?.decimals ?? 0).toString();
+
       const amountUsd = amountToUsd(
-        policy.coverage,
+        amount,
         reserve?.formattedPriceInMarketReferenceCurrency ?? '1',
         marketReferencePriceInUsd
-      );
+      ).toString();
 
       const market = markets.find(
         (market) => market.marketId.toLowerCase() === policy.marketId.toLowerCase()
@@ -182,8 +189,13 @@ export const useUserLoans = (
       return {
         id: policy.id,
         policyId: policy.policyId,
-        amount: policy.coverage,
+        amount,
         amountUsd,
+        usdRate: amountToUsd(
+          1,
+          reserve?.formattedPriceInMarketReferenceCurrency ?? '1',
+          marketReferencePriceInUsd
+        ).toString(),
         marketId: policy.marketId,
         market,
         title: `${market?.product.title}:${market?.title}`,
@@ -203,9 +215,9 @@ export const useUserLoans = (
     });
   }, [policies, reserves, tokenData, data?.loanRequests, marketReferencePriceInUsd]);
 
-  const refetchLoans = useCallback(async () => {
-    await refetch();
-    await refetchChunks();
+  const refetchLoans = useCallback(async (blockNumber?: number) => {
+    sync(blockNumber);
+    syncChunks(blockNumber);
   }, []);
 
   return {

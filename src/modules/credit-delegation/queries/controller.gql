@@ -2,4 +2,12 @@ query controller {
   systems {
     id
   }
+
+  _meta {
+    block {
+      number
+      timestamp
+      hash
+    }
+  }
 }
