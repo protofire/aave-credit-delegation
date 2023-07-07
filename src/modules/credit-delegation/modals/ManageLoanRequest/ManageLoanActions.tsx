@@ -1,7 +1,6 @@
 import { TokenMetadataType } from '@aave/contract-helpers';
 import { Trans } from '@lingui/macro';
 import { BoxProps } from '@mui/material';
-import { Contract } from 'ethers';
 import { parseUnits } from 'ethers/lib/utils';
 import React, { useCallback, useEffect } from 'react';
 import { TxActionsWrapper } from 'src/components/transactions/TxActionsWrapper';
@@ -9,33 +8,24 @@ import { useModalContext } from 'src/hooks/useModal';
 import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
 import { getErrorTextFromError, TxAction } from 'src/ui-config/errorMapping';
 
-import RISK_POOL_CONTROLLER_ABI from '../../abi/RiskPoolController.json';
-import { RISK_POOL_CONTROLLER_ADDRESS } from '../../consts';
+import { useCreditDelegationContext } from '../../CreditDelegationContext';
+import { useControllerAddress } from '../../hooks/useControllerAddress';
 
 export interface ManageLoanActionProps extends BoxProps {
-  loanRequestId: string;
+  policyId: string;
   amount: string;
-  minAmount: string;
-  maxPemiumRatePerSec: string;
   isWrongNetwork: boolean;
   asset?: TokenMetadataType;
 }
 
 export const ManageLoanActions = React.memo(
-  ({
-    loanRequestId,
-    amount,
-    minAmount,
-    maxPemiumRatePerSec,
-    isWrongNetwork,
-    asset,
-    sx,
-    ...props
-  }: ManageLoanActionProps) => {
+  ({ policyId, amount, isWrongNetwork, asset, sx, ...props }: ManageLoanActionProps) => {
     const { mainTxState, loadingTxns, setMainTxState, setGasLimit, setTxError, close } =
       useModalContext();
 
     const { provider } = useWeb3Context();
+    const { contract: riskPoolController } = useControllerAddress();
+    const { refetchLoans } = useCreditDelegationContext();
 
     // Update gas estimation
     useEffect(() => {
@@ -44,27 +34,22 @@ export const ManageLoanActions = React.memo(
 
     const modifyLoanRequest = useCallback(async () => {
       try {
-        const riskPoolController = new Contract(
-          RISK_POOL_CONTROLLER_ADDRESS,
-          RISK_POOL_CONTROLLER_ABI,
-          provider?.getSigner()
-        );
-
-        if (provider) {
-          riskPoolController.connect(provider?.getSigner());
+        if (provider === undefined || riskPoolController === undefined) {
+          throw new Error('Wallet not connected');
         }
 
         setMainTxState({ ...mainTxState, loading: true });
 
-        const response = await riskPoolController.modifyLoanRequest(
-          loanRequestId,
+        const response = await riskPoolController.changePolicyCover(
+          policyId,
           parseUnits(amount, asset?.decimals || 18).toString(),
-          minAmount,
-          maxPemiumRatePerSec,
-          true
+          0,
+          0
         );
 
-        await response.wait(4);
+        const receipt = await response.wait();
+
+        await refetchLoans(receipt.blockNumber);
 
         setMainTxState({
           txHash: response.hash,
@@ -80,17 +65,7 @@ export const ManageLoanActions = React.memo(
           loading: false,
         });
       }
-    }, [
-      amount,
-      loanRequestId,
-      mainTxState,
-      minAmount,
-      maxPemiumRatePerSec,
-      setMainTxState,
-      provider,
-      setTxError,
-      close,
-    ]);
+    }, [amount, policyId, mainTxState, setMainTxState, provider, setTxError, close]);
 
     return (
       <TxActionsWrapper

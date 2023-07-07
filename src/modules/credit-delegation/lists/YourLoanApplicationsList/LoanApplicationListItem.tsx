@@ -1,7 +1,7 @@
-import { normalize } from '@aave/math-utils';
+import { TransactionReceipt } from '@ethersproject/providers';
 import { Trans } from '@lingui/macro';
 import { Box, Button, CircularProgress } from '@mui/material';
-import { Contract } from 'ethers';
+import { parseUnits } from 'ethers/lib/utils';
 import { useCallback, useState } from 'react';
 import { ListColumn } from 'src/components/lists/ListColumn';
 import { useModalContext } from 'src/hooks/useModal';
@@ -9,56 +9,51 @@ import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
 import { getErrorTextFromError, TxAction } from 'src/ui-config/errorMapping';
 import { CREDIT_DELEGATION_LIST_COLUMN_WIDTHS } from 'src/utils/creditDelegationSortUtils';
 
-import RISK_POOL_CONTROLLER_ABI from '../../abi/RiskPoolController.json';
-import { RISK_POOL_CONTROLLER_ADDRESS } from '../../consts';
 import { useCreditDelegationContext } from '../../CreditDelegationContext';
+import { useControllerAddress } from '../../hooks/useControllerAddress';
 import { LoanApplicationStatus, PoliciesAndLoanRequest } from '../../types';
 import { ListAPRColumn } from '../ListAPRColumn';
 import { ListItemWrapper } from '../ListItemWrapper';
 import { ListValueColumn } from '../ListValueColumn';
 
-export const LoanApplicationListItem = ({
-  amount,
-  policyId,
-  status,
-  market,
-  amountUsd,
-  asset,
-  loanRequestId,
-  maxPremiumRatePerSec,
-  minAmount,
-  title,
-}: PoliciesAndLoanRequest) => {
+export const LoanApplicationListItem = (policy: PoliciesAndLoanRequest) => {
+  const {
+    amount,
+    policyId,
+    status,
+    market,
+    amountUsd,
+    asset,
+    maxPremiumRatePerSec,
+    minAmount,
+    title,
+  } = policy;
   const { setTxError, setMainTxState, openManageLoan } = useModalContext();
   const [loadingTxns, setLoadingTxns] = useState(false);
   const { provider } = useWeb3Context();
-  const { refetchLoans } = useCreditDelegationContext();
+  const { refetchAll, loansLoading, loading } = useCreditDelegationContext();
+
+  const { contract: riskPoolController } = useControllerAddress();
 
   const requestLoan = useCallback(async () => {
     try {
-      if (provider === undefined) {
+      if (provider === undefined || riskPoolController === undefined) {
         throw new Error('Wallet not connected');
       }
-
-      const riskPoolController = new Contract(
-        RISK_POOL_CONTROLLER_ADDRESS,
-        RISK_POOL_CONTROLLER_ABI,
-        provider?.getSigner()
-      );
 
       setLoadingTxns(true);
 
       const response = await riskPoolController.requestLoan(
         policyId,
-        amount,
+        parseUnits(amount, asset?.decimals),
         minAmount ?? '0',
         maxPremiumRatePerSec ?? '0',
         1
       );
 
-      await response.wait(4);
+      const receipt: TransactionReceipt = await response.wait();
 
-      await refetchLoans();
+      await refetchAll(receipt.blockNumber);
 
       setLoadingTxns(false);
     } catch (error) {
@@ -92,8 +87,8 @@ export const LoanApplicationListItem = ({
 
       <ListValueColumn
         symbol={asset?.symbol}
-        value={normalize(amount, 6)}
-        subValue={normalize(amountUsd, 6)}
+        value={amount}
+        subValue={amountUsd}
         disabled={Number(amount) === 0}
       />
       <ListAPRColumn symbol={asset?.symbol ?? 'unknown'} value={Number(market?.apr || 0) / 100} />
@@ -120,26 +115,21 @@ export const LoanApplicationListItem = ({
             },
           }}
         >
-          {status === LoanApplicationStatus.Requested && (
+          {status === LoanApplicationStatus.Available && (
             <Button
               variant="contained"
               disabled={loadingTxns}
-              onClick={() =>
-                openManageLoan({
-                  loanRequestId: loanRequestId || '',
-                  amount,
-                  minAmount: minAmount || '0',
-                  maxPemiumRatePerSec: maxPremiumRatePerSec || '0',
-                  asset,
-                  amountUsd,
-                })
-              }
+              onClick={() => openManageLoan(policy)}
             >
               <Trans>Manage</Trans>
             </Button>
           )}
           {status === LoanApplicationStatus.Available && (
-            <Button variant="contained" disabled={loadingTxns} onClick={requestLoan}>
+            <Button
+              variant="contained"
+              disabled={loadingTxns || loansLoading || loading}
+              onClick={requestLoan}
+            >
               {loadingTxns && <CircularProgress color="inherit" size="16px" sx={{ mr: 2 }} />}
               <Trans>Request</Trans>
             </Button>

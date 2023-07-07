@@ -51,4 +51,12 @@ query main($productIds: [String]!, $managerIds: [String]!, $owner: String!) {
       premiumToken
     }
   }
+
+  _meta {
+    block {
+      number
+      timestamp
+      hash
+    }
+  }
 }

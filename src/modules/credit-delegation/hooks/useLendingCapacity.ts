@@ -31,7 +31,7 @@ export const useLendingCapacity = (pools?: AtomicaDelegationPool[]) => {
       .shiftedBy(-USD_DECIMALS);
 
     return vailableBorrowsUSD.toFixed(2);
-  }, [reserves, marketReferencePriceInUsd, user, loading]);
+  }, [reserves, marketReferencePriceInUsd, user, loading, pools]);
 
   const lended = useMemo(() => {
     if (pools === undefined) return '0';

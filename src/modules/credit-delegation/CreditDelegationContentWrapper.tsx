@@ -35,9 +35,9 @@ export const CreditDelegationContentWrapper = ({
         </Box>
 
         <Box style={{ display: isBorrow ? 'block' : 'none' }}>
-          <YourLoansList />
           <MarketsList />
           <YourLoanApplicationsList />
+          <YourLoansList />
         </Box>
       </Box>
       <CreditDelegationModal />

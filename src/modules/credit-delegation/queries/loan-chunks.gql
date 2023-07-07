@@ -8,4 +8,12 @@ query loanChunks($loanIds: [String]!) {
     chunkIndex
     borrowedAmount
   }
+
+  _meta {
+    block {
+      number
+      timestamp
+      hash
+    }
+  }
 }

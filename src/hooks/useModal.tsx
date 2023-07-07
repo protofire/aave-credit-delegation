@@ -3,6 +3,7 @@ import { BigNumber } from 'bignumber.js';
 import { createContext, useContext, useState } from 'react';
 import { EmodeModalType } from 'src/components/transactions/Emode/EmodeModalContent';
 import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
+import { PoliciesAndLoanRequest } from 'src/modules/credit-delegation/types';
 import { TxErrorType } from 'src/ui-config/errorMapping';
 
 export enum ModalType {
@@ -30,7 +31,7 @@ export enum ModalType {
 }
 
 export interface ModalManageLoanArgs {
-  loanRequestId: string;
+  policyId: string;
   amount: string;
   minAmount: string;
   maxPemiumRatePerSec: string;
@@ -51,6 +52,7 @@ export interface ModalArgsType {
   poolId?: string;
   marketId?: string;
   loanRequest?: ModalManageLoanArgs;
+  policy?: PoliciesAndLoanRequest;
 }
 
 export type TxStateType = {
@@ -81,7 +83,7 @@ export interface ModalContextType<T extends ModalArgsType> {
   openGovVote: (proposalId: number, support: boolean, power: string) => void;
   openCreditDelegation: (poolId: string, underlyingAsset: string) => void;
   openRequestLoan: (marketId: string, underlyingAsset: string) => void;
-  openManageLoan: (loanRequest: ModalManageLoanArgs) => void;
+  openManageLoan: (policy: PoliciesAndLoanRequest) => void;
   close: () => void;
   type?: ModalType;
   args: T;
@@ -192,9 +194,9 @@ export const ModalContextProvider: React.FC = ({ children }) => {
           setType(ModalType.RequestLoan);
           setArgs({ marketId, underlyingAsset });
         },
-        openManageLoan: (loanRequest) => {
+        openManageLoan: (policy) => {
           setType(ModalType.ManageLoan);
-          setArgs({ loanRequest });
+          setArgs({ policy });
         },
         close: () => {
           setType(undefined);

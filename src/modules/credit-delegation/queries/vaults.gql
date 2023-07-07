@@ -15,4 +15,12 @@ query vaults($owner: String!) {
     allowance
     loanAmount
   }
+
+  _meta {
+    block {
+      number
+      timestamp
+      hash
+    }
+  }
 }

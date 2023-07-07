@@ -19,4 +19,12 @@ query loans($policyIds: [String]!) {
     data
     borrowedAmount
   }
+
+  _meta {
+    block {
+      number
+      timestamp
+      hash
+    }
+  }
 }

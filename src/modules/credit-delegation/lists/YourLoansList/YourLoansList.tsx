@@ -114,6 +114,7 @@ export const YourLoansList = () => {
       }
       localStorageName="yourLoansCreditDelegationTableCollapse"
       noData={!loanPositions.length}
+      withTopMargin
     >
       {!loanPositions.length && (
         <CreditDelegationContentNoData text={<Trans>Nothing borrowed yet</Trans>} />
