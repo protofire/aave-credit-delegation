@@ -675,7 +675,7 @@ msgstr "Copy error message"
 msgid "Copy error text"
 msgstr "Copy error text"
 
-#: src/modules/credit-delegation/lists/MarketsList/MarketsList.tsx
+#: src/modules/credit-delegation/lists/MarketsList/CreateMarketButton.tsx
 msgid "Create Market"
 msgstr "Create Market"
 
