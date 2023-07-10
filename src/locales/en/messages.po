@@ -150,6 +150,10 @@ msgstr "Address is not a contract"
 msgid "Addresses ({0})"
 msgstr "Addresses ({0})"
 
+#: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
+msgid "Agreement"
+msgstr "Agreement"
+
 #: src/components/transactions/Emode/EmodeModalContent.tsx
 #: src/components/transactions/Emode/EmodeModalContent.tsx
 msgid "All Assets"
@@ -167,6 +171,10 @@ msgstr "All proposals"
 #: src/components/transactions/FlowCommons/PermissionView.tsx
 msgid "Allowance required action"
 msgstr "Allowance required action"
+
+#: src/modules/credit-delegation/modals/RepayLoan/RepayTypeTooltip.tsx
+msgid "Allows you to choose which debt to pay <0>principal</0> or <1>interest</1>, where principal is the amount you borrowed and have to pay, and interest is what the lender charges for lending you the money. You can find the values in the agreement."
+msgstr "Allows you to choose which debt to pay <0>principal</0> or <1>interest</1>, where principal is the amount you borrowed and have to pay, and interest is what the lender charges for lending you the money. You can find the values in the agreement."
 
 #: src/components/infoTooltips/CollateralSwitchTooltip.tsx
 msgid "Allows you to decide whether to use a supplied asset as collateral. An asset used as collateral will affect your borrowing power and health factor."
@@ -739,6 +747,10 @@ msgstr "Debt ceiling is not zero"
 msgid "Debt ceiling limits the amount possible to borrow against this asset by protocol users. Debt ceiling is specific to assets in isolation mode and is denoted in USD."
 msgstr "Debt ceiling limits the amount possible to borrow against this asset by protocol users. Debt ceiling is specific to assets in isolation mode and is denoted in USD."
 
+#: src/modules/credit-delegation/modals/RepayLoan/RepayLoanModalContent.tsx
+msgid "Debt to pay"
+msgstr "Debt to pay"
+
 #: src/modules/governance/DelegatedInfoPanel.tsx
 msgid "Delegated power"
 msgstr "Delegated power"
@@ -1059,6 +1071,10 @@ msgstr "In Isolation mode, you cannot supply other assets as collateral. A globa
 msgid "Inconsistent flashloan parameters"
 msgstr "Inconsistent flashloan parameters"
 
+#: src/modules/credit-delegation/modals/RepayLoan/RepayLoanModalContent.tsx
+msgid "Interest"
+msgstr "Interest"
+
 #: src/ui-config/errorMapping.tsx
 msgid "Interest rate rebalance conditions were not met"
 msgstr "Interest rate rebalance conditions were not met"
@@ -1228,7 +1244,6 @@ msgstr "MAX"
 #: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsListItem.tsx
 #: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsListItem.tsx
 #: src/modules/credit-delegation/lists/YourLoanApplicationsList/LoanApplicationListItem.tsx
-#: src/modules/credit-delegation/lists/YourLoansList/LoanListItem.tsx
 msgid "Manage"
 msgstr "Manage"
 
@@ -1562,6 +1577,14 @@ msgstr "Price impact is the spread between the total value of the entry tokens s
 msgid "Price impact {0}%"
 msgstr "Price impact {0}%"
 
+#: src/modules/credit-delegation/modals/RepayLoan/RepayLoanModalContent.tsx
+msgid "Principal"
+msgstr "Principal"
+
+#: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
+msgid "Principal debt"
+msgstr "Principal debt"
+
 #: pages/governance/proposal/[proposalId].governance.tsx
 msgid "Proposal details"
 msgstr "Proposal details"
@@ -1655,6 +1678,10 @@ msgstr "Reload the page"
 msgid "Remaining debt"
 msgstr "Remaining debt"
 
+#: src/modules/credit-delegation/modals/RepayLoan/RepayLoanModalContent.tsx
+msgid "Remaining principal debt"
+msgstr "Remaining principal debt"
+
 #: src/components/transactions/Withdraw/WithdrawModalContent.tsx
 msgid "Remaining supply"
 msgstr "Remaining supply"
@@ -1664,10 +1691,19 @@ msgid "Repaid"
 msgstr "Repaid"
 
 #: src/components/transactions/Repay/RepayModal.tsx
+#: src/modules/credit-delegation/lists/YourLoansList/LoanListItem.tsx
 #: src/modules/dashboard/lists/BorrowedPositionsList/BorrowedPositionsListItem.tsx
 #: src/modules/dashboard/lists/BorrowedPositionsList/BorrowedPositionsListMobileItem.tsx
 msgid "Repay"
 msgstr "Repay"
+
+#: src/modules/credit-delegation/modals/RepayLoan/RepayLoanModal.tsx
+msgid "Repay loan"
+msgstr "Repay loan"
+
+#: src/modules/credit-delegation/modals/RepayLoan/RepayLoanActions.tsx
+msgid "Repay loan {repayType}"
+msgstr "Repay loan {repayType}"
 
 #: src/components/transactions/Repay/RepayTypeSelector.tsx
 msgid "Repay with"
@@ -1678,6 +1714,10 @@ msgstr "Repay with"
 #: src/components/transactions/Repay/RepayActions.tsx
 msgid "Repay {symbol}"
 msgstr "Repay {symbol}"
+
+#: src/modules/credit-delegation/modals/RepayLoan/RepayLoanActions.tsx
+msgid "Repaying loan {repayType}..."
+msgstr "Repaying loan {repayType}..."
 
 #: src/components/transactions/Repay/CollateralRepayActions.tsx
 #: src/components/transactions/Repay/RepayActions.tsx
@@ -1953,7 +1993,6 @@ msgid "State"
 msgstr "State"
 
 #: src/modules/credit-delegation/lists/YourLoanApplicationsList/YourLoanApplicationsList.tsx
-#: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
 msgid "Status"
 msgstr "Status"
 
@@ -2535,6 +2574,7 @@ msgstr "Wallet Balance"
 #: src/components/transactions/Repay/RepayTypeSelector.tsx
 #: src/components/transactions/Stake/StakeModalContent.tsx
 #: src/components/transactions/Supply/SupplyModalContent.tsx
+#: src/modules/credit-delegation/modals/RepayLoan/RepayLoanModalContent.tsx
 #: src/modules/dashboard/lists/SupplyAssetsList/SupplyAssetsList.tsx
 #: src/modules/faucet/FaucetAssetsList.tsx
 msgid "Wallet balance"
@@ -2806,6 +2846,10 @@ msgstr "of"
 #: src/modules/governance/FormattedProposalTime.tsx
 msgid "on"
 msgstr "on"
+
+#: src/modules/credit-delegation/lists/YourLoansList/LoanListItem.tsx
+msgid "open agreement"
+msgstr "open agreement"
 
 #: src/components/transactions/Warnings/SNXWarning.tsx
 msgid "please check that the amount you want to supply is not currently being used for staking. If it is being used for staking, your transaction might fail."

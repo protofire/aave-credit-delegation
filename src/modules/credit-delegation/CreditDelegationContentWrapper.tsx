@@ -8,6 +8,7 @@ import { YourLoanApplicationsList } from './lists/YourLoanApplicationsList/YourL
 import { YourLoansList } from './lists/YourLoansList/YourLoansList';
 import { CreditDelegationModal } from './modals/CreditDelegation/CreditDelegationModal';
 import { ManageLoanModal } from './modals/ManageLoanRequest/ManageLoanModal';
+import { RepayLoanModal } from './modals/RepayLoan/RepayLoanModal';
 import { RequestLoanModal } from './modals/RequestLoan/RequestLoanModal';
 
 interface CreditDelegationContentWrapperProps {
@@ -35,14 +36,15 @@ export const CreditDelegationContentWrapper = ({
         </Box>
 
         <Box style={{ display: isBorrow ? 'block' : 'none' }}>
-          <YourLoansList />
           <MarketsList />
           <YourLoanApplicationsList />
+          <YourLoansList />
         </Box>
       </Box>
       <CreditDelegationModal />
       <RequestLoanModal />
       <ManageLoanModal />
+      <RepayLoanModal />
     </>
   );
 };

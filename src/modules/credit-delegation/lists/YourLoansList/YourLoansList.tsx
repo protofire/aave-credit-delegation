@@ -33,8 +33,12 @@ const head = [
     sortKey: 'apr',
   },
   {
-    title: <Trans>Status</Trans>,
-    sortKey: 'status',
+    title: <Trans>Principal debt</Trans>,
+    sortKey: 'debt',
+  },
+  {
+    title: <Trans>Agreement</Trans>,
+    sortKey: 'agreement',
   },
 ];
 
@@ -114,6 +118,7 @@ export const YourLoansList = () => {
       }
       localStorageName="yourLoansCreditDelegationTableCollapse"
       noData={!loanPositions.length}
+      withTopMargin
     >
       {!loanPositions.length && (
         <CreditDelegationContentNoData text={<Trans>Nothing borrowed yet</Trans>} />

@@ -110,7 +110,6 @@ export const MarketsList = () => {
       }
       localStorageName="marketsListCreditDelegationTableCollapse"
       noData={borrowDisabled}
-      withTopMargin
       subChildrenComponent={<CreateMarketButton />}
     >
       <>
