@@ -100,10 +100,6 @@ export const RepayLoanActions = memo(
           provider?.getSigner()
         );
 
-        if (provider) {
-          riskPoolController.connect(provider?.getSigner());
-        }
-
         const repayFunction =
           repayType === 'Interest'
             ? riskPoolController.repayInterest
