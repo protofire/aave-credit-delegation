@@ -79,6 +79,12 @@ export interface AtomicaSubgraphLoan {
   data: string | null;
   borrowedAmount: string;
   loanRequestId: string;
+  governanceIncentiveFee: string;
+  lastUpdateTs: string;
+  marketOperatorIncentiveFee: string;
+  productOperatorIncentiveFee: string;
+  interestCharged: string;
+  interestRepaid: string;
 }
 
 export interface AtomicaSubgraphLoanChunk {

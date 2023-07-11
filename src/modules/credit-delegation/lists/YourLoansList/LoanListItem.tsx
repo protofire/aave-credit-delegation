@@ -1,6 +1,9 @@
+import { ExternalLinkIcon } from '@heroicons/react/outline';
 import { Trans } from '@lingui/macro';
-import { Button } from '@mui/material';
+import { Button, SvgIcon, Typography } from '@mui/material';
 import { ListColumn } from 'src/components/lists/ListColumn';
+import { Link } from 'src/components/primitives/Link';
+import { useModalContext } from 'src/hooks/useModal';
 
 import { AtomicaLoan } from '../../types';
 import { ListAPRColumn } from '../ListAPRColumn';
@@ -8,13 +11,19 @@ import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListItemWrapper } from '../ListItemWrapper';
 import { ListValueColumn } from '../ListValueColumn';
 
-export const LoanListItem = ({
-  apr,
-  borrowedAmount,
-  borrowedAmountUsd,
-  asset,
-  market,
-}: AtomicaLoan) => {
+export const LoanListItem = (loan: AtomicaLoan) => {
+  const { openRepayLoan } = useModalContext();
+  const {
+    apr,
+    borrowedAmount,
+    borrowedAmountUsd,
+    asset,
+    market,
+    requiredRepayAmount,
+    requiredRepayAmountUsd,
+    data,
+  } = loan;
+
   return (
     <ListItemWrapper
       symbol={asset?.symbol ?? 'unknown'}
@@ -34,10 +43,36 @@ export const LoanListItem = ({
 
       <ListAPRColumn symbol={asset?.symbol ?? 'unknown'} value={apr} />
 
-      <ListColumn>Approved</ListColumn>
+      <ListValueColumn
+        symbol={asset?.symbol}
+        value={Number(requiredRepayAmount)}
+        subValue={Number(requiredRepayAmountUsd)}
+        disabled={Number(requiredRepayAmount) === 0}
+        withTooltip
+      />
+
+      <ListColumn>
+        <Button
+          endIcon={
+            <SvgIcon sx={{ width: 14, height: 14 }}>
+              <ExternalLinkIcon />
+            </SvgIcon>
+          }
+          component={Link}
+          href={`https://ipfs.io/ipfs/${data}`}
+          variant="outlined"
+          size="small"
+          disabled={!data}
+        >
+          <Typography variant="buttonS">
+            <Trans>open agreement</Trans>
+          </Typography>
+        </Button>
+      </ListColumn>
+
       <ListButtonsColumn>
-        <Button variant="contained">
-          <Trans>Manage</Trans>
+        <Button variant="contained" onClick={() => openRepayLoan(loan)}>
+          <Trans>Repay</Trans>
         </Button>
       </ListButtonsColumn>
     </ListItemWrapper>

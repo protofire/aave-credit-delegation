@@ -18,6 +18,12 @@ query loans($policyIds: [String]!) {
     policyId
     data
     borrowedAmount
+    governanceIncentiveFee
+    lastUpdateTs
+    marketOperatorIncentiveFee
+    productOperatorIncentiveFee
+    interestCharged
+    interestRepaid
   }
 
   _meta {
