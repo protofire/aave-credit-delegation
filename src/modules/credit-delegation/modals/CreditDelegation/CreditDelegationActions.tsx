@@ -111,9 +111,9 @@ export const CreditDelegationActions = React.memo(
 
           const response = await sendTx(deployVaultTxData);
 
-          await response.wait(4);
+          const receipt = await response.wait();
 
-          await refetchVaults();
+          await refetchVaults(receipt.blockNumber);
 
           setMainTxState({});
         } catch (error) {

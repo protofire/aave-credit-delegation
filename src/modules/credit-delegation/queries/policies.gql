@@ -15,4 +15,12 @@ query policies($ids: [String]!) {
       premiumToken
     }
   }
+
+  _meta {
+    block {
+      number
+      timestamp
+      hash
+    }
+  }
 }

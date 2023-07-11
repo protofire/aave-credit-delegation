@@ -25,4 +25,12 @@ query loans($policyIds: [String]!) {
     interestCharged
     interestRepaid
   }
+
+  _meta {
+    block {
+      number
+      timestamp
+      hash
+    }
+  }
 }

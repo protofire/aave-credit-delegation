@@ -3,18 +3,15 @@ import { Trans } from '@lingui/macro';
 import React from 'react';
 import { BasicModal } from 'src/components/primitives/BasicModal';
 import { ModalWrapper } from 'src/components/transactions/FlowCommons/ModalWrapper';
-import {
-  ModalContextType,
-  ModalManageLoanArgs,
-  ModalType,
-  useModalContext,
-} from 'src/hooks/useModal';
+import { ModalContextType, ModalType, useModalContext } from 'src/hooks/useModal';
 
+import { PoliciesAndLoanRequest } from '../../types';
 import { ManageLoanModalContent } from './ManageLoanModalContent';
 
 export const ManageLoanModal = () => {
   const { type, close, args } = useModalContext() as ModalContextType<{
-    loanRequest: ModalManageLoanArgs;
+    policy: PoliciesAndLoanRequest;
+    amount: string;
   }>;
 
   return (
@@ -26,7 +23,7 @@ export const ManageLoanModal = () => {
         // underlyingAsset={args.loanRequest?.asset?.address || API_ETH_MOCK_ADDRESS}
         underlyingAsset={API_ETH_MOCK_ADDRESS}
       >
-        {(params) => <ManageLoanModalContent {...args.loanRequest} {...params} />}
+        {(params) => <ManageLoanModalContent {...args} {...params} />}
       </ModalWrapper>
     </BasicModal>
   );

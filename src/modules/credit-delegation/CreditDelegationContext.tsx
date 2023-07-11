@@ -35,7 +35,7 @@ export interface CreditDelgationData {
   loanRequests: PoliciesAndLoanRequest[];
   fetchAllBorrowAllowances: (forceApprovalCheck?: boolean | undefined) => Promise<void>;
   fetchBorrowAllowance: (poolId: string, forceApprovalCheck?: boolean | undefined) => Promise<void>;
-  refetchVaults: () => Promise<unknown>;
+  refetchVaults: (blockNumber?: number) => Promise<unknown>;
   generateDeployVault: (args: {
     manager: string;
     atomicaPool: string;
@@ -43,7 +43,8 @@ export interface CreditDelgationData {
     value: string;
     delegationPercentage?: number;
   }) => Promise<PopulatedTransaction>;
-  refetchLoans: () => Promise<void>;
+  refetchLoans: (blockNumber?: number) => Promise<void>;
+  refetchAll: (blockNumber?: number) => Promise<void>;
 }
 
 export const CreditDelegationContext = createContext({
@@ -66,6 +67,7 @@ export const CreditDelegationContext = createContext({
     throw new Error('Method not implemented');
   },
   refetchLoans: () => Promise.reject(),
+  refetchAll: () => Promise.reject(),
 } as CreditDelgationData);
 
 const CreditDelegationDataProvider = ({
@@ -87,6 +89,7 @@ const CreditDelegationDataProvider = ({
     myPolicies,
     loanRequests,
     refetchLoans,
+    refetchAll,
   } = usePoolsAndMarkets();
 
   const {
@@ -136,7 +139,7 @@ const CreditDelegationDataProvider = ({
     }
 
     return undefined;
-  }, [getProvider, account]);
+  }, [provider, account]);
 
   const generateDeployVault = useCallback(
     async ({
@@ -218,6 +221,7 @@ const CreditDelegationDataProvider = ({
         myPolicies,
         loanRequests,
         refetchLoans,
+        refetchAll,
       }}
     >
       {children}

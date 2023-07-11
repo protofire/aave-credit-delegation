@@ -1,4 +1,3 @@
-import { normalize } from '@aave/math-utils';
 import { Trans } from '@lingui/macro';
 import { Box, Typography } from '@mui/material';
 import { memo, useMemo, useState } from 'react';
@@ -10,45 +9,38 @@ import {
   TxModalDetails,
 } from 'src/components/transactions/FlowCommons/TxModalDetails';
 import { useWalletBalances } from 'src/hooks/app-data-provider/useWalletBalances';
-import { ModalManageLoanArgs, useModalContext } from 'src/hooks/useModal';
+import { useModalContext } from 'src/hooks/useModal';
 import { roundToTokenDecimals } from 'src/utils/utils';
 
+import { PoliciesAndLoanRequest } from '../../types';
 import { ManageLoanActions } from './ManageLoanActions';
 
-interface ManageLoanModalContentProps extends ModalWrapperProps, ModalManageLoanArgs {}
+interface ManageLoanModalContentProps extends ModalWrapperProps {
+  policy: PoliciesAndLoanRequest;
+}
 
 export const ManageLoanModalContent = memo(
-  ({
-    loanRequestId,
-    amount,
-    minAmount,
-    maxPemiumRatePerSec,
-    amountUsd,
-    asset,
-    isWrongNetwork,
-  }: ManageLoanModalContentProps) => {
+  ({ policy, isWrongNetwork }: ManageLoanModalContentProps) => {
     const { mainTxState: supplyTxState, gasLimit, txError } = useModalContext();
     const { walletBalances } = useWalletBalances();
 
-    const [newAmount, setNewAmount] = useState(normalize(amount, asset?.decimals || 18) ?? '0');
+    const [newAmount, setNewAmount] = useState(policy.amount);
 
     // TODO: Atomica USDC doesnt show in the wallet balance
     const walletBalance = useMemo(
-      () => walletBalances[asset?.address || '']?.amount,
+      () => walletBalances[policy.asset?.address || '']?.amount,
       [walletBalances]
     );
 
     const handleChange = (value: string) => {
-      const decimalTruncatedValue = roundToTokenDecimals(value, asset?.decimals || 18);
+      const decimalTruncatedValue = roundToTokenDecimals(value, policy.asset?.decimals || 18);
       setNewAmount(decimalTruncatedValue);
     };
 
     const actionProps = {
-      loanRequestId,
+      policyId: policy.policyId,
       amount: newAmount,
-      minAmount,
-      maxPemiumRatePerSec,
-      asset,
+      asset: policy.asset,
       isWrongNetwork,
     };
 
@@ -63,13 +55,13 @@ export const ManageLoanModalContent = memo(
           <AssetInput
             value={newAmount}
             onChange={handleChange}
-            usdValue={normalize(amountUsd, asset?.decimals || 18)}
-            symbol={asset?.symbol || ''}
+            usdValue={policy.amountUsd}
+            symbol={policy.asset?.symbol || ''}
             assets={[
               {
                 balance: walletBalance,
-                symbol: asset?.symbol || '',
-                iconSymbol: asset?.symbol || '',
+                symbol: policy.asset?.symbol || '',
+                iconSymbol: policy.asset?.symbol || '',
               },
             ]}
             disabled={supplyTxState.loading}

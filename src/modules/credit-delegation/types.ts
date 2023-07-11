@@ -230,13 +230,14 @@ export interface LoanRequest {
   policy?: AtomicaSubgraphPolicy;
   asset?: TokenMetadataType;
   amountUsd: BigNumber;
+  usdRate: string;
 }
 
 export interface PoliciesAndLoanRequest {
   id: string;
   policyId: string;
   amount: string;
-  amountUsd: BigNumber;
+  amountUsd: string;
   marketId: string;
   status: LoanApplicationStatus;
   market?: AtomicaBorrowMarket;
@@ -250,4 +251,5 @@ export interface PoliciesAndLoanRequest {
   receiveOnApprove?: boolean;
   symbol: string;
   title: string;
+  usdRate: string;
 }

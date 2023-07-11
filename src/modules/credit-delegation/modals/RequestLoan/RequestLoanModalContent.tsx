@@ -3,7 +3,7 @@ import { Web3Provider } from '@ethersproject/providers';
 import { Trans } from '@lingui/macro';
 // import { AddressInput } from '../AddressInput';
 import { Box, Typography } from '@mui/material';
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { RequestLoanWidget } from 'rm-react-components';
 import { GasEstimationError } from 'src/components/transactions/FlowCommons/GasEstimationError';
 import { ModalWrapperProps } from 'src/components/transactions/FlowCommons/ModalWrapper';
@@ -25,7 +25,7 @@ export const RequestLoanModalContent = React.memo(
   ({ underlyingAsset, poolReserve, marketId }: RequestLoanModalContentProps) => {
     const { currentNetworkConfig, currentChainId } = useProtocolDataContext();
     const { mainTxState: supplyTxState, txError, close } = useModalContext();
-    const { markets } = useCreditDelegationContext();
+    const { markets, refetchAll } = useCreditDelegationContext();
 
     const market = useMemo(() => markets.find((m) => m.id === marketId), [markets, marketId]);
 
@@ -36,6 +36,12 @@ export const RequestLoanModalContent = React.memo(
     const [loanAmount] = useState('10000');
 
     const supplyUnWrapped = underlyingAsset.toLowerCase() === API_ETH_MOCK_ADDRESS.toLowerCase();
+
+    const handleOnRequestSuccess = useCallback(async () => {
+      const blockNumber = await provider.getBlockNumber();
+      await refetchAll(blockNumber);
+      close();
+    }, []);
 
     if (supplyTxState.success) {
       return (
@@ -64,7 +70,7 @@ export const RequestLoanModalContent = React.memo(
             marketId={marketId}
             chainId={currentChainId}
             environment={4} // 4-dev 6-staging
-            onRequestSuccess={close}
+            onRequestSuccess={handleOnRequestSuccess}
             hideLogo
           />
         </Box>

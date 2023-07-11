@@ -18,3 +18,5 @@ export const MARKET_MANAGER_IDS = [
 export const LOAN_CHUNK_RATE_DECIMALS = 18;
 
 export const SECONDS_IN_A_YEAR = 31536000;
+
+export const POLLING_INTERVAL = 5000;

@@ -8,4 +8,12 @@ query poolLoanChunks($poolIds: [String]!) {
     chunkIndex
     borrowedAmount
   }
+
+  _meta {
+    block {
+      number
+      timestamp
+      hash
+    }
+  }
 }

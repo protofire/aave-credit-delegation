@@ -4,6 +4,7 @@ import { createContext, useContext, useState } from 'react';
 import { EmodeModalType } from 'src/components/transactions/Emode/EmodeModalContent';
 import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
 import { AtomicaLoan } from 'src/modules/credit-delegation/types';
+import { PoliciesAndLoanRequest } from 'src/modules/credit-delegation/types';
 import { TxErrorType } from 'src/ui-config/errorMapping';
 
 export enum ModalType {
@@ -32,7 +33,7 @@ export enum ModalType {
 }
 
 export interface ModalManageLoanArgs {
-  loanRequestId: string;
+  policyId: string;
   amount: string;
   minAmount: string;
   maxPemiumRatePerSec: string;
@@ -54,6 +55,7 @@ export interface ModalArgsType {
   marketId?: string;
   loanRequest?: ModalManageLoanArgs;
   loan?: AtomicaLoan;
+  policy?: PoliciesAndLoanRequest;
 }
 
 export type TxStateType = {
@@ -196,9 +198,9 @@ export const ModalContextProvider: React.FC = ({ children }) => {
           setType(ModalType.RequestLoan);
           setArgs({ marketId, underlyingAsset });
         },
-        openManageLoan: (loanRequest) => {
+        openManageLoan: (policy) => {
           setType(ModalType.ManageLoan);
-          setArgs({ loanRequest });
+          setArgs({ policy });
         },
         openRepayLoan: (loan) => {
           setType(ModalType.RepayLoan);
