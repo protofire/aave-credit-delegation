@@ -24,7 +24,7 @@ import { amountToUsd } from 'src/utils/utils';
 
 import {
   LOAN_CHUNK_RATE_DECIMALS,
-  MARKET_MANAGER_IDS,
+  POOL_MANAGER_IDS,
   PRODUCT_IDS,
   SECONDS_IN_A_YEAR,
 } from '../consts';
@@ -121,14 +121,14 @@ export const usePoolsAndMarkets = () => {
   }>(MAIN_QUERY, {
     variables: {
       productIds: PRODUCT_IDS,
-      managerIds: MARKET_MANAGER_IDS,
+      managerIds: POOL_MANAGER_IDS,
       owner: account.toLowerCase(),
     },
     skip: !account,
   });
 
   const { loading: loadingPoolLoanChunks, data: poolLoanChunks } = usePoolLoanChunks(
-    data?.pools.map((pool) => pool.id)
+    useMemo(() => data?.pools.map((pool) => pool.id), [data?.pools])
   );
 
   const [marketTokens, { loading: loadingMarketTokens }] = useAsyncMemo<TokenMetadataType[]>(
