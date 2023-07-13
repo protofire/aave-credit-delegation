@@ -18,6 +18,7 @@ msgid "<0>Ampleforth</0> is a rebasing asset. Visit the <1>documentation</1> to 
 msgstr "<0>Ampleforth</0> is a rebasing asset. Visit the <1>documentation</1> to learn more."
 
 #: src/components/transactions/Borrow/BorrowModalContent.tsx
+#: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationModalContent.tsx
 msgid "<0>Attention:</0> Parameter changes via governance can alter your account health factor and risk of liquidation. Follow the <1>Aave governance forum</1> for updates."
 msgstr "<0>Attention:</0> Parameter changes via governance can alter your account health factor and risk of liquidation. Follow the <1>Aave governance forum</1> for updates."
 
@@ -45,7 +46,6 @@ msgstr "APR"
 
 #: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
 #: src/modules/credit-delegation/lists/PoolsList/PoolsList.tsx
-#: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationModalContent.tsx
 #: src/modules/dashboard/lists/BorrowedPositionsList/BorrowedPositionsList.tsx
 #: src/modules/dashboard/lists/BorrowedPositionsList/BorrowedPositionsList.tsx
 #: src/modules/dashboard/lists/BorrowedPositionsList/BorrowedPositionsListMobileItem.tsx
@@ -192,10 +192,13 @@ msgstr "Already on cooldown"
 #: src/components/transactions/Faucet/CaptchaFaucetModalContent.tsx
 #: src/components/transactions/Faucet/FaucetModalContent.tsx
 #: src/components/transactions/StakeRewardClaim/StakeRewardClaimModalContent.tsx
-#: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
 #: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
 msgid "Amount"
 msgstr "Amount"
+
+#: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
+msgid "Amount Used"
+msgstr "Amount Used"
 
 #: src/ui-config/errorMapping.tsx
 msgid "Amount must be greater than 0"
@@ -331,11 +334,14 @@ msgstr "Author"
 msgid "Available"
 msgstr "Available"
 
+#: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationModalContent.tsx
+msgid "Available Aave credit"
+msgstr "Available Aave credit"
+
 #: src/components/transactions/Emode/EmodeModalContent.tsx
 msgid "Available assets"
 msgstr "Available assets"
 
-#: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationModalContent.tsx
 #: src/modules/credit-delegation/modals/ManageLoanRequest/ManageLoanModalContent.tsx
 msgid "Available credit"
 msgstr "Available credit"
@@ -495,6 +501,7 @@ msgid "Borrowing power and assets are limited due to Isolation mode."
 msgstr "Borrowing power and assets are limited due to Isolation mode."
 
 #: src/components/transactions/Borrow/BorrowModalContent.tsx
+#: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationModalContent.tsx
 msgid "Borrowing this amount will reduce your health factor and increase risk of liquidation."
 msgstr "Borrowing this amount will reduce your health factor and increase risk of liquidation."
 
@@ -750,6 +757,10 @@ msgstr "Debt ceiling limits the amount possible to borrow against this asset by 
 #: src/modules/credit-delegation/modals/RepayLoan/RepayLoanModalContent.tsx
 msgid "Debt to pay"
 msgstr "Debt to pay"
+
+#: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
+msgid "Delegated Amount"
+msgstr "Delegated Amount"
 
 #: src/modules/governance/DelegatedInfoPanel.tsx
 msgid "Delegated power"
@@ -1032,6 +1043,7 @@ msgstr "Hide"
 
 #: src/components/transactions/Borrow/BorrowModalContent.tsx
 #: src/components/transactions/Withdraw/WithdrawModalContent.tsx
+#: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationModalContent.tsx
 msgid "I acknowledge the risks involved."
 msgstr "I acknowledge the risks involved."
 
@@ -1171,10 +1183,6 @@ msgstr "Lend to pool"
 #: src/modules/credit-delegation/CreditDelegationTopPanel.tsx
 msgid "Lended"
 msgstr "Lended"
-
-#: src/modules/credit-delegation/lists/PoolsList/PoolsList.tsx
-msgid "Lending Capacity"
-msgstr "Lending Capacity"
 
 #: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationModalContent.tsx
 msgid "Lent"
@@ -1349,6 +1357,10 @@ msgstr "Modifying loan request..."
 msgid "More"
 msgstr "More"
 
+#: src/modules/credit-delegation/lists/PoolsList/PoolsList.tsx
+msgid "My lending Capacity"
+msgstr "My lending Capacity"
+
 #: src/modules/governance/VoteBar.tsx
 msgid "NAY"
 msgstr "NAY"
@@ -1444,12 +1456,15 @@ msgid "Not reached"
 msgstr "Not reached"
 
 #: pages/v3-migration.page.tsx
-#: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
-#: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
 #: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
 #: src/modules/dashboard/lists/BorrowedPositionsList/BorrowedPositionsList.tsx
 msgid "Nothing borrowed yet"
 msgstr "Nothing borrowed yet"
+
+#: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
+#: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
+msgid "Nothing lent yet"
+msgstr "Nothing lent yet"
 
 #: src/modules/credit-delegation/lists/YourLoanApplicationsList/YourLoanApplicationsList.tsx
 msgid "Nothing requested yet"
@@ -1493,8 +1508,8 @@ msgid "Page not found"
 msgstr "Page not found"
 
 #: src/components/incentives/IncentivesTooltipContent.tsx
-msgid "Participating in this {symbol} reserve gives annualized rewards."
-msgstr "Participating in this {symbol} reserve gives annualized rewards."
+msgid "Participating in this pool gives annualized {symbol} rewards."
+msgstr "Participating in this pool gives annualized {symbol} rewards."
 
 #: src/components/transactions/CollateralChange/CollateralChangeActions.tsx
 #: src/components/transactions/Faucet/FaucetActions.tsx
@@ -1539,6 +1554,10 @@ msgstr "Please switch to {networkName}."
 #: src/components/ConnectWalletPaperStaking.tsx
 msgid "Please, connect your wallet"
 msgstr "Please, connect your wallet"
+
+#: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationModalContent.tsx
+msgid "Pool APY"
+msgstr "Pool APY"
 
 #: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
 #: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
@@ -2296,8 +2315,8 @@ msgid "This transaction will modify the requested loan amount."
 msgstr "This transaction will modify the requested loan amount."
 
 #: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationModalContent.tsx
-msgid "This transaction will use credit delegation to deposit into the pool <0>({0})</0> and in exchange you will receive pool tokens."
-msgstr "This transaction will use credit delegation to deposit into the pool <0>({0})</0> and in exchange you will receive pool tokens."
+msgid "This transaction will use aave's credit delegation (stable rate) to deposit into the pool <0>({0})</0> and in exchange you will receive pool tokens."
+msgstr "This transaction will use aave's credit delegation (stable rate) to deposit into the pool <0>({0})</0> and in exchange you will receive pool tokens."
 
 #: src/modules/staking/StakingPanel.tsx
 msgid "Time left to be able to withdraw your staked asset."
@@ -2732,6 +2751,16 @@ msgstr "Your borrows"
 msgid "Your current loan to value based on your collateral supplied."
 msgstr "Your current loan to value based on your collateral supplied."
 
+#: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
+#: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
+msgid "Your deficit positions"
+msgstr "Your deficit positions"
+
+#: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
+#: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
+msgid "Your earning positions"
+msgstr "Your earning positions"
+
 #: src/modules/dashboard/LiquidationRiskParametresModal/LiquidationRiskParametresModal.tsx
 msgid "Your health factor and loan to value determine the assurance of your collateral. To avoid liquidations you can supply more collateral or repay borrow positions."
 msgstr "Your health factor and loan to value determine the assurance of your collateral. To avoid liquidations you can supply more collateral or repay borrow positions."
@@ -2749,11 +2778,6 @@ msgstr "Your info"
 msgid "Your lending capacity"
 msgstr "Your lending capacity"
 
-#: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
-#: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
-msgid "Your lending positiond (payouts made)"
-msgstr "Your lending positiond (payouts made)"
-
 #: src/modules/credit-delegation/lists/YourLoanApplicationsList/YourLoanApplicationsList.tsx
 msgid "Your loan applications"
 msgstr "Your loan applications"
@@ -2762,15 +2786,10 @@ msgstr "Your loan applications"
 msgid "Your loan requests"
 msgstr "Your loan requests"
 
-#: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
 #: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
 #: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
 msgid "Your loans"
 msgstr "Your loans"
-
-#: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
-msgid "Your positions earning yield"
-msgstr "Your positions earning yield"
 
 #: src/modules/governance/VotingPowerInfoPanel.tsx
 msgid "Your proposition power is based on your AAVE/stkAAVE balance and received delegations."
@@ -2934,6 +2953,10 @@ msgstr "{currentMethod}"
 #: src/modules/staking/StakingPanel.tsx
 msgid "{d}d"
 msgstr "{d}d"
+
+#: src/components/incentives/IncentivesTooltipContent.tsx
+msgid "{endDate}"
+msgstr "{endDate}"
 
 #: src/modules/staking/StakingPanel.tsx
 msgid "{h}h"

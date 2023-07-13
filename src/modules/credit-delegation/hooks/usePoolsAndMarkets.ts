@@ -36,9 +36,11 @@ import {
   AtomicaSubgraphPolicy,
   AtomicaSubgraphPool,
 } from '../types';
+import { convertTimestampToDate } from '../utils';
 import useAsyncMemo from './useAsyncMemo';
 import { useLendingPositions as usePoolLoanChunks } from './useLendingPositions';
 import { useMarketsApr } from './useMarketsApr';
+import { usePoolRewards } from './usePoolRewards';
 import { usePoolsApy } from './usePoolsApy';
 import { usePoolsMetadata } from './usePoolsMetadata';
 import { useSubgraph } from './useSubgraph';
@@ -131,6 +133,10 @@ export const usePoolsAndMarkets = () => {
     data?.pools.map((pool) => pool.id)
   );
 
+  const { loading: loadingPoolRewards, data: poolRewards } = usePoolRewards(
+    data?.pools.map((pool) => pool.id)
+  );
+
   const [marketTokens, { loading: loadingMarketTokens }] = useAsyncMemo<TokenMetadataType[]>(
     async () => {
       const tokens = Array.from(
@@ -172,7 +178,7 @@ export const usePoolsAndMarkets = () => {
         if (poolReserve && vault) {
           const { amount } = await getCreditDelegationApprovedAmount({
             delegatee: vault.vault,
-            debtTokenAddress: poolReserve.stableDebtTokenAddress,
+            debtTokenAddress: vault.debtToken,
           });
 
           setApprovedCredit((prev) => {
@@ -234,7 +240,13 @@ export const usePoolsAndMarkets = () => {
   }, [fetchAllBorrowAllowances, appDataLoading, mainLoading, approvedCreditLoaded, loadingVaults]);
 
   const pools: AtomicaDelegationPool[] = useMemo(() => {
-    if (mainLoading || appDataLoading || approvedCreditLoading || loadingVaults) {
+    if (
+      mainLoading ||
+      appDataLoading ||
+      approvedCreditLoading ||
+      loadingVaults ||
+      loadingPoolRewards
+    ) {
       return [];
     }
 
@@ -244,7 +256,7 @@ export const usePoolsAndMarkets = () => {
       const tokenToBorrow = tokensToBorrow.find(
         (token) => token.symbol === pool.capitalTokenSymbol
       );
-
+      console.log('toek', tokenToBorrow);
       const poolMetadata = metadata?.find(
         (data) => data.EntityId.toLowerCase() === pool.id.toLowerCase()
       );
@@ -253,9 +265,15 @@ export const usePoolsAndMarkets = () => {
         (vault) => vault.atomicaPool.toLowerCase() === pool.id.toLowerCase()
       );
 
+      const rewards = poolRewards.find((reward) => reward.poolId === pool.id);
+
       const supplyAPY =
         poolsApy?.find((poolApy) => poolApy.id?.toLowerCase() === pool.id?.toLowerCase())
           ?.baseApy ?? '0.0';
+
+      const rewardAPY =
+        poolsApy?.find((poolApy) => poolApy.id?.toLowerCase() === pool.id?.toLowerCase())
+          ?.rewardApy ?? '0.0';
 
       return {
         asset: tokenToBorrow,
@@ -287,6 +305,12 @@ export const usePoolsAndMarkets = () => {
         vault,
         stableDebtTokenAddress: userReserve?.stableDebtTokenAddress ?? '',
         variableDebtTokenAddress: userReserve?.variableDebtTokenAddress ?? '',
+        rewardAPY,
+        reward: {
+          rewardToken: rewards?.rewardToken,
+          endedAt: convertTimestampToDate(rewards?.endedAt || ''),
+          rewardTokenSymbol: rewards?.rewardTokenSymbol,
+        },
       };
     });
   }, [
@@ -302,6 +326,8 @@ export const usePoolsAndMarkets = () => {
     loadingVaults,
     mainLoading,
     appDataLoading,
+    loadingPoolRewards,
+    poolRewards,
   ]);
 
   const markets: AtomicaBorrowMarket[] = useMemo(() => {

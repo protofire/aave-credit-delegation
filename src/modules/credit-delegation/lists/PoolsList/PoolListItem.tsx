@@ -25,6 +25,8 @@ export const PoolListItem = ({
   id,
   manager,
   markets,
+  rewardAPY,
+  reward,
 }: AtomicaDelegationPool) => {
   const { openCreditDelegation } = useModalContext();
 
@@ -69,7 +71,18 @@ export const PoolListItem = ({
         disabled={Number(availableBalance) === 0}
       />
 
-      <ListAPRColumn value={Number(supplyAPY)} incentives={[]} symbol={symbol} />
+      <ListAPRColumn
+        value={Number(supplyAPY)}
+        incentives={[
+          {
+            incentiveAPR: rewardAPY,
+            rewardTokenAddress: reward?.rewardToken || '',
+            rewardTokenSymbol: reward?.rewardTokenSymbol || '',
+          },
+        ]}
+        symbol={symbol}
+        endDate={reward?.endedAt}
+      />
 
       <ListButtonsColumn>
         <Button

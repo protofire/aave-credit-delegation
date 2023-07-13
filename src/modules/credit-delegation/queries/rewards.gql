@@ -1,0 +1,27 @@
+query rewards($poolIds: [String]!) {
+  rewards(where: { poolId_in: $poolIds }) {
+    cid
+    amount
+    creator
+    endedAt
+    id
+    num
+    poolId
+    updatedAt
+    startedAt
+    rewardTokenSymbol
+    rewardTokenName
+    rewardTokenDecimals
+    rewardToken
+    rewardPerToken
+    ratePerSecond
+  }
+
+  _meta {
+    block {
+      number
+      timestamp
+      hash
+    }
+  }
+}

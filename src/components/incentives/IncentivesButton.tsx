@@ -13,6 +13,7 @@ interface IncentivesButtonProps {
   symbol: string;
   incentives?: ReserveIncentiveResponse[];
   displayBlank?: boolean;
+  endDate?: string;
 }
 
 const BlankIncentives = () => {
@@ -32,7 +33,12 @@ const BlankIncentives = () => {
   );
 };
 
-export const IncentivesButton = ({ incentives, symbol, displayBlank }: IncentivesButtonProps) => {
+export const IncentivesButton = ({
+  incentives,
+  symbol,
+  displayBlank,
+  endDate,
+}: IncentivesButtonProps) => {
   const [open, setOpen] = useState(false);
 
   if (!(incentives && incentives.length > 0)) {
@@ -102,6 +108,7 @@ export const IncentivesButton = ({ incentives, symbol, displayBlank }: Incentive
           incentives={incentives}
           incentivesNetAPR={incentivesNetAPR}
           symbol={symbol}
+          endDate={endDate}
         />
       }
       withoutHover

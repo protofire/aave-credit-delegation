@@ -10,12 +10,14 @@ interface IncentivesTooltipContentProps {
   incentives: ReserveIncentiveResponse[];
   incentivesNetAPR: 'Infinity' | number;
   symbol: string;
+  endDate?: string;
 }
 
 export const IncentivesTooltipContent = ({
   incentives,
   incentivesNetAPR,
   symbol,
+  endDate,
 }: IncentivesTooltipContentProps) => {
   const typographyVariant = 'secondary12';
 
@@ -51,30 +53,55 @@ export const IncentivesTooltipContent = ({
       }}
     >
       <Typography variant="caption" color="text.secondary" mb={3}>
-        <Trans>Participating in this {symbol} reserve gives annualized rewards.</Trans>
+        <Trans>Participating in this pool gives annualized {symbol} rewards.</Trans>
+        {/* <Trans>Participating in this {symbol} reserve gives annualized rewards.</Trans> */}
       </Typography>
 
       <Box sx={{ width: '100%' }}>
         {incentives.map((incentive) => (
-          <Row
-            height={32}
-            caption={
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  mb: incentives.length > 1 ? 2 : 0,
-                }}
-              >
-                <TokenIcon symbol={incentive.rewardTokenSymbol} sx={{ fontSize: '20px', mr: 1 }} />
-                <Typography variant={typographyVariant}>{incentive.rewardTokenSymbol}</Typography>
-              </Box>
-            }
-            key={incentive.rewardTokenAddress}
-            width="100%"
-          >
-            <Number incentiveAPR={incentive.incentiveAPR} />
-          </Row>
+          <>
+            <Row
+              height={32}
+              caption={
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    mb: incentives.length > 1 ? 2 : 0,
+                  }}
+                >
+                  <TokenIcon
+                    symbol={incentive.rewardTokenSymbol}
+                    sx={{ fontSize: '20px', mr: 1 }}
+                  />
+                  <Typography variant={typographyVariant}>{incentive.rewardTokenSymbol}</Typography>
+                </Box>
+              }
+              key={incentive.rewardTokenAddress}
+              width="100%"
+            >
+              <Number incentiveAPR={incentive.incentiveAPR} />
+            </Row>
+            <Row
+              height={32}
+              caption={
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    mb: incentives.length > 1 ? 2 : 0,
+                  }}
+                >
+                  <Typography variant={typographyVariant}>Reward end date:</Typography>
+                </Box>
+              }
+              key={incentive.rewardTokenSymbol}
+              width="100%"
+            >
+              {/* <Number incentiveAPR={incentive.incentiveAPR} /> */}
+              <Trans>{endDate}</Trans>
+            </Row>
+          </>
         ))}
 
         {incentives.length > 1 && (

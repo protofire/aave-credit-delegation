@@ -78,7 +78,7 @@ export const LoanPositionsList = () => {
   if (loading || loadingLendingPositions)
     return (
       <ListLoader
-        title={<Trans>Your lending positiond (payouts made)</Trans>}
+        title={<Trans>Your deficit positions</Trans>}
         head={head.map((c) => c.title)}
         withTopMargin
       />
@@ -88,15 +88,14 @@ export const LoanPositionsList = () => {
     <ListWrapper
       titleComponent={
         <Typography component="div" variant="h3" sx={{ mr: 4 }}>
-          <Trans>Your lending positiond (payouts made)</Trans>
+          <Trans>Your deficit positions</Trans>
         </Typography>
       }
       localStorageName="loanPositionsCreditDelegationTableCollapse"
       noData={!sortedLendingPositions.length}
-      withTopMargin
     >
       {!sortedLendingPositions.length && (
-        <CreditDelegationContentNoData text={<Trans>Nothing borrowed yet</Trans>} />
+        <CreditDelegationContentNoData text={<Trans>Nothing lent yet</Trans>} />
       )}
 
       {!!sortedLendingPositions.length && (

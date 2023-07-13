@@ -61,3 +61,6 @@ export const handleSortLoanRequests = (
     return orderBy(loanRequests, sortName, sortDesc ? 'desc' : 'asc');
   }
 };
+
+export const convertTimestampToDate = (timestamp: string) =>
+  new Intl.DateTimeFormat('en-US').format(new Date(Number(timestamp) * 1000));

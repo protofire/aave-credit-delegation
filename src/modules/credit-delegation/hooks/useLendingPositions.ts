@@ -25,7 +25,7 @@ export const useLendingPositions = (poolIds?: string[]) => {
     },
   });
 
-  const loanIds = useMemo(() => data?.loanChunks.map((chunk) => chunk.loanId), [data?.loanChunks]);
+  const loanIds = useMemo(() => data?.loanChunks?.map((chunk) => chunk.loanId), [data?.loanChunks]);
 
   const {
     loading: loadingLoans,
@@ -60,7 +60,7 @@ export const useLendingPositions = (poolIds?: string[]) => {
 
   const loanChunks: AtomicaSubgraphPoolLoanChunk[] = useMemo(
     () =>
-      data?.loanChunks.map((chunk) => {
+      data?.loanChunks?.map((chunk) => {
         const loan = loansData?.loans?.find(
           (loan) => loan.id.toLowerCase() === chunk.loanId.toLowerCase()
         );

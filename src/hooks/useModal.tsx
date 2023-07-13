@@ -3,8 +3,7 @@ import { BigNumber } from 'bignumber.js';
 import { createContext, useContext, useState } from 'react';
 import { EmodeModalType } from 'src/components/transactions/Emode/EmodeModalContent';
 import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
-import { AtomicaLoan } from 'src/modules/credit-delegation/types';
-import { PoliciesAndLoanRequest } from 'src/modules/credit-delegation/types';
+import { AtomicaLoan, PoliciesAndLoanRequest } from 'src/modules/credit-delegation/types';
 import { TxErrorType } from 'src/ui-config/errorMapping';
 
 export enum ModalType {

@@ -137,6 +137,7 @@ export interface AtomicaDelegationPool {
   supplyCap: string;
   totalLiquidity: string;
   supplyAPY: string;
+  rewardAPY: string;
   underlyingAsset: string;
   isActive: boolean;
   availableBalance: string | number;
@@ -157,6 +158,7 @@ export interface AtomicaDelegationPool {
   }[];
   stableDebtTokenAddress: string;
   variableDebtTokenAddress: string;
+  reward?: PoolReward;
 }
 
 export interface AtomicaBorrowMarket {
@@ -252,4 +254,28 @@ export interface PoliciesAndLoanRequest {
   symbol: string;
   title: string;
   usdRate: string;
+}
+
+export interface AtomicaSubgraphRewards {
+  cid: string;
+  amount: string;
+  creator: string;
+  endedAt: string;
+  id: string;
+  num: string;
+  poolId: string;
+  updatedAt: string;
+  startedAt: string;
+  rewardTokenSymbol: string;
+  rewardTokenName: string;
+  rewardTokenDecimals: string;
+  rewardToken: string;
+  rewardPerToken: string;
+  ratePerSecond: string;
+}
+
+export interface PoolReward {
+  rewardToken?: string;
+  endedAt?: string;
+  rewardTokenSymbol?: string;
 }

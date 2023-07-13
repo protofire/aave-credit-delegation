@@ -39,7 +39,8 @@ export const CreditDelegationActions = React.memo(
   }: CreditDelegationActionProps) => {
     const generateApproveDelegation = useRootStore((state) => state.generateApproveDelegation);
 
-    const { mainTxState, loadingTxns, setMainTxState, setGasLimit, setTxError } = useModalContext();
+    const { mainTxState, loadingTxns, setMainTxState, setGasLimit, setTxError, close } =
+      useModalContext();
 
     const { sendTx } = useWeb3Context();
 
@@ -74,6 +75,7 @@ export const CreditDelegationActions = React.memo(
             loading: false,
             success: true,
           });
+          close();
         } catch (error) {
           const parsedError = getErrorTextFromError(error, TxAction.GAS_ESTIMATION, false);
           setTxError(parsedError);
@@ -81,6 +83,7 @@ export const CreditDelegationActions = React.memo(
             txHash: undefined,
             loading: false,
           });
+          close();
         }
       }
     }, [
@@ -95,6 +98,7 @@ export const CreditDelegationActions = React.memo(
       fetchBorrowAllowance,
       getErrorTextFromError,
       setTxError,
+      close,
     ]);
 
     const deployVault = useCallback(async () => {
@@ -105,6 +109,7 @@ export const CreditDelegationActions = React.memo(
             atomicaPool: pool?.id,
             debtToken: poolReserve.stableDebtTokenAddress,
             value: parseUnits(amount, decimals).toString(),
+            delegationPercentage: 100,
           });
 
           setMainTxState({ ...mainTxState, loading: true });

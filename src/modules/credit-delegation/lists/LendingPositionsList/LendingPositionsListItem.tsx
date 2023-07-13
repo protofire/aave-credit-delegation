@@ -1,8 +1,13 @@
+import { normalize, valueToBigNumber } from '@aave/math-utils';
 import { Trans } from '@lingui/macro';
 import { Button } from '@mui/material';
 import { ListColumn } from 'src/components/lists/ListColumn';
 import { Link } from 'src/components/primitives/Link';
 import { Row } from 'src/components/primitives/Row';
+import {
+  ComputedUserReserveData,
+  useAppDataContext,
+} from 'src/hooks/app-data-provider/useAppDataProvider';
 import { useModalContext } from 'src/hooks/useModal';
 
 import { useManagerDetails } from '../../hooks/useManagerDetails';
@@ -20,16 +25,29 @@ export const LendingPositionsListItem = ({
   isActive,
   underlyingAsset,
   availableBalance,
-  metadata,
-  approvedCredit,
   approvedCreditUsd,
+  approvedCredit,
+  metadata,
   id,
   manager,
   markets,
+  vault,
+  asset,
+  reward,
+  rewardAPY,
 }: AtomicaDelegationPool) => {
   const { openCreditDelegation } = useModalContext();
 
   const { managerDetails } = useManagerDetails(manager);
+  const { user } = useAppDataContext();
+
+  const amount = normalize(vault?.loanAmount || '0', asset?.decimals || 18);
+
+  const { reserve } = user?.userReservesData.find((userReserve) => {
+    return underlyingAsset === userReserve.underlyingAsset;
+  }) as ComputedUserReserveData;
+
+  const usdValue = valueToBigNumber(amount).multipliedBy(reserve.priceInUSD);
 
   return (
     <ListItemWrapper symbol={symbol} iconSymbol={iconSymbol} name={name}>
@@ -67,10 +85,29 @@ export const LendingPositionsListItem = ({
         value={Number(approvedCredit)}
         subValue={approvedCreditUsd}
         withTooltip
-        disabled={Number(approvedCredit) === 0}
+        disabled={Number(vault?.loanAmount) === 0}
       />
 
-      <ListAPRColumn value={Number(supplyAPY)} incentives={[]} symbol={symbol} />
+      <ListValueColumn
+        symbol={symbol}
+        value={Number(amount)}
+        subValue={usdValue.toString(10)}
+        withTooltip
+        disabled={Number(vault?.loanAmount) === 0}
+      />
+
+      <ListAPRColumn
+        value={Number(supplyAPY)}
+        incentives={[
+          {
+            incentiveAPR: rewardAPY,
+            rewardTokenAddress: reward?.rewardToken || '',
+            rewardTokenSymbol: reward?.rewardTokenSymbol || '',
+          },
+        ]}
+        symbol={symbol}
+        endDate={reward?.endedAt}
+      />
 
       <ListButtonsColumn>
         <Button

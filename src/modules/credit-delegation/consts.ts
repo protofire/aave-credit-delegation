@@ -5,7 +5,7 @@ export const AAVE_USDC = '0xe9dce89b076ba6107bb64ef30678efec11939234';
 
 export const CREDIT_DELEGATION_ATOMICA_GOOGLE_SHEET_ID = `${process.env.NEXT_PUBLIC_ATOMICA_META_SHEET_ID}`;
 
-export const PRODUCT_IDS = ['3', '4', '8'];
+export const PRODUCT_IDS = ['10', '11', '12', '13'];
 
 export const MARKET_MANAGER_IDS = [
   '0xFB338C5fE584c026270e5DeD1C2e0AcA786a22fe',
