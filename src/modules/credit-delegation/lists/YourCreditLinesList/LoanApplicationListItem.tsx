@@ -11,24 +11,18 @@ import { CREDIT_DELEGATION_LIST_COLUMN_WIDTHS } from 'src/utils/creditDelegation
 
 import { useCreditDelegationContext } from '../../CreditDelegationContext';
 import { useControllerAddress } from '../../hooks/useControllerAddress';
-import { LoanApplicationStatus, PoliciesAndLoanRequest } from '../../types';
+import { CreditLine } from '../../types';
 import { ListAPRColumn } from '../ListAPRColumn';
 import { ListItemWrapper } from '../ListItemWrapper';
 import { ListValueColumn } from '../ListValueColumn';
 
-export const LoanApplicationListItem = (policy: PoliciesAndLoanRequest) => {
+export const CreditLineListItem = (creditLine: CreditLine) => {
+  const { amount, policyId, market, amountUsd, asset, title } = creditLine;
   const {
-    amount,
-    policyId,
-    status,
-    market,
-    amountUsd,
-    asset,
-    maxPremiumRatePerSec,
-    minAmount,
-    title,
-  } = policy;
-  const { setTxError, setMainTxState, openManageLoan } = useModalContext();
+    setTxError,
+    setMainTxState,
+    openManageCreditLine: openManageCreditLine,
+  } = useModalContext();
   const [loadingTxns, setLoadingTxns] = useState(false);
   const { provider } = useWeb3Context();
   const { refetchAll, loansLoading, loading } = useCreditDelegationContext();
@@ -46,9 +40,10 @@ export const LoanApplicationListItem = (policy: PoliciesAndLoanRequest) => {
       const response = await riskPoolController.requestLoan(
         policyId,
         parseUnits(amount, asset?.decimals),
-        minAmount ?? '0',
-        maxPremiumRatePerSec ?? '0',
-        1
+        parseUnits(amount, asset?.decimals),
+        parseUnits(market?.apr || '0', 4),
+        1,
+        ''
       );
 
       const receipt: TransactionReceipt = await response.wait();
@@ -73,8 +68,9 @@ export const LoanApplicationListItem = (policy: PoliciesAndLoanRequest) => {
     market,
     amount,
     policyId,
-    minAmount,
-    maxPremiumRatePerSec,
+    asset?.decimals,
+    refetchAll,
+    riskPoolController,
   ]);
 
   return (
@@ -99,10 +95,6 @@ export const LoanApplicationListItem = (policy: PoliciesAndLoanRequest) => {
         subValue={market?.availableBorrowsInUSD ?? 0}
       />
 
-      <ListColumn>
-        {status === LoanApplicationStatus.Available ? 'Available' : 'Pending approval'}
-      </ListColumn>
-
       <ListColumn maxWidth={CREDIT_DELEGATION_LIST_COLUMN_WIDTHS.BUTTONS}>
         <Box
           sx={{
@@ -115,25 +107,22 @@ export const LoanApplicationListItem = (policy: PoliciesAndLoanRequest) => {
             },
           }}
         >
-          {status === LoanApplicationStatus.Available && (
-            <Button
-              variant="contained"
-              disabled={loadingTxns}
-              onClick={() => openManageLoan(policy)}
-            >
-              <Trans>Manage</Trans>
-            </Button>
-          )}
-          {status === LoanApplicationStatus.Available && (
-            <Button
-              variant="contained"
-              disabled={loadingTxns || loansLoading || loading}
-              onClick={requestLoan}
-            >
-              {loadingTxns && <CircularProgress color="inherit" size="16px" sx={{ mr: 2 }} />}
-              <Trans>Request</Trans>
-            </Button>
-          )}
+          <Button
+            variant="contained"
+            disabled={loadingTxns}
+            onClick={() => openManageCreditLine(creditLine)}
+          >
+            <Trans>Manage</Trans>
+          </Button>
+
+          <Button
+            variant="contained"
+            disabled={loadingTxns || loansLoading || loading}
+            onClick={requestLoan}
+          >
+            {loadingTxns && <CircularProgress color="inherit" size="16px" sx={{ mr: 2 }} />}
+            <Trans>Request</Trans>
+          </Button>
         </Box>
         {/* <Box
           sx={{

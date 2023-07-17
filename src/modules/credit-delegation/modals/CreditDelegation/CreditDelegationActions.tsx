@@ -95,6 +95,7 @@ export const CreditDelegationActions = React.memo(
       fetchBorrowAllowance,
       getErrorTextFromError,
       setTxError,
+      poolReserve.stableDebtTokenAddress,
     ]);
 
     const deployVault = useCallback(async () => {

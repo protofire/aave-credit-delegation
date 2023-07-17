@@ -25,7 +25,7 @@ const head = [
     sortKey: 'market.title',
   },
   {
-    title: <Trans>Amount</Trans>,
+    title: <Trans>Principal</Trans>,
     sortKey: 'borrowedAmount',
   },
   {
@@ -33,8 +33,12 @@ const head = [
     sortKey: 'apr',
   },
   {
-    title: <Trans>Principal debt</Trans>,
+    title: <Trans>Interest</Trans>,
     sortKey: 'debt',
+  },
+  {
+    title: <Trans>Status</Trans>,
+    sortKey: 'status',
   },
   {
     title: <Trans>Agreement</Trans>,
@@ -104,7 +108,7 @@ export const YourLoansList = () => {
         market,
       };
     });
-  }, [pools, loans]);
+  }, [pools, loans, markets]);
 
   if (loading)
     return <ListLoader title={<Trans>Your loans</Trans>} head={head.map((c) => c.title)} />;
@@ -133,7 +137,7 @@ export const YourLoansList = () => {
         />
       )}
       {loanPositions.map((item) => (
-        <LoanListItem key={item.id} {...item} />
+        <LoanListItem key={item.loanRequestId} {...item} />
       ))}
     </ListWrapper>
   );

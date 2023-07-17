@@ -4,7 +4,7 @@ import {
   AtomicaBorrowMarket,
   AtomicaDelegationPool,
   AtomicaLendingPosition,
-  PoliciesAndLoanRequest,
+  CreditLine,
 } from './types';
 
 const handleSymbolSort = <T extends { symbol: string }>(sortDesc: boolean, pools: T[]) => {
@@ -50,14 +50,14 @@ export const handleSortLoans = (
   }
 };
 
-export const handleSortLoanRequests = (
+export const handleSortCreditLines = (
   sortDesc: boolean,
   sortName: string,
-  loanRequests: PoliciesAndLoanRequest[]
-): PoliciesAndLoanRequest[] => {
+  creditLines: CreditLine[]
+): CreditLine[] => {
   if (sortName === 'symbol') {
-    return handleSymbolSort(true, loanRequests);
+    return handleSymbolSort(true, creditLines);
   } else {
-    return orderBy(loanRequests, sortName, sortDesc ? 'desc' : 'asc');
+    return orderBy(creditLines, sortName, sortDesc ? 'desc' : 'asc');
   }
 };

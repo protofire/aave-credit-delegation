@@ -4,10 +4,10 @@ import { LendingPositionsList } from './lists/LendingPositionsList/LendingPositi
 import { LoanPositionsList } from './lists/LoanPositionsList/LoanPositionsList';
 import { MarketsList } from './lists/MarketsList/MarketsList';
 import { PoolsList } from './lists/PoolsList/PoolsList';
-import { YourLoanApplicationsList } from './lists/YourLoanApplicationsList/YourLoanApplicationsList';
+import { YourCreditLinesList } from './lists/YourCreditLinesList/YourCreditLinesList';
 import { YourLoansList } from './lists/YourLoansList/YourLoansList';
 import { CreditDelegationModal } from './modals/CreditDelegation/CreditDelegationModal';
-import { ManageLoanModal } from './modals/ManageLoanRequest/ManageLoanModal';
+import { ManageCreditLineModal as ManageCreditLine } from './modals/ManageCreditLine/ManageCreditLineModal';
 import { RepayLoanModal } from './modals/RepayLoan/RepayLoanModal';
 import { RequestLoanModal } from './modals/RequestLoan/RequestLoanModal';
 
@@ -37,13 +37,13 @@ export const CreditDelegationContentWrapper = ({
 
         <Box style={{ display: isBorrow ? 'block' : 'none' }}>
           <MarketsList />
-          <YourLoanApplicationsList />
+          <YourCreditLinesList />
           <YourLoansList />
         </Box>
       </Box>
       <CreditDelegationModal />
       <RequestLoanModal />
-      <ManageLoanModal />
+      <ManageCreditLine />
       <RepayLoanModal />
     </>
   );

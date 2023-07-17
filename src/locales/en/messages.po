@@ -38,7 +38,7 @@ msgstr "ACTIVATE COOLDOWN"
 #: src/components/incentives/IncentivesTooltipContent.tsx
 #: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
 #: src/modules/credit-delegation/lists/MarketsList/MarketsList.tsx
-#: src/modules/credit-delegation/lists/YourLoanApplicationsList/YourLoanApplicationsList.tsx
+#: src/modules/credit-delegation/lists/YourCreditLinesList/YourCreditLinesList.tsx
 #: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
 msgid "APR"
 msgstr "APR"
@@ -193,7 +193,6 @@ msgstr "Already on cooldown"
 #: src/components/transactions/Faucet/FaucetModalContent.tsx
 #: src/components/transactions/StakeRewardClaim/StakeRewardClaimModalContent.tsx
 #: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
-#: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
 msgid "Amount"
 msgstr "Amount"
 
@@ -230,7 +229,7 @@ msgid "Array parameters that should be equal length are not"
 msgstr "Array parameters that should be equal length are not"
 
 #: src/modules/credit-delegation/lists/MarketsList/MarketsList.tsx
-#: src/modules/credit-delegation/lists/YourLoanApplicationsList/YourLoanApplicationsList.tsx
+#: src/modules/credit-delegation/lists/YourCreditLinesList/YourCreditLinesList.tsx
 #: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
 #: src/modules/dashboard/lists/BorrowAssetsList/BorrowAssetsList.tsx
 #: src/modules/dashboard/lists/BorrowedPositionsList/BorrowedPositionsList.tsx
@@ -326,7 +325,7 @@ msgstr "Author"
 #: src/components/transactions/Borrow/BorrowModalContent.tsx
 #: src/components/transactions/Withdraw/WithdrawModalContent.tsx
 #: src/modules/credit-delegation/lists/MarketsList/MarketsList.tsx
-#: src/modules/credit-delegation/lists/YourLoanApplicationsList/YourLoanApplicationsList.tsx
+#: src/modules/credit-delegation/lists/YourCreditLinesList/YourCreditLinesList.tsx
 #: src/modules/dashboard/lists/BorrowAssetsList/BorrowAssetsList.tsx
 msgid "Available"
 msgstr "Available"
@@ -336,7 +335,7 @@ msgid "Available assets"
 msgstr "Available assets"
 
 #: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationModalContent.tsx
-#: src/modules/credit-delegation/modals/ManageLoanRequest/ManageLoanModalContent.tsx
+#: src/modules/credit-delegation/modals/ManageCreditLine/ManageCreditLineModalContent.tsx
 msgid "Available credit"
 msgstr "Available credit"
 
@@ -1071,6 +1070,7 @@ msgstr "In Isolation mode, you cannot supply other assets as collateral. A globa
 msgid "Inconsistent flashloan parameters"
 msgstr "Inconsistent flashloan parameters"
 
+#: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
 #: src/modules/credit-delegation/modals/RepayLoan/RepayLoanModalContent.tsx
 msgid "Interest"
 msgstr "Interest"
@@ -1225,7 +1225,7 @@ msgstr "Liquidation value"
 msgid "Loading data..."
 msgstr "Loading data..."
 
-#: src/modules/credit-delegation/lists/YourLoanApplicationsList/YourLoanApplicationsList.tsx
+#: src/modules/credit-delegation/lists/YourCreditLinesList/YourCreditLinesList.tsx
 msgid "Loan Requested"
 msgstr "Loan Requested"
 
@@ -1243,13 +1243,13 @@ msgstr "MAX"
 
 #: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsListItem.tsx
 #: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsListItem.tsx
-#: src/modules/credit-delegation/lists/YourLoanApplicationsList/LoanApplicationListItem.tsx
+#: src/modules/credit-delegation/lists/YourCreditLinesList/LoanApplicationListItem.tsx
 msgid "Manage"
 msgstr "Manage"
 
-#: src/modules/credit-delegation/modals/ManageLoanRequest/ManageLoanModal.tsx
-msgid "Manage loan request"
-msgstr "Manage loan request"
+#: src/modules/credit-delegation/modals/ManageCreditLine/ManageCreditLineModal.tsx
+msgid "Manage credit line"
+msgstr "Manage credit line"
 
 #: src/modules/reserve-overview/ReserveTopDetails.tsx
 msgid "Market"
@@ -1337,11 +1337,11 @@ msgstr "Migrating multiple collaterals and borrowed assets at the same time can 
 msgid "Migration risks"
 msgstr "Migration risks"
 
-#: src/modules/credit-delegation/modals/ManageLoanRequest/ManageLoanActions.tsx
+#: src/modules/credit-delegation/modals/ManageCreditLine/ManageCreditLineActions.tsx
 msgid "Modify loan request"
 msgstr "Modify loan request"
 
-#: src/modules/credit-delegation/modals/ManageLoanRequest/ManageLoanActions.tsx
+#: src/modules/credit-delegation/modals/ManageCreditLine/ManageCreditLineActions.tsx
 msgid "Modifying loan request..."
 msgstr "Modifying loan request..."
 
@@ -1354,7 +1354,7 @@ msgid "NAY"
 msgstr "NAY"
 
 #: src/modules/credit-delegation/lists/MarketsList/MarketsList.tsx
-#: src/modules/credit-delegation/lists/YourLoanApplicationsList/YourLoanApplicationsList.tsx
+#: src/modules/credit-delegation/lists/YourCreditLinesList/YourCreditLinesList.tsx
 #: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
 msgid "Name"
 msgstr "Name"
@@ -1391,7 +1391,7 @@ msgstr "Network not supported for this wallet"
 msgid "New APY"
 msgstr "New APY"
 
-#: src/modules/credit-delegation/modals/ManageLoanRequest/ManageLoanModalContent.tsx
+#: src/modules/credit-delegation/modals/ManageCreditLine/ManageCreditLineModalContent.tsx
 msgid "New amount"
 msgstr "New amount"
 
@@ -1451,7 +1451,7 @@ msgstr "Not reached"
 msgid "Nothing borrowed yet"
 msgstr "Nothing borrowed yet"
 
-#: src/modules/credit-delegation/lists/YourLoanApplicationsList/YourLoanApplicationsList.tsx
+#: src/modules/credit-delegation/lists/YourCreditLinesList/YourCreditLinesList.tsx
 msgid "Nothing requested yet"
 msgstr "Nothing requested yet"
 
@@ -1577,13 +1577,10 @@ msgstr "Price impact is the spread between the total value of the entry tokens s
 msgid "Price impact {0}%"
 msgstr "Price impact {0}%"
 
+#: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
 #: src/modules/credit-delegation/modals/RepayLoan/RepayLoanModalContent.tsx
 msgid "Principal"
 msgstr "Principal"
-
-#: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
-msgid "Principal debt"
-msgstr "Principal debt"
 
 #: pages/governance/proposal/[proposalId].governance.tsx
 msgid "Proposal details"
@@ -1674,6 +1671,10 @@ msgstr "Reload"
 msgid "Reload the page"
 msgstr "Reload the page"
 
+#: src/modules/credit-delegation/lists/YourLoansList/ListRepaidColumn.tsx
+msgid "Remaining"
+msgstr "Remaining"
+
 #: src/components/transactions/Repay/RepayModalContent.tsx
 msgid "Remaining debt"
 msgstr "Remaining debt"
@@ -1687,6 +1688,7 @@ msgid "Remaining supply"
 msgstr "Remaining supply"
 
 #: src/components/transactions/Repay/CollateralRepayModalContent.tsx
+#: src/modules/credit-delegation/lists/YourLoansList/ListRepaidColumn.tsx
 msgid "Repaid"
 msgstr "Repaid"
 
@@ -1724,7 +1726,7 @@ msgstr "Repaying loan {repayType}..."
 msgid "Repaying {symbol}"
 msgstr "Repaying {symbol}"
 
-#: src/modules/credit-delegation/lists/YourLoanApplicationsList/LoanApplicationListItem.tsx
+#: src/modules/credit-delegation/lists/YourCreditLinesList/LoanApplicationListItem.tsx
 msgid "Request"
 msgstr "Request"
 
@@ -1732,6 +1734,7 @@ msgstr "Request"
 msgid "Request loan"
 msgstr "Request loan"
 
+#: src/modules/credit-delegation/lists/YourLoansList/ListRepaidColumn.tsx
 #: src/modules/credit-delegation/modals/RequestLoan/RequestLoanModalContent.tsx
 msgid "Requested"
 msgstr "Requested"
@@ -1992,7 +1995,7 @@ msgstr "Started"
 msgid "State"
 msgstr "State"
 
-#: src/modules/credit-delegation/lists/YourLoanApplicationsList/YourLoanApplicationsList.tsx
+#: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
 msgid "Status"
 msgstr "Status"
 
@@ -2291,9 +2294,9 @@ msgstr "This is the total amount that you are able to supply to in this reserve.
 msgid "This represents the threshold at which a borrow position will be considered undercollateralized and subject to liquidation for each collateral. For example, if a collateral has a liquidation threshold of 80%, it means that the position will be liquidated when the debt value is worth 80% of the collateral value."
 msgstr "This represents the threshold at which a borrow position will be considered undercollateralized and subject to liquidation for each collateral. For example, if a collateral has a liquidation threshold of 80%, it means that the position will be liquidated when the debt value is worth 80% of the collateral value."
 
-#: src/modules/credit-delegation/modals/ManageLoanRequest/ManageLoanModalContent.tsx
-msgid "This transaction will modify the requested loan amount."
-msgstr "This transaction will modify the requested loan amount."
+#: src/modules/credit-delegation/modals/ManageCreditLine/ManageCreditLineModalContent.tsx
+msgid "This transaction will modify the credit line."
+msgstr "This transaction will modify the credit line."
 
 #: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationModalContent.tsx
 msgid "This transaction will use credit delegation to deposit into the pool <0>({0})</0> and in exchange you will receive pool tokens."
@@ -2728,6 +2731,10 @@ msgstr "Your average APY"
 msgid "Your borrows"
 msgstr "Your borrows"
 
+#: src/modules/credit-delegation/lists/YourCreditLinesList/YourCreditLinesList.tsx
+msgid "Your credit lines"
+msgstr "Your credit lines"
+
 #: src/modules/dashboard/LiquidationRiskParametresModal/LiquidationRiskParametresModal.tsx
 msgid "Your current loan to value based on your collateral supplied."
 msgstr "Your current loan to value based on your collateral supplied."
@@ -2754,11 +2761,7 @@ msgstr "Your lending capacity"
 msgid "Your lending positiond (payouts made)"
 msgstr "Your lending positiond (payouts made)"
 
-#: src/modules/credit-delegation/lists/YourLoanApplicationsList/YourLoanApplicationsList.tsx
-msgid "Your loan applications"
-msgstr "Your loan applications"
-
-#: src/modules/credit-delegation/lists/YourLoanApplicationsList/YourLoanApplicationsList.tsx
+#: src/modules/credit-delegation/lists/YourCreditLinesList/YourCreditLinesList.tsx
 msgid "Your loan requests"
 msgstr "Your loan requests"
 
@@ -2836,6 +2839,7 @@ msgid "ends"
 msgstr "ends"
 
 #: src/components/caps/DebtCeilingStatus.tsx
+#: src/modules/credit-delegation/lists/YourLoansList/ListRepaidColumn.tsx
 #: src/modules/reserve-overview/BorrowInfo.tsx
 #: src/modules/reserve-overview/BorrowInfo.tsx
 #: src/modules/reserve-overview/SupplyInfo.tsx
@@ -2951,6 +2955,10 @@ msgstr "{networkName} Faucet"
 #: src/modules/migration/MigrationMobileList.tsx
 msgid "{numSelected}/{numAvailable} assets selected"
 msgstr "{numSelected}/{numAvailable} assets selected"
+
+#: src/modules/credit-delegation/lists/YourLoansList/LoanListItem.tsx
+msgid "{status}"
+msgstr "{status}"
 
 #: src/components/NoSearchResults.tsx
 msgid "{subtitle}"

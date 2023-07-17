@@ -55,9 +55,9 @@ export interface AtomicaSubgraphPolicy {
   };
 }
 
-export enum LoanApplicationStatus {
-  Available = 0,
-  Requested = 1,
+export enum LoanStatus {
+  Pending = 'Pending',
+  Active = 'Active',
 }
 
 export interface AtomicaSubgraphLoanRequest {
@@ -68,7 +68,6 @@ export interface AtomicaSubgraphLoanRequest {
   minAmount: string;
   approvedAmount: string;
   filledAmount: string;
-  loanId: string | null;
   maxPremiumRatePerSec: string;
   receiveOnApprove: boolean;
 }
@@ -93,7 +92,6 @@ export interface AtomicaSubgraphLoanChunk {
   poolId: string;
   rate: string;
   repaidAmount: string;
-  chunkIndex: number;
   borrowedAmount: string;
 }
 
@@ -103,7 +101,6 @@ export interface AtomicaSubgraphPoolLoanChunk {
   poolId: string;
   rate: string;
   repaidAmount: string;
-  chunkIndex: number;
   borrowedAmount: string;
   loan?: AtomicaSubgraphLoan;
   policy?: AtomicaSubgraphPolicy;
@@ -201,6 +198,11 @@ export interface AtomicaLoan {
   asset?: TokenMetadataType;
   chunks: AtomicaSubgraphLoanChunk[];
   market?: AtomicaBorrowMarket;
+  interestCharged: string;
+  interestChargedUsd: string;
+  interestRepaid: string;
+  interestRepaidUsd: string;
+  status: LoanStatus;
 }
 
 export interface AtomicaLendingPosition {
@@ -209,7 +211,6 @@ export interface AtomicaLendingPosition {
   poolId: string;
   rate: string;
   repaidAmount: string;
-  chunkIndex: number;
   borrowedAmount: string;
   borrowedAmountUsd: string;
   apr: number;
@@ -233,22 +234,14 @@ export interface LoanRequest {
   usdRate: string;
 }
 
-export interface PoliciesAndLoanRequest {
+export interface CreditLine {
   id: string;
   policyId: string;
   amount: string;
   amountUsd: string;
   marketId: string;
-  status: LoanApplicationStatus;
   market?: AtomicaBorrowMarket;
   asset?: TokenMetadataType;
-  loanRequestId?: string;
-  signedAgreement?: string;
-  minAmount?: string;
-  approvedAmount?: string;
-  filledAmount?: string;
-  maxPremiumRatePerSec?: string;
-  receiveOnApprove?: boolean;
   symbol: string;
   title: string;
   usdRate: string;

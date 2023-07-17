@@ -419,7 +419,7 @@ export const usePoolsAndMarkets = () => {
   const {
     loading: loansLoading,
     loans,
-    loanRequests,
+    creditLines,
     refetchLoans,
   } = useUserLoans(data?.myPolicies, markets);
 
@@ -450,7 +450,7 @@ export const usePoolsAndMarkets = () => {
     fetchBorrowAllowance,
     fetchAllBorrowAllowances,
     refetchVaults,
-    loanRequests,
+    creditLines,
     refetchLoans,
     refetchAll,
   };

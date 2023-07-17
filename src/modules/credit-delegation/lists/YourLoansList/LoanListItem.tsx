@@ -5,11 +5,11 @@ import { ListColumn } from 'src/components/lists/ListColumn';
 import { Link } from 'src/components/primitives/Link';
 import { useModalContext } from 'src/hooks/useModal';
 
-import { AtomicaLoan } from '../../types';
+import { AtomicaLoan, LoanStatus } from '../../types';
 import { ListAPRColumn } from '../ListAPRColumn';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListItemWrapper } from '../ListItemWrapper';
-import { ListValueColumn } from '../ListValueColumn';
+import { ListRepaidColumn } from './ListRepaidColumn';
 
 export const LoanListItem = (loan: AtomicaLoan) => {
   const { openRepayLoan } = useModalContext();
@@ -22,6 +22,13 @@ export const LoanListItem = (loan: AtomicaLoan) => {
     requiredRepayAmount,
     requiredRepayAmountUsd,
     data,
+    interestCharged,
+    interestChargedUsd,
+    interestRepaid,
+    interestRepaidUsd,
+    repaidAmount,
+    repaidAmountUsd,
+    status,
   } = loan;
 
   return (
@@ -33,47 +40,69 @@ export const LoanListItem = (loan: AtomicaLoan) => {
       <ListColumn>
         {market?.product.title}: {market?.title}
       </ListColumn>
-      <ListValueColumn
-        symbol={asset?.symbol}
-        value={Number(borrowedAmount)}
-        subValue={Number(borrowedAmountUsd)}
-        disabled={Number(borrowedAmount) === 0}
-        withTooltip
+      <ListRepaidColumn
+        remaining={Number(borrowedAmount)}
+        repaid={Number(repaidAmount)}
+        original={Number(requiredRepayAmount)}
+        remainingUsd={borrowedAmountUsd}
+        repaidUsd={repaidAmountUsd}
+        originalUsd={requiredRepayAmountUsd}
+        status={status}
       />
 
       <ListAPRColumn symbol={asset?.symbol ?? 'unknown'} value={apr} />
 
-      <ListValueColumn
-        symbol={asset?.symbol}
-        value={Number(requiredRepayAmount)}
-        subValue={Number(requiredRepayAmountUsd)}
-        disabled={Number(requiredRepayAmount) === 0}
-        withTooltip
-      />
+      {status === LoanStatus.Active ? (
+        <ListRepaidColumn
+          original={Number(interestCharged)}
+          originalUsd={interestChargedUsd}
+          remaining={Number(interestCharged) - Number(interestRepaid)}
+          remainingUsd={(Number(interestChargedUsd) - Number(interestRepaidUsd)).toString()}
+          repaid={Number(interestRepaid)}
+          repaidUsd={interestRepaidUsd}
+          status={status}
+        />
+      ) : (
+        <ListColumn>0</ListColumn>
+      )}
 
       <ListColumn>
-        <Button
-          endIcon={
-            <SvgIcon sx={{ width: 14, height: 14 }}>
-              <ExternalLinkIcon />
-            </SvgIcon>
-          }
-          component={Link}
-          href={`https://ipfs.io/ipfs/${data}`}
-          variant="outlined"
-          size="small"
-          disabled={!data}
-        >
-          <Typography variant="buttonS">
-            <Trans>open agreement</Trans>
-          </Typography>
-        </Button>
+        <Typography color={status === LoanStatus.Active ? 'success.main' : 'warning.main'}>
+          <Trans>{status}</Trans>
+        </Typography>
+      </ListColumn>
+
+      <ListColumn>
+        {status === LoanStatus.Active ? (
+          <Button
+            endIcon={
+              <SvgIcon sx={{ width: 14, height: 14 }}>
+                <ExternalLinkIcon />
+              </SvgIcon>
+            }
+            component={Link}
+            href={`https://ipfs.io/ipfs/${data}`}
+            variant="outlined"
+            size="small"
+            disabled={!data}
+          >
+            <Typography variant="buttonS">
+              <Trans>open agreement</Trans>
+            </Typography>
+          </Button>
+        ) : (
+          ''
+        )}
       </ListColumn>
 
       <ListButtonsColumn>
-        <Button variant="contained" onClick={() => openRepayLoan(loan)}>
-          <Trans>Repay</Trans>
-        </Button>
+        {status === LoanStatus.Active ? (
+          <Button variant="contained" onClick={() => openRepayLoan(loan)}>
+            <Trans>Repay</Trans>
+          </Button>
+        ) : (
+          ''
+        )}
       </ListButtonsColumn>
     </ListItemWrapper>
   );

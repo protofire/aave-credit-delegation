@@ -17,7 +17,7 @@ import {
   AtomicaLendingPosition,
   AtomicaLoan,
   AtomicaSubgraphPolicy,
-  PoliciesAndLoanRequest,
+  CreditLine,
 } from './types';
 
 export interface CreditDelgationData {
@@ -32,7 +32,7 @@ export interface CreditDelgationData {
   lendingPositions: AtomicaLendingPosition[];
   loadingLendingPositions: boolean;
   myPolicies: AtomicaSubgraphPolicy[];
-  loanRequests: PoliciesAndLoanRequest[];
+  creditLines: CreditLine[];
   fetchAllBorrowAllowances: (forceApprovalCheck?: boolean | undefined) => Promise<void>;
   fetchBorrowAllowance: (poolId: string, forceApprovalCheck?: boolean | undefined) => Promise<void>;
   refetchVaults: (blockNumber?: number) => Promise<unknown>;
@@ -59,7 +59,7 @@ export const CreditDelegationContext = createContext({
   lendingPositions: [],
   loadingLendingPositions: true,
   myPolicies: [],
-  loanRequests: [],
+  creditLines: [],
   refetchVaults: () => Promise.reject(),
   fetchAllBorrowAllowances: () => Promise.reject(),
   fetchBorrowAllowance: () => Promise.reject(),
@@ -87,7 +87,7 @@ const CreditDelegationDataProvider = ({
     fetchBorrowAllowance,
     refetchVaults,
     myPolicies,
-    loanRequests,
+    creditLines,
     refetchLoans,
     refetchAll,
   } = usePoolsAndMarkets();
@@ -198,7 +198,16 @@ const CreditDelegationDataProvider = ({
 
       throw new Error('Pool not found');
     },
-    [account, chainId, getProvider, getUserDebtTokenNonce, getVaultAddress, pools, signTxData]
+    [
+      account,
+      chainId,
+      getProvider,
+      getUserDebtTokenNonce,
+      getVaultAddress,
+      pools,
+      signTxData,
+      generateDelegationSignatureRequest,
+    ]
   );
 
   return (
@@ -219,7 +228,7 @@ const CreditDelegationDataProvider = ({
         fetchBorrowAllowance,
         generateDeployVault,
         myPolicies,
-        loanRequests,
+        creditLines,
         refetchLoans,
         refetchAll,
       }}

@@ -2,7 +2,7 @@ import { USD_DECIMALS, valueToBigNumber } from '@aave/math-utils';
 import { Trans } from '@lingui/macro';
 import { Box, Typography } from '@mui/material';
 import BigNumber from 'bignumber.js';
-import { memo, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { Row } from 'src/components/primitives/Row';
 import { StyledTxModalToggleButton } from 'src/components/StyledToggleButton';
 import { StyledTxModalToggleGroup } from 'src/components/StyledToggleButtonGroup';
@@ -87,7 +87,7 @@ export const RepayLoanModalContent = memo(
     id,
     poolReserve,
   }: RepayLoanModalContentProps) => {
-    const { mainTxState: supplyTxState, gasLimit, txError } = useModalContext();
+    const { mainTxState: supplyTxState, gasLimit, txError, setTxError } = useModalContext();
     const { walletBalances } = useWalletBalances();
     const { marketReferencePriceInUsd } = useAppDataContext();
 
@@ -130,9 +130,18 @@ export const RepayLoanModalContent = memo(
       repayType,
     };
 
+    const handleTabSwitch = useCallback(
+      (value: RepayType) => {
+        setRepayType(value);
+        setAmount('');
+        setTxError(undefined);
+      },
+      [setRepayType, setAmount]
+    );
+
     return (
       <>
-        <RepayTypeSwitch setRepayType={setRepayType} repayType={repayType} />
+        <RepayTypeSwitch setRepayType={handleTabSwitch} repayType={repayType} />
         <Box sx={{ pt: 5 }}>
           <AssetInput
             value={amount}
