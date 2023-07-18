@@ -6,7 +6,7 @@ import { LiquidationPenaltyTooltip } from 'src/components/infoTooltips/Liquidati
 import { LiquidationThresholdTooltip } from 'src/components/infoTooltips/LiquidationThresholdTooltip';
 import { MaxLTVTooltip } from 'src/components/infoTooltips/MaxLTVTooltip';
 import { FormattedNumber } from 'src/components/primitives/FormattedNumber';
-import { Link, ROUTES } from 'src/components/primitives/Link';
+import { Link } from 'src/components/primitives/Link';
 import { Warning } from 'src/components/primitives/Warning';
 import { ReserveOverviewBox } from 'src/components/ReserveOverviewBox';
 import { getEmodeMessage } from 'src/components/transactions/Emode/EmodeNaming';
@@ -186,41 +186,6 @@ export const ReserveConfiguration: React.FC<ReserveConfigurationProps> = ({ rese
                   />
                 </ReserveOverviewBox>
               </Box>
-              <Typography variant="caption" color="text.secondary" paddingTop="24px">
-                <Trans>
-                  E-Mode increases your LTV for a selected category of assets, meaning that when
-                  E-mode is enabled, you will have higher borrowing power over assets of the same
-                  E-mode category which are defined by Aave Governance. You can enter E-Mode from
-                  your{' '}
-                  <Link
-                    href={ROUTES.dashboard}
-                    sx={{ textDecoration: 'underline' }}
-                    variant="caption"
-                    color="text.secondary"
-                  >
-                    Dashboard
-                  </Link>
-                  . To learn more about E-Mode and applied restrictions in{' '}
-                  <Link
-                    href="https://docs.aave.com/faq/aave-v3-features#high-efficiency-mode-e-mode"
-                    sx={{ textDecoration: 'underline' }}
-                    variant="caption"
-                    color="text.secondary"
-                  >
-                    FAQ
-                  </Link>{' '}
-                  or{' '}
-                  <Link
-                    href="https://github.com/aave/aave-v3-core/blob/master/techpaper/Aave_V3_Technical_Paper.pdf"
-                    sx={{ textDecoration: 'underline' }}
-                    variant="caption"
-                    color="text.secondary"
-                  >
-                    Aave V3 Technical Paper
-                  </Link>
-                  .
-                </Trans>
-              </Typography>
             </Box>
           </PanelRow>
         </>

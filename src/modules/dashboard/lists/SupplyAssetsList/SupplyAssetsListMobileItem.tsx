@@ -7,7 +7,6 @@ import { DashboardReserve } from 'src/utils/dashboardSortUtils';
 import { CapsHint } from '../../../../components/caps/CapsHint';
 import { CapType } from '../../../../components/caps/helper';
 import { IncentivesCard } from '../../../../components/incentives/IncentivesCard';
-import { Link, ROUTES } from '../../../../components/primitives/Link';
 import { Row } from '../../../../components/primitives/Row';
 import { useModalContext } from '../../../../hooks/useModal';
 import { ListItemCanBeCollateral } from '../ListItemCanBeCollateral';
@@ -29,7 +28,6 @@ export const SupplyAssetsListMobileItem = ({
   isActive,
   isFreezed,
   underlyingAsset,
-  detailsAddress,
 }: DashboardReserve) => {
   const { currentMarket } = useProtocolDataContext();
   const { openSupply } = useModalContext();
@@ -97,14 +95,6 @@ export const SupplyAssetsListMobileItem = ({
           fullWidth
         >
           <Trans>Supply</Trans>
-        </Button>
-        <Button
-          variant="outlined"
-          component={Link}
-          href={ROUTES.reserveOverview(detailsAddress, currentMarket)}
-          fullWidth
-        >
-          <Trans>Details</Trans>
         </Button>
       </Box>
     </ListMobileItemWrapper>

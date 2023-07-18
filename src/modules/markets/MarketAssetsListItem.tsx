@@ -1,30 +1,22 @@
-import { Trans } from '@lingui/macro';
-import { Box, Button, Typography } from '@mui/material';
-import { useRouter } from 'next/router';
+import { Box, Typography } from '@mui/material';
 import { BUSDOffBoardingTooltip } from 'src/components/infoTooltips/BUSDOffboardingToolTip';
 import { RenFILToolTip } from 'src/components/infoTooltips/RenFILToolTip';
 import { NoData } from 'src/components/primitives/NoData';
 import { ReserveSubheader } from 'src/components/ReserveSubheader';
-import { useProtocolDataContext } from 'src/hooks/useProtocolDataContext';
 
 import { IncentivesCard } from '../../components/incentives/IncentivesCard';
 import { AMPLToolTip } from '../../components/infoTooltips/AMPLToolTip';
 import { ListColumn } from '../../components/lists/ListColumn';
 import { ListItem } from '../../components/lists/ListItem';
 import { FormattedNumber } from '../../components/primitives/FormattedNumber';
-import { Link, ROUTES } from '../../components/primitives/Link';
 import { TokenIcon } from '../../components/primitives/TokenIcon';
 import { ComputedReserveData } from '../../hooks/app-data-provider/useAppDataProvider';
 
 export const MarketAssetsListItem = ({ ...reserve }: ComputedReserveData) => {
-  const router = useRouter();
-  const { currentMarket } = useProtocolDataContext();
-
   return (
     <ListItem
       px={6}
       minHeight={76}
-      onClick={() => router.push(ROUTES.reserveOverview(reserve.underlyingAsset, currentMarket))}
       sx={{ cursor: 'pointer' }}
       button
       data-cy={`marketListItemListItem_${reserve.symbol.toUpperCase()}`}
@@ -102,15 +94,7 @@ export const MarketAssetsListItem = ({ ...reserve }: ComputedReserveData) => {
         )}
       </ListColumn>
 
-      <ListColumn maxWidth={95} minWidth={95} align="right">
-        <Button
-          variant="outlined"
-          component={Link}
-          href={ROUTES.reserveOverview(reserve.underlyingAsset, currentMarket)}
-        >
-          <Trans>Details</Trans>
-        </Button>
-      </ListColumn>
+      <ListColumn maxWidth={95} minWidth={95} align="right" />
     </ListItem>
   );
 };

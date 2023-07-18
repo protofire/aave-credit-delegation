@@ -1,5 +1,5 @@
 import { Trans } from '@lingui/macro';
-import { Box, Button, Divider } from '@mui/material';
+import { Box, Divider } from '@mui/material';
 import { StableAPYTooltip } from 'src/components/infoTooltips/StableAPYTooltip';
 import { VariableAPYTooltip } from 'src/components/infoTooltips/VariableAPYTooltip';
 import { NoData } from 'src/components/primitives/NoData';
@@ -8,7 +8,6 @@ import { useProtocolDataContext } from 'src/hooks/useProtocolDataContext';
 
 import { IncentivesCard } from '../../components/incentives/IncentivesCard';
 import { FormattedNumber } from '../../components/primitives/FormattedNumber';
-import { Link, ROUTES } from '../../components/primitives/Link';
 import { Row } from '../../components/primitives/Row';
 import { ComputedReserveData } from '../../hooks/app-data-provider/useAppDataProvider';
 import { ListMobileItemWrapper } from '../dashboard/lists/ListMobileItemWrapper';
@@ -124,15 +123,6 @@ export const MarketAssetsListMobileItem = ({ ...reserve }: ComputedReserveData) 
             !reserve.isFrozen && <ReserveSubheader value={'Disabled'} />}
         </Box>
       </Row>
-
-      <Button
-        variant="outlined"
-        component={Link}
-        href={ROUTES.reserveOverview(reserve.underlyingAsset, currentMarket)}
-        fullWidth
-      >
-        <Trans>View details</Trans>
-      </Button>
     </ListMobileItemWrapper>
   );
 };

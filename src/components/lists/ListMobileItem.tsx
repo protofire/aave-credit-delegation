@@ -1,10 +1,6 @@
-import { Box, Divider, Skeleton, Typography } from '@mui/material';
+import { Box, Divider, Skeleton } from '@mui/material';
 import { ReactNode } from 'react';
-import { useAssetCaps } from 'src/hooks/useAssetCaps';
 import { CustomMarket } from 'src/ui-config/marketsConfig';
-
-import { Link, ROUTES } from '../primitives/Link';
-import { TokenIcon } from '../primitives/TokenIcon';
 
 interface ListMobileItemProps {
   warningComponent?: ReactNode;
@@ -20,21 +16,7 @@ interface ListMobileItemProps {
   showDebtCeilingTooltips?: boolean;
 }
 
-export const ListMobileItem = ({
-  children,
-  warningComponent,
-  symbol,
-  iconSymbol,
-  name,
-  underlyingAsset,
-  loading,
-  currentMarket,
-  showSupplyCapTooltips = false,
-  showBorrowCapTooltips = false,
-  showDebtCeilingTooltips = false,
-}: ListMobileItemProps) => {
-  const { supplyCap, borrowCap, debtCeiling } = useAssetCaps();
-
+export const ListMobileItem = ({ children, warningComponent, loading }: ListMobileItemProps) => {
   return (
     <Box>
       <Divider />
@@ -47,29 +29,7 @@ export const ListMobileItem = ({
                 <Skeleton width={100} height={24} />
               </Box>
             </Box>
-          ) : (
-            symbol &&
-            underlyingAsset &&
-            name &&
-            currentMarket &&
-            iconSymbol && (
-              <Link
-                href={ROUTES.reserveOverview(underlyingAsset, currentMarket)}
-                sx={{ display: 'inline-flex', alignItems: 'center' }}
-              >
-                <TokenIcon symbol={iconSymbol} sx={{ fontSize: '40px' }} />
-                <Box sx={{ ml: 2 }}>
-                  <Typography variant="h4">{name}</Typography>
-                  <Typography variant="subheader2" color="text.muted">
-                    {symbol}
-                  </Typography>
-                </Box>
-                {showSupplyCapTooltips && supplyCap.displayMaxedTooltip({ supplyCap })}
-                {showBorrowCapTooltips && borrowCap.displayMaxedTooltip({ borrowCap })}
-                {showDebtCeilingTooltips && debtCeiling.displayMaxedTooltip({ debtCeiling })}
-              </Link>
-            )
-          )}
+          ) : null}
           {warningComponent}
         </Box>
         {children}

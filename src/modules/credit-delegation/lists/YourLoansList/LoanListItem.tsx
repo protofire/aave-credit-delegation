@@ -41,12 +41,12 @@ export const LoanListItem = (loan: AtomicaLoan) => {
         {market?.product.title}: {market?.title}
       </ListColumn>
       <ListRepaidColumn
-        remaining={Number(borrowedAmount)}
+        remaining={Number(requiredRepayAmount)}
         repaid={Number(repaidAmount)}
-        original={Number(requiredRepayAmount)}
-        remainingUsd={borrowedAmountUsd}
+        original={Number(borrowedAmount)}
+        remainingUsd={requiredRepayAmountUsd}
         repaidUsd={repaidAmountUsd}
-        originalUsd={requiredRepayAmountUsd}
+        originalUsd={borrowedAmountUsd}
         status={status}
       />
 
@@ -97,7 +97,11 @@ export const LoanListItem = (loan: AtomicaLoan) => {
 
       <ListButtonsColumn>
         {status === LoanStatus.Active ? (
-          <Button variant="contained" onClick={() => openRepayLoan(loan)}>
+          <Button
+            variant="contained"
+            onClick={() => openRepayLoan(loan)}
+            disabled={Number(requiredRepayAmount) === 0}
+          >
             <Trans>Repay</Trans>
           </Button>
         ) : (

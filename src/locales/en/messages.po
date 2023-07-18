@@ -473,18 +473,6 @@ msgstr "Borrowing is disabled due to an Aave community decision. <0>More details
 msgid "Borrowing is not enabled"
 msgstr "Borrowing is not enabled"
 
-#: src/hooks/useReserveActionState.tsx
-msgid "Borrowing is unavailable because you’re using Isolation mode. To manage Isolation mode visit your <0>Dashboard</0>."
-msgstr "Borrowing is unavailable because you’re using Isolation mode. To manage Isolation mode visit your <0>Dashboard</0>."
-
-#: src/hooks/useReserveActionState.tsx
-msgid "Borrowing is unavailable because you’ve enabled Efficiency Mode (E-Mode) and Isolation mode. To manage E-Mode and Isolation mode visit your <0>Dashboard</0>."
-msgstr "Borrowing is unavailable because you’ve enabled Efficiency Mode (E-Mode) and Isolation mode. To manage E-Mode and Isolation mode visit your <0>Dashboard</0>."
-
-#: src/hooks/useReserveActionState.tsx
-msgid "Borrowing is unavailable because you’ve enabled Efficiency Mode (E-Mode) for {0} category. To manage E-Mode categories visit your <0>Dashboard</0>."
-msgstr "Borrowing is unavailable because you’ve enabled Efficiency Mode (E-Mode) for {0} category. To manage E-Mode categories visit your <0>Dashboard</0>."
-
 #: src/modules/reserve-overview/BorrowInfo.tsx
 msgid "Borrowing of this asset is limited to a certain amount to minimize liquidity pool insolvency."
 msgstr "Borrowing of this asset is limited to a certain amount to minimize liquidity pool insolvency."
@@ -504,10 +492,6 @@ msgstr "Borrowing {symbol}"
 #: src/components/transactions/GovDelegation/DelegationTypeSelector.tsx
 msgid "Both"
 msgstr "Both"
-
-#: src/ui-config/menu-items/index.tsx
-msgid "Buy Crypto With Fiat"
-msgstr "Buy Crypto With Fiat"
 
 #: src/modules/staking/BuyWithFiatModal.tsx
 msgid "Buy Crypto with Fiat"
@@ -721,7 +705,6 @@ msgstr "Dark mode"
 
 #: src/modules/credit-delegation/CreditDelegationTopPanel.tsx
 #: src/modules/dashboard/DashboardTopPanel.tsx
-#: src/ui-config/menu-items/index.tsx
 msgid "Dashboard"
 msgstr "Dashboard"
 
@@ -753,18 +736,6 @@ msgstr "Debt to pay"
 #: src/modules/governance/DelegatedInfoPanel.tsx
 msgid "Delegated power"
 msgstr "Delegated power"
-
-#: src/modules/dashboard/lists/BorrowAssetsList/BorrowAssetsListItem.tsx
-#: src/modules/dashboard/lists/BorrowAssetsList/BorrowAssetsListMobileItem.tsx
-#: src/modules/dashboard/lists/SupplyAssetsList/SupplyAssetsListItem.tsx
-#: src/modules/dashboard/lists/SupplyAssetsList/SupplyAssetsListMobileItem.tsx
-#: src/modules/markets/MarketAssetsListItem.tsx
-msgid "Details"
-msgstr "Details"
-
-#: src/ui-config/menu-items/index.tsx
-msgid "Developers"
-msgstr "Developers"
 
 #: pages/governance/proposal/[proposalId].governance.tsx
 #: src/modules/governance/ProposalListItem.tsx
@@ -801,10 +772,6 @@ msgstr "Disabling this asset as collateral affects your borrowing power and Heal
 msgid "Disconnect Wallet"
 msgstr "Disconnect Wallet"
 
-#: src/ui-config/menu-items/index.tsx
-msgid "Discord"
-msgstr "Discord"
-
 #: pages/500.page.tsx
 msgid "Discord channel"
 msgstr "Discord channel"
@@ -836,10 +803,6 @@ msgstr "E-Mode increases your LTV for a selected category of assets up to 97%. <
 #: src/components/infoTooltips/EModeTooltip.tsx
 msgid "E-Mode increases your LTV for a selected category of assets up to<0/>. <1>Learn more</1>"
 msgstr "E-Mode increases your LTV for a selected category of assets up to<0/>. <1>Learn more</1>"
-
-#: src/modules/reserve-overview/ReserveConfiguration.tsx
-msgid "E-Mode increases your LTV for a selected category of assets, meaning that when E-mode is enabled, you will have higher borrowing power over assets of the same E-mode category which are defined by Aave Governance. You can enter E-Mode from your <0>Dashboard</0>. To learn more about E-Mode and applied restrictions in <1>FAQ</1> or <2>Aave V3 Technical Paper</2>."
-msgstr "E-Mode increases your LTV for a selected category of assets, meaning that when E-mode is enabled, you will have higher borrowing power over assets of the same E-mode category which are defined by Aave Governance. You can enter E-Mode from your <0>Dashboard</0>. To learn more about E-Mode and applied restrictions in <1>FAQ</1> or <2>Aave V3 Technical Paper</2>."
 
 #: src/modules/dashboard/DashboardEModeButton.tsx
 msgid "Efficiency mode (E-Mode)"
@@ -911,10 +874,6 @@ msgstr "Expected amount to repay"
 msgid "Expires"
 msgstr "Expires"
 
-#: src/ui-config/menu-items/index.tsx
-msgid "FAQ"
-msgstr "FAQ"
-
 #: src/modules/governance/proposal/VotersListContainer.tsx
 msgid "Failed to load proposal voters. Please refresh the page."
 msgstr "Failed to load proposal voters. Please refresh the page."
@@ -972,17 +931,10 @@ msgstr "Funds in the Safety Module"
 msgid "Get ABP Token"
 msgstr "Get ABP Token"
 
-#: src/ui-config/menu-items/index.tsx
-msgid "Github"
-msgstr "Github"
-
-#: src/layouts/MobileMenu.tsx
 #: src/layouts/SettingsMenu.tsx
 msgid "Global settings"
 msgstr "Global settings"
 
-#: src/modules/governance/proposal/ProposalTopPanel.tsx
-#: src/modules/migration/MigrationTopPanel.tsx
 #: src/modules/reserve-overview/ReserveTopDetails.tsx
 msgid "Go Back"
 msgstr "Go Back"
@@ -994,10 +946,6 @@ msgstr "Go to Balancer Pool"
 #: src/components/transactions/MigrateV3/MigrateV3ModalContent.tsx
 msgid "Go to V3 Dashboard"
 msgstr "Go to V3 Dashboard"
-
-#: src/ui-config/menu-items/index.tsx
-msgid "Governance"
-msgstr "Governance"
 
 #: src/layouts/components/LanguageSwitcher.tsx
 msgid "Greek"
@@ -1160,6 +1108,7 @@ msgid "Learn more."
 msgstr "Learn more."
 
 #: pages/credit-delegation.page.tsx
+#: pages/index.page.tsx
 #: src/modules/credit-delegation/lists/PoolsList/PoolListItem.tsx
 msgid "Lend"
 msgstr "Lend"
@@ -1179,10 +1128,6 @@ msgstr "Lending Capacity"
 #: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationModalContent.tsx
 msgid "Lent"
 msgstr "Lent"
-
-#: src/layouts/MobileMenu.tsx
-msgid "Links"
-msgstr "Links"
 
 #: src/modules/dashboard/LiquidationRiskParametresModal/components/LTVContent.tsx
 msgid "Liquidation <0/> threshold"
@@ -1258,7 +1203,6 @@ msgstr "Market"
 #: src/modules/credit-delegation/lists/MarketsList/MarketsList.tsx
 #: src/modules/credit-delegation/lists/MarketsList/MarketsList.tsx
 #: src/modules/markets/MarketsTopPanel.tsx
-#: src/ui-config/menu-items/index.tsx
 msgid "Markets"
 msgstr "Markets"
 
@@ -1298,25 +1242,10 @@ msgstr "Maximum amount available to supply is limited because protocol supply ca
 msgid "Maximum loan to value"
 msgstr "Maximum loan to value"
 
-#: src/layouts/MobileMenu.tsx
-msgid "Menu"
-msgstr "Menu"
-
 #: src/components/transactions/MigrateV3/MigrateV3Actions.tsx
 msgid "Migrate"
 msgstr "Migrate"
 
-#: src/components/TopInfoPanel/PageTitle.tsx
-msgid "Migrate to V3"
-msgstr "Migrate to V3"
-
-#: src/modules/credit-delegation/CreditDelegationTopPanel.tsx
-#: src/modules/dashboard/DashboardTopPanel.tsx
-msgid "Migrate to v3"
-msgstr "Migrate to v3"
-
-#: src/modules/credit-delegation/CreditDelegationTopPanel.tsx
-#: src/modules/dashboard/DashboardTopPanel.tsx
 #: src/modules/migration/MigrationTopPanel.tsx
 msgid "Migrate to {0} v3 Market"
 msgstr "Migrate to {0} v3 Market"
@@ -1344,10 +1273,6 @@ msgstr "Modify loan request"
 #: src/modules/credit-delegation/modals/ManageCreditLine/ManageCreditLineActions.tsx
 msgid "Modifying loan request..."
 msgstr "Modifying loan request..."
-
-#: src/layouts/MoreMenu.tsx
-msgid "More"
-msgstr "More"
 
 #: src/modules/governance/VoteBar.tsx
 msgid "NAY"
@@ -1791,11 +1716,6 @@ msgstr "Rewards APR"
 msgid "Risk details"
 msgstr "Risk details"
 
-#: src/modules/credit-delegation/lists/ListItemAPYButton.tsx
-#: src/modules/dashboard/lists/ListItemAPYButton.tsx
-msgid "SEE CHARTS"
-msgstr "SEE CHARTS"
-
 #: src/modules/dashboard/LiquidationRiskParametresModal/LiquidationRiskParametresModal.tsx
 msgid "Safety of your deposited collateral against the borrowed assets and its underlying value."
 msgstr "Safety of your deposited collateral against the borrowed assets and its underlying value."
@@ -1882,10 +1802,6 @@ msgstr "Signatures ready"
 msgid "Signing"
 msgstr "Signing"
 
-#: src/modules/reserve-overview/ReserveActions.tsx
-msgid "Since this asset is frozen, the only available actions are withdraw and repay which can be accessed from the <0>Dashboard</0>"
-msgstr "Since this asset is frozen, the only available actions are withdraw and repay which can be accessed from the <0>Dashboard</0>"
-
 #: src/modules/dashboard/lists/ListBottomText.tsx
 msgid "Since this is a test network, you can get any of the assets if you have ETH on your wallet"
 msgstr "Since this is a test network, you can get any of the assets if you have ETH on your wallet"
@@ -1893,10 +1809,6 @@ msgstr "Since this is a test network, you can get any of the assets if you have 
 #: src/components/infoTooltips/SlippageTooltip.tsx
 msgid "Slippage is the difference between the quoted and received amounts from changing market conditions between the moment the transaction is submitted and its verification."
 msgstr "Slippage is the difference between the quoted and received amounts from changing market conditions between the moment the transaction is submitted and its verification."
-
-#: src/modules/migration/MigrationList.tsx
-msgid "Some migrated assets will not be used as collateral due to enabled isolation mode in {marketName} V3 Market. Visit <0>{marketName} V3 Dashboard</0> to manage isolation mode."
-msgstr "Some migrated assets will not be used as collateral due to enabled isolation mode in {marketName} V3 Market. Visit <0>{marketName} V3 Dashboard</0> to manage isolation mode."
 
 #: pages/500.page.tsx
 #: src/modules/reserve-overview/graphs/ApyGraphContainer.tsx
@@ -1947,7 +1859,6 @@ msgstr "Stablecoin"
 #: src/components/transactions/Stake/StakeActions.tsx
 #: src/modules/staking/StakingPanel.tsx
 #: src/modules/staking/StakingPanel.tsx
-#: src/ui-config/menu-items/index.tsx
 msgid "Stake"
 msgstr "Stake"
 
@@ -2007,7 +1918,6 @@ msgstr "Supplied"
 msgid "Supplied asset amount"
 msgstr "Supplied asset amount"
 
-#: pages/index.page.tsx
 #: src/components/transactions/Supply/SupplyModal.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsListItem.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsListMobileItem.tsx
@@ -2053,10 +1963,6 @@ msgstr "Supply cap on target reserve reached. Try lowering the amount."
 #: src/components/transactions/Supply/SupplyActions.tsx
 msgid "Supply {symbol}"
 msgstr "Supply {symbol}"
-
-#: src/components/transactions/Warnings/AAVEWarning.tsx
-msgid "Supplying your"
-msgstr "Supplying your"
 
 #: src/components/transactions/Supply/SupplyActions.tsx
 msgid "Supplying {symbol}"
@@ -2525,10 +2431,6 @@ msgstr "View all votes"
 msgid "View contract"
 msgstr "View contract"
 
-#: src/modules/markets/MarketAssetsListMobileItem.tsx
-msgid "View details"
-msgstr "View details"
-
 #: src/layouts/WalletWidget.tsx
 msgid "View on Explorer"
 msgstr "View on Explorer"
@@ -2871,21 +2773,9 @@ msgstr "stETH supplied as collateral will continue to accrue staking rewards pro
 msgid "stETH tokens will be migrated to Wrapped stETH using Lido Protocol wrapper which leads to supply balance change after migration: {0}"
 msgstr "stETH tokens will be migrated to Wrapped stETH using Lido Protocol wrapper which leads to supply balance change after migration: {0}"
 
-#: src/components/transactions/Warnings/AAVEWarning.tsx
-msgid "staking view"
-msgstr "staking view"
-
 #: src/modules/governance/FormattedProposalTime.tsx
 msgid "starts"
 msgstr "starts"
-
-#: src/components/transactions/Warnings/AAVEWarning.tsx
-msgid "tokens is not the same as staking them. If you wish to stake your"
-msgstr "tokens is not the same as staking them. If you wish to stake your"
-
-#: src/components/transactions/Warnings/AAVEWarning.tsx
-msgid "tokens, please go to the"
-msgstr "tokens, please go to the"
 
 #: src/components/transactions/Faucet/CaptchaFaucetModalContent.tsx
 msgid "will receive"

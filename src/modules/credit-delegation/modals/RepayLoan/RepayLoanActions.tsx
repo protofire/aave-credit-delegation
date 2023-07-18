@@ -1,7 +1,6 @@
 import { ApproveType, ERC20Service, TokenMetadataType } from '@aave/contract-helpers';
 import { Trans } from '@lingui/macro';
 import { BoxProps } from '@mui/material';
-import { Contract } from 'ethers';
 import { parseUnits } from 'ethers/lib/utils';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { TxActionsWrapper } from 'src/components/transactions/TxActionsWrapper';
@@ -11,8 +10,7 @@ import { useProtocolDataContext } from 'src/hooks/useProtocolDataContext';
 import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
 import { getErrorTextFromError, TxAction } from 'src/ui-config/errorMapping';
 
-import RISK_POOL_CONTROLLER_ABI from '../../abi/RiskPoolController.json';
-import { RISK_POOL_CONTROLLER_ADDRESS } from '../../consts';
+import { useControllerAddress } from '../../hooks/useControllerAddress';
 import { RepayType } from './RepayLoanModalContent';
 
 interface RepayLoanActionProps extends BoxProps {
@@ -41,6 +39,7 @@ export const RepayLoanActions = memo(
 
     const [requiresApproval, setRequiresApproval] = useState<boolean>(false);
     const [approvedAmount, setApprovedAmount] = useState<ApproveType | undefined>();
+    const { contract: riskPoolController } = useControllerAddress();
 
     useEffect(() => {
       setGasLimit('40000');
@@ -48,18 +47,19 @@ export const RepayLoanActions = memo(
 
     const fetchApprovedAmount = useCallback(
       async (forceApprovalCheck?: boolean) => {
+        if (!riskPoolController) return;
         if (!approvedAmount || forceApprovalCheck) {
           setLoadingTxns(true);
           const erc20Service = new ERC20Service(jsonRpcProvider());
           const currentApprovedAmount = await erc20Service.approvedAmount({
-            spender: RISK_POOL_CONTROLLER_ADDRESS,
+            spender: riskPoolController?.address,
             token: asset?.address || '',
             user: currentAccount,
           });
 
           setApprovedAmount({
             amount: currentApprovedAmount.toString(),
-            spender: RISK_POOL_CONTROLLER_ADDRESS,
+            spender: riskPoolController?.address,
             user: currentAccount,
             token: asset?.address || '',
           });
@@ -94,11 +94,7 @@ export const RepayLoanActions = memo(
 
     const repayLoan = useCallback(async () => {
       try {
-        const riskPoolController = new Contract(
-          RISK_POOL_CONTROLLER_ADDRESS,
-          RISK_POOL_CONTROLLER_ABI,
-          provider?.getSigner()
-        );
+        if (!riskPoolController) return;
 
         const repayFunction =
           repayType === 'Interest'
@@ -142,12 +138,13 @@ export const RepayLoanActions = memo(
 
     const approval = async () => {
       try {
+        if (!riskPoolController) return;
         const erc20Service = new ERC20Service(jsonRpcProvider());
 
         const approveTxData = erc20Service.approveTxData({
           user: currentAccount,
           amount,
-          spender: RISK_POOL_CONTROLLER_ADDRESS,
+          spender: riskPoolController?.address,
           token: asset?.address || '',
         });
 

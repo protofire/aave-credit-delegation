@@ -9,7 +9,6 @@ import { DashboardReserve } from 'src/utils/dashboardSortUtils';
 import { CapsHint } from '../../../../components/caps/CapsHint';
 import { CapType } from '../../../../components/caps/helper';
 import { ListColumn } from '../../../../components/lists/ListColumn';
-import { Link, ROUTES } from '../../../../components/primitives/Link';
 import { ListAPRColumn } from '../ListAPRColumn';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListItemCanBeCollateral } from '../ListItemCanBeCollateral';
@@ -86,13 +85,6 @@ export const SupplyAssetsListItem = ({
           onClick={() => openSupply(underlyingAsset)}
         >
           <Trans>Supply</Trans>
-        </Button>
-        <Button
-          variant="outlined"
-          component={Link}
-          href={ROUTES.reserveOverview(detailsAddress, currentMarket)}
-        >
-          <Trans>Details</Trans>
         </Button>
       </ListButtonsColumn>
     </ListItemWrapper>

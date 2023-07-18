@@ -4,16 +4,13 @@ import { ArrowNarrowRightIcon, CheckIcon } from '@heroicons/react/solid';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import { Box, Button, SvgIcon, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { IncentivesCard } from 'src/components/incentives/IncentivesCard';
-import { MigrationDisabledTooltip } from 'src/components/infoTooltips/MigrationDisabledTooltip';
 import { IsolatedEnabledBadge } from 'src/components/isolationMode/IsolatedBadge';
 import { ListColumn } from 'src/components/lists/ListColumn';
 import { ListItem } from 'src/components/lists/ListItem';
 import { FormattedNumber } from 'src/components/primitives/FormattedNumber';
-import { ROUTES } from 'src/components/primitives/Link';
 import { NoData } from 'src/components/primitives/NoData';
 import { TokenIcon } from 'src/components/primitives/TokenIcon';
 import { ComputedUserReserveData } from 'src/hooks/app-data-provider/useAppDataProvider';
-import { useRootStore } from 'src/store/root';
 import { MigrationDisabled, V3Rates } from 'src/store/v3MigrationSelectors';
 
 import { MigrationListItemToggler } from './MigrationListItemToggler';
@@ -56,7 +53,6 @@ export const MigrationListItem = ({
   isSupplyList,
 }: MigrationListItemProps) => {
   const theme = useTheme();
-  const { currentMarket, currentMarketData } = useRootStore();
   const isMobile = useMediaQuery(theme.breakpoints.down(1125));
 
   const baseColor = disabled === undefined ? 'text.primary' : 'text.muted';
@@ -152,14 +148,6 @@ export const MigrationListItem = ({
             <Typography variant="subheader1" color={baseColor} noWrap sx={{ pr: 1 }}>
               {userReserve.reserve.symbol}
             </Typography>
-            {disabled !== undefined && (
-              <MigrationDisabledTooltip
-                dashboardLink={ROUTES.dashboard + '/?marketName=' + currentMarket + '_v3'}
-                marketName={currentMarketData.marketTitle}
-                warningType={disabled}
-                isolatedV3={!enteringIsolation}
-              />
-            )}
           </Box>
         </ListColumn>
 

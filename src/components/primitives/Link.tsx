@@ -4,7 +4,6 @@ import clsx from 'clsx';
 import NextLink, { LinkProps as NextLinkProps } from 'next/link';
 import { useRouter } from 'next/router';
 import * as React from 'react';
-import { CustomMarket } from 'src/ui-config/marketsConfig';
 
 // Add support for the sx prop for consistency with the other branches.
 const Anchor = styled('a')({});
@@ -114,15 +113,6 @@ export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(function Link
 });
 
 export const ROUTES = {
-  dashboard: '/',
-  markets: '/markets',
-  staking: '/staking',
-  creditDelegation: '/credit-delegation',
-  governance: '/governance',
+  creditDelegation: '/',
   faucet: '/faucet',
-  migrationTool: '/v3-migration',
-  prerenderedProposal: (proposalId: number) => `/governance/proposal/${proposalId}`,
-  dynamicRenderedProposal: (proposalId: number) => `/governance/proposal?proposalId=${proposalId}`,
-  reserveOverview: (underlyingAsset: string, marketName: CustomMarket) =>
-    `/reserve-overview/?underlyingAsset=${underlyingAsset}&marketName=${marketName}`,
 };
