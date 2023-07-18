@@ -261,6 +261,7 @@ export interface AtomicaSubgraphRewards {
   amount: string;
   creator: string;
   endedAt: string;
+  endedAtConverted: string;
   id: string;
   num: string;
   poolId: string;

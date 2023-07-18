@@ -7,7 +7,6 @@ export const useCoinRate = () => {
     `https://api.coingecko.com/api/v3/simple/price?ids=${coinIds.join(',')}&vs_currencies=usd`;
 
   const getPrice = async (coinIds: string[]) => {
-    console.log('coinIds', coinIds);
     try {
       const response = await fetch(getCoinPriceUrl(coinIds));
       if (response.ok) {

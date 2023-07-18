@@ -49,7 +49,6 @@ export const useRiskPool = (pool: string) => {
   };
 
   const generateClaimRewardsTx = async (rewardIds: string[]) => {
-    console.log('earnedRewardIds', rewardIds);
     const txData = jsonInterface.encodeFunctionData('claimSelectedRewards', [rewardIds]);
 
     const claimRewardsTx: PopulatedTransaction = {

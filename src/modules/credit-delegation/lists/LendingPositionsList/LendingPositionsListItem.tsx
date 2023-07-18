@@ -106,7 +106,7 @@ export const LendingPositionsListItem = (poolVault: AtomicaDelegationPool) => {
           },
         ]}
         symbol={symbol}
-        endDate={rewards?.length ? rewards[0].endedAt : ''}
+        endDate={rewards?.length ? rewards[0].endedAtConverted : ''}
       />
 
       <ListButtonsColumn>

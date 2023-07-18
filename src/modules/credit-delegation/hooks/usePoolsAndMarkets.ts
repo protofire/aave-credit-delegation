@@ -309,7 +309,7 @@ export const usePoolsAndMarkets = () => {
         rewards: rewards.map((reward) => {
           return {
             ...reward,
-            endedAt: convertTimestampToDate(reward.endedAt),
+            endedAtConverted: convertTimestampToDate(reward.endedAt),
           };
         }),
       };
