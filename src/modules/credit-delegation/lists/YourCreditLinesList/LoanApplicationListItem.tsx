@@ -9,6 +9,7 @@ import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
 import { getErrorTextFromError, TxAction } from 'src/ui-config/errorMapping';
 import { CREDIT_DELEGATION_LIST_COLUMN_WIDTHS } from 'src/utils/creditDelegationSortUtils';
 
+import { SECONDS_IN_A_YEAR } from '../../consts';
 import { useCreditDelegationContext } from '../../CreditDelegationContext';
 import { useControllerAddress } from '../../hooks/useControllerAddress';
 import { CreditLine } from '../../types';
@@ -41,7 +42,7 @@ export const CreditLineListItem = (creditLine: CreditLine) => {
         policyId,
         parseUnits(amount, asset?.decimals),
         parseUnits(amount, asset?.decimals),
-        parseUnits(market?.apr || '0', 4),
+        parseUnits(market?.apr || '0', 18 - 2).div(SECONDS_IN_A_YEAR),
         1,
         ''
       );

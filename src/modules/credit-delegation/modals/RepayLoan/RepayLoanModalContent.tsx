@@ -86,6 +86,9 @@ export const RepayLoanModalContent = memo(
     isWrongNetwork,
     id,
     poolReserve,
+    lastUpdateTs,
+    ratePerSec,
+    interestRepaid,
   }: RepayLoanModalContentProps) => {
     const { mainTxState: supplyTxState, gasLimit, txError, setTxError } = useModalContext();
     const { walletBalances } = useWalletBalances();
@@ -93,7 +96,6 @@ export const RepayLoanModalContent = memo(
 
     const [_amount, setAmount] = useState('');
     const amountRef = useRef<string>();
-    const [repayType, setRepayType] = useState<RepayType>(RepayType.INTEREST);
 
     const { reserve } = userReserve;
 
@@ -102,8 +104,19 @@ export const RepayLoanModalContent = memo(
       [walletBalances, asset]
     );
 
+    const interestAccrued = Number(ratePerSec) * (Date.now() / 1000 - (Number(lastUpdateTs) ?? 0));
+
+    const interestRemaining = new BigNumber(interestAccrued - Number(interestRepaid))
+      .decimalPlaces(asset?.decimals ?? 18)
+      .toString();
+
+    const [repayType, setRepayType] = useState<RepayType>(
+      interestRemaining === '0' ? RepayType.PRINCIPAL : RepayType.INTEREST
+    );
+    const maxAmount = repayType === RepayType.INTEREST ? interestRemaining : requiredRepayAmount;
+
     const isMaxSelected = _amount === '-1';
-    const amount = isMaxSelected ? requiredRepayAmount : _amount;
+    const amount = isMaxSelected ? maxAmount : _amount;
 
     const handleChange = (value: string) => {
       const maxSelected = value === '-1';

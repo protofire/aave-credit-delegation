@@ -17,7 +17,7 @@ export const useMarketsApr = (): [MarketApr[] | undefined, string | undefined] =
     let isNotCancelled = true;
 
     async function getApr() {
-      const url = `${process.env.NEXT_PUBLIC_ATOMICA_API_URL}v1/deployments/all/products/all/markets/all/quote`;
+      const url = `${process.env.NEXT_PUBLIC_ATOMICA_API_URL}v1/deployments/dev-mumbai-v2/products/all/markets/all/quote?take=999`;
 
       try {
         const response = await fetch(url);

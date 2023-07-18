@@ -133,22 +133,20 @@ export const useUserLoans = (
         marketReferencePriceInUsd
       );
 
-      const apr =
+      const ratePerSec =
         loan !== undefined
-          ? chunks
-              .reduce((acc, chunk) => {
-                return acc.plus(
-                  valueToBigNumber(chunk.rate)
-                    .times(SECONDS_IN_A_YEAR)
-                    .times(valueToBigNumber(chunk.borrowedAmount).div(borrowedAmount))
-                );
-              }, valueToBigNumber(0))
-              .toNumber()
-          : normalizeBN(request.maxPremiumRatePerSec, LOAN_CHUNK_RATE_DECIMALS)
-              .times(SECONDS_IN_A_YEAR)
-              .toNumber();
+          ? chunks.reduce((acc, chunk) => {
+              return acc.plus(
+                valueToBigNumber(chunk.rate).times(
+                  valueToBigNumber(chunk.borrowedAmount).div(borrowedAmount)
+                )
+              );
+            }, valueToBigNumber(0))
+          : normalizeBN(request.maxPremiumRatePerSec, LOAN_CHUNK_RATE_DECIMALS);
 
-      const interestRepaid = loan?.interestRepaid ?? '0';
+      const apr = ratePerSec.times(SECONDS_IN_A_YEAR).toNumber();
+
+      const interestRepaid = normalize(loan?.interestRepaid ?? '0', asset?.decimals ?? 18);
 
       const interestRepaidUsd = amountToUsd(
         interestRepaid,
@@ -176,6 +174,7 @@ export const useUserLoans = (
         chunks: [],
         borrowedAmount: borrowedAmount.toString(),
         borrowedAmountUsd: borrowedAmountUsd.toString(),
+        ratePerSec: ratePerSec.toString(),
         apr,
         repaidAmount: repaidAmount.toString(),
         repaidAmountUsd: repaidAmountUsd.toString(),
@@ -188,6 +187,7 @@ export const useUserLoans = (
         interestRepaidUsd,
         data: loan?.data ?? null,
         loanRequestId: request.id,
+        lastUpdateTs: loan?.lastUpdateTs ?? undefined,
       };
     });
 

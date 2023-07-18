@@ -203,6 +203,9 @@ export interface AtomicaLoan {
   interestRepaid: string;
   interestRepaidUsd: string;
   status: LoanStatus;
+  lastUpdateTs?: string;
+  ratePerSec: string;
+  usdRate: string;
 }
 
 export interface AtomicaLendingPosition {

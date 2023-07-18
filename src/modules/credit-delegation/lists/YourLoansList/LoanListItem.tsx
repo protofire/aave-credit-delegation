@@ -1,6 +1,7 @@
 import { ExternalLinkIcon } from '@heroicons/react/outline';
 import { Trans } from '@lingui/macro';
 import { Button, SvgIcon, Typography } from '@mui/material';
+import { BigNumber } from 'bignumber.js';
 import { ListColumn } from 'src/components/lists/ListColumn';
 import { Link } from 'src/components/primitives/Link';
 import { useModalContext } from 'src/hooks/useModal';
@@ -22,14 +23,30 @@ export const LoanListItem = (loan: AtomicaLoan) => {
     requiredRepayAmount,
     requiredRepayAmountUsd,
     data,
-    interestCharged,
-    interestChargedUsd,
     interestRepaid,
     interestRepaidUsd,
     repaidAmount,
     repaidAmountUsd,
     status,
+    ratePerSec,
+    usdRate,
   } = loan;
+
+  const interestAccrued = BigNumber.max(
+    new BigNumber(ratePerSec)
+      .times(new BigNumber(Date.now()).div(1000).minus(loan?.lastUpdateTs ?? 0))
+      .decimalPlaces(asset?.decimals ?? 18),
+    0
+  );
+
+  const interestAccruedUsd = interestAccrued.times(usdRate);
+
+  const interestRemaining = BigNumber.max(interestAccrued.minus(interestRepaid), 0);
+
+  const interestRemainingUsd = BigNumber.max(
+    Number(interestAccruedUsd) - Number(interestRepaidUsd),
+    0
+  );
 
   return (
     <ListItemWrapper
@@ -54,10 +71,10 @@ export const LoanListItem = (loan: AtomicaLoan) => {
 
       {status === LoanStatus.Active ? (
         <ListRepaidColumn
-          original={Number(interestCharged)}
-          originalUsd={interestChargedUsd}
-          remaining={Number(interestCharged) - Number(interestRepaid)}
-          remainingUsd={(Number(interestChargedUsd) - Number(interestRepaidUsd)).toString()}
+          original={Number(interestAccrued)}
+          originalUsd={interestAccruedUsd.toString()}
+          remaining={interestRemaining.toString()}
+          remainingUsd={interestRemainingUsd.toString()}
           repaid={Number(interestRepaid)}
           repaidUsd={interestRepaidUsd}
           status={status}
@@ -100,7 +117,7 @@ export const LoanListItem = (loan: AtomicaLoan) => {
           <Button
             variant="contained"
             onClick={() => openRepayLoan(loan)}
-            disabled={Number(requiredRepayAmount) === 0}
+            disabled={Number(requiredRepayAmount) + interestRemaining.toNumber() === 0}
           >
             <Trans>Repay</Trans>
           </Button>
