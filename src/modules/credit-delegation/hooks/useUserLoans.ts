@@ -160,7 +160,7 @@ export const useUserLoans = (
     }
 
     return policies?.map((policy) => {
-      const loanRequest = data?.loanRequests.find(
+      const loanRequest = data?.loanRequests?.find(
         (loan) => policy.policyId.toLowerCase() === loan.policyId.toLowerCase()
       );
 

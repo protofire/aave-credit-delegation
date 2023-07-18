@@ -21,8 +21,7 @@ const head = [
   { title: <Trans key="title">Pool Description</Trans>, sortKey: 'metadata.Label' },
   { title: <Trans key="manager">Pool Manager</Trans>, sortKey: 'manager' },
   { title: <Trans key="borrowers">Borrowers</Trans>, sortKey: 'borrowers' },
-  { title: <Trans key="lended">Delegated Amount</Trans>, sortKey: 'approvedCredit' },
-  { title: <Trans key="lended">Amount Used</Trans>, sortKey: 'approvedCredit' },
+  { title: <Trans key="lended">Amount Used</Trans>, sortKey: 'lended' },
   { title: <Trans key="APY">APY</Trans>, sortKey: 'supplyAPY' },
 ];
 
@@ -31,6 +30,10 @@ interface HeaderProps {
   sortDesc: boolean;
   setSortName: Dispatch<SetStateAction<string>>;
   setSortDesc: Dispatch<SetStateAction<boolean>>;
+}
+
+interface LendingPositionsListProps {
+  type: string;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -65,7 +68,7 @@ const Header: React.FC<HeaderProps> = ({
   );
 };
 
-export const LendingPositionsList = () => {
+export const LendingPositionsList = ({ type }: LendingPositionsListProps) => {
   const { loading } = useAppDataContext();
   const [sortName, setSortName] = useState('');
   const [sortDesc, setSortDesc] = useState(false);
@@ -77,26 +80,35 @@ export const LendingPositionsList = () => {
     (pool) => Number(pool.supplyAPY) > 0 || Number(pool.rewardAPY) > 0
   );
 
+  const deficitPools = pools.filter(
+    (pool) => Number(pool.supplyAPY) <= 0 || Number(pool.rewardAPY) <= 0
+  );
+
   const sortedPools = useMemo(
     () =>
       handleSortPools(
         sortDesc,
         sortName,
-        earningPools.filter((pool) => pool.vault?.owner.id === account)
+        (type === 'earning' ? earningPools : deficitPools).filter(
+          (pool) => pool.vault?.owner.id === account
+        )
       ),
-    [sortDesc, sortName, account, earningPools]
+    [sortDesc, sortName, type, earningPools, deficitPools, account]
   );
 
   if (loading || loadingPools)
     return (
-      <ListLoader title={<Trans>Your earning positions</Trans>} head={head.map((c) => c.title)} />
+      <ListLoader
+        title={<Trans>{`Your ${type} positions`}</Trans>}
+        head={head.map((c) => c.title)}
+      />
     );
 
   return (
     <ListWrapper
       titleComponent={
         <Typography component="div" variant="h3" sx={{ mr: 4 }}>
-          <Trans>Your earning positions</Trans>
+          <Trans>{`Your ${type} positions`}</Trans>
         </Typography>
       }
       localStorageName="lendingPositionsCreditDelegationTableCollapse"

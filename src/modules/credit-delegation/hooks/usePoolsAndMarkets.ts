@@ -256,7 +256,7 @@ export const usePoolsAndMarkets = () => {
       const tokenToBorrow = tokensToBorrow.find(
         (token) => token.symbol === pool.capitalTokenSymbol
       );
-      console.log('toek', tokenToBorrow);
+
       const poolMetadata = metadata?.find(
         (data) => data.EntityId.toLowerCase() === pool.id.toLowerCase()
       );
@@ -265,7 +265,7 @@ export const usePoolsAndMarkets = () => {
         (vault) => vault.atomicaPool.toLowerCase() === pool.id.toLowerCase()
       );
 
-      const rewards = poolRewards.find((reward) => reward.poolId === pool.id);
+      const rewards = poolRewards.filter((reward) => reward.poolId === pool.id);
 
       const supplyAPY =
         poolsApy?.find((poolApy) => poolApy.id?.toLowerCase() === pool.id?.toLowerCase())
@@ -306,11 +306,12 @@ export const usePoolsAndMarkets = () => {
         stableDebtTokenAddress: userReserve?.stableDebtTokenAddress ?? '',
         variableDebtTokenAddress: userReserve?.variableDebtTokenAddress ?? '',
         rewardAPY,
-        reward: {
-          rewardToken: rewards?.rewardToken,
-          endedAt: convertTimestampToDate(rewards?.endedAt || ''),
-          rewardTokenSymbol: rewards?.rewardTokenSymbol,
-        },
+        rewards: rewards.map((reward) => {
+          return {
+            ...reward,
+            endedAt: convertTimestampToDate(reward.endedAt),
+          };
+        }),
       };
     });
   }, [

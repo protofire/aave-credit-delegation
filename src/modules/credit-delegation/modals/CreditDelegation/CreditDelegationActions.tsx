@@ -7,7 +7,6 @@ import { ComputedReserveData } from 'src/hooks/app-data-provider/useAppDataProvi
 import { useModalContext } from 'src/hooks/useModal';
 import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
 import { useCreditDelegationContext } from 'src/modules/credit-delegation/CreditDelegationContext';
-import { useRootStore } from 'src/store/root';
 import { getErrorTextFromError, TxAction } from 'src/ui-config/errorMapping';
 
 import { AtomicaDelegationPool } from '../../types';
@@ -37,69 +36,20 @@ export const CreditDelegationActions = React.memo(
     pool,
     ...props
   }: CreditDelegationActionProps) => {
-    const generateApproveDelegation = useRootStore((state) => state.generateApproveDelegation);
+    // const generateApproveDelegation = useRootStore((state) => state.generateApproveDelegation);
 
     const { mainTxState, loadingTxns, setMainTxState, setGasLimit, setTxError, close } =
       useModalContext();
 
     const { sendTx } = useWeb3Context();
 
-    const { fetchBorrowAllowance, generateDeployVault, refetchVaults } =
+    const { generateDeployVault, refetchVaults, generateBorrowWithSig } =
       useCreditDelegationContext();
 
     // Update gas estimation
     useEffect(() => {
       setGasLimit('40000');
     }, [setGasLimit]);
-
-    const approveDelegation = useCallback(async () => {
-      if (pool?.vault) {
-        try {
-          const approveDelegationTxData = generateApproveDelegation({
-            debtTokenAddress: poolReserve.stableDebtTokenAddress,
-            delegatee: pool?.vault.vault,
-            amount: parseUnits(amount, decimals).toString(),
-          });
-
-          setMainTxState({ ...mainTxState, loading: true });
-
-          const response = await sendTx(approveDelegationTxData);
-
-          await response.wait(4);
-
-          if (pool) {
-            await fetchBorrowAllowance(pool.id, true);
-          }
-          setMainTxState({
-            txHash: response.hash,
-            loading: false,
-            success: true,
-          });
-          close();
-        } catch (error) {
-          const parsedError = getErrorTextFromError(error, TxAction.GAS_ESTIMATION, false);
-          setTxError(parsedError);
-          setMainTxState({
-            txHash: undefined,
-            loading: false,
-          });
-          close();
-        }
-      }
-    }, [
-      pool?.vault,
-      generateApproveDelegation,
-      amount,
-      decimals,
-      setMainTxState,
-      mainTxState,
-      sendTx,
-      pool,
-      fetchBorrowAllowance,
-      getErrorTextFromError,
-      setTxError,
-      close,
-    ]);
 
     const deployVault = useCallback(async () => {
       if (pool?.id) {
@@ -134,25 +84,73 @@ export const CreditDelegationActions = React.memo(
       }
     }, [
       pool?.id,
-      pool?.vault,
       generateDeployVault,
       poolReserve.stableDebtTokenAddress,
       setMainTxState,
       sendTx,
       refetchVaults,
-      getErrorTextFromError,
       setTxError,
       amount,
       decimals,
+      mainTxState,
+      pool?.manager,
+    ]);
+
+    const borrowWithSig = useCallback(async () => {
+      if (pool?.id) {
+        try {
+          const borrowWithTxData = await generateBorrowWithSig({
+            atomicaPool: pool?.id,
+            amount: parseUnits(amount, decimals).toString(),
+            vaultAddress: pool.vault?.vault || '',
+          });
+
+          setMainTxState({ ...mainTxState, loading: true });
+
+          const response = await sendTx(borrowWithTxData);
+
+          const receipt = await response.wait(4);
+
+          await refetchVaults(receipt.blockNumber);
+
+          setMainTxState({
+            txHash: response.hash,
+            loading: false,
+            success: true,
+          });
+          close();
+        } catch (error) {
+          const parsedError = getErrorTextFromError(error, TxAction.GAS_ESTIMATION, false);
+          console.error(error);
+          setTxError(parsedError);
+          setMainTxState({
+            txHash: undefined,
+            loading: false,
+          });
+          close();
+        }
+      }
+    }, [
+      pool?.id,
+      pool?.vault,
+      setMainTxState,
+      sendTx,
+      refetchVaults,
+      setTxError,
+      amount,
+      decimals,
+      generateBorrowWithSig,
+      mainTxState,
+      close,
     ]);
 
     const action = useCallback(async () => {
       if (pool?.vault === undefined) {
         await deployVault();
       } else {
-        await approveDelegation();
+        await borrowWithSig();
       }
-    }, [pool?.vault, approveDelegation, deployVault]);
+    }, [pool?.vault, borrowWithSig, deployVault]);
 
     return (
       <TxActionsWrapper
@@ -165,19 +163,16 @@ export const CreditDelegationActions = React.memo(
         preparingTransactions={loadingTxns}
         actionText={
           <Trans>
-            {pool?.vault === undefined
-              ? 'Deploy vault to delegate credit'
-              : `Approve credit delegation for ${symbol}`}
+            {pool?.vault === undefined ? 'Deploy vault to delegate credit' : `Lend ${symbol}`}
           </Trans>
         }
         actionInProgressText={
-          <Trans>
-            {pool?.vault === undefined ? 'Deploying vault...' : `Approving delegation ${symbol}`}
-          </Trans>
+          <Trans>{pool?.vault === undefined ? 'Deploying vault...' : `Lending ${symbol}...`}</Trans>
         }
         handleAction={action}
         requiresApproval={false}
         sx={sx}
+        delegate
         {...props}
       />
     );

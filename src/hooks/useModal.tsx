@@ -3,7 +3,11 @@ import { BigNumber } from 'bignumber.js';
 import { createContext, useContext, useState } from 'react';
 import { EmodeModalType } from 'src/components/transactions/Emode/EmodeModalContent';
 import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
-import { AtomicaLoan, PoliciesAndLoanRequest } from 'src/modules/credit-delegation/types';
+import {
+  AtomicaDelegationPool,
+  AtomicaLoan,
+  PoliciesAndLoanRequest,
+} from 'src/modules/credit-delegation/types';
 import { TxErrorType } from 'src/ui-config/errorMapping';
 
 export enum ModalType {
@@ -29,6 +33,7 @@ export enum ModalType {
   RequestLoan,
   ManageLoan,
   RepayLoan,
+  ManageVault,
 }
 
 export interface ModalManageLoanArgs {
@@ -55,6 +60,7 @@ export interface ModalArgsType {
   loanRequest?: ModalManageLoanArgs;
   loan?: AtomicaLoan;
   policy?: PoliciesAndLoanRequest;
+  poolVault?: AtomicaDelegationPool;
 }
 
 export type TxStateType = {
@@ -87,6 +93,7 @@ export interface ModalContextType<T extends ModalArgsType> {
   openRequestLoan: (marketId: string, underlyingAsset: string) => void;
   openManageLoan: (loanRequest: ModalManageLoanArgs) => void;
   openRepayLoan: (loan: AtomicaLoan) => void;
+  openManageVault: (poolVault: AtomicaDelegationPool) => void;
   close: () => void;
   type?: ModalType;
   args: T;
@@ -204,6 +211,10 @@ export const ModalContextProvider: React.FC = ({ children }) => {
         openRepayLoan: (loan) => {
           setType(ModalType.RepayLoan);
           setArgs({ loan });
+        },
+        openManageVault: (poolVault) => {
+          setType(ModalType.ManageVault);
+          setArgs({ poolVault });
         },
         close: () => {
           setType(undefined);

@@ -158,7 +158,7 @@ export interface AtomicaDelegationPool {
   }[];
   stableDebtTokenAddress: string;
   variableDebtTokenAddress: string;
-  reward?: PoolReward;
+  rewards?: AtomicaSubgraphRewards[];
 }
 
 export interface AtomicaBorrowMarket {
@@ -274,8 +274,47 @@ export interface AtomicaSubgraphRewards {
   ratePerSecond: string;
 }
 
-export interface PoolReward {
-  rewardToken?: string;
-  endedAt?: string;
-  rewardTokenSymbol?: string;
+export interface Reward {
+  id: string;
+  logoURI: string;
+  decimals: string;
+  symbol: string;
+  name: string;
+  amount: BigNumber;
+  duration: number;
+  earned: BigNumber;
+  rewardRate: BigNumber;
+  earnedRewardIds: string[];
+  endedAt: BigNumber;
+  startedAt: BigNumber;
+  tokenUsdPrice: number;
+  updatedAt?: number;
+}
+
+export interface AccountPoolReward {
+  reward: number;
+  poolId: string;
+  chainId: number;
+  rewardId: string;
+  updatedAt: number;
+}
+
+export interface EarnedToken {
+  id: string;
+  rewardRate: BigNumber;
+  earned: BigNumber;
+  earnedRewardIds: string[];
+  decimals: number;
+  symbol: string;
+  price: number;
+  logoUrl: string;
+  endedAt: BigNumber;
+  startedAt: BigNumber;
+  updatedAt?: number;
+}
+
+export interface PoolRewards {
+  apy: BigNumber;
+  lastReward?: Reward;
+  earnings: EarnedToken[];
 }

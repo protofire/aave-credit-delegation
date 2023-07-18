@@ -17,26 +17,26 @@ import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListItemWrapper } from '../ListItemWrapper';
 import { ListValueColumn } from '../ListValueColumn';
 
-export const LendingPositionsListItem = ({
-  symbol,
-  iconSymbol,
-  name,
-  supplyAPY,
-  isActive,
-  underlyingAsset,
-  availableBalance,
-  approvedCreditUsd,
-  approvedCredit,
-  metadata,
-  id,
-  manager,
-  markets,
-  vault,
-  asset,
-  reward,
-  rewardAPY,
-}: AtomicaDelegationPool) => {
-  const { openCreditDelegation } = useModalContext();
+export const LendingPositionsListItem = (poolVault: AtomicaDelegationPool) => {
+  const { openCreditDelegation, openManageVault } = useModalContext();
+
+  const {
+    symbol,
+    iconSymbol,
+    name,
+    supplyAPY,
+    isActive,
+    underlyingAsset,
+    availableBalance,
+    metadata,
+    id,
+    manager,
+    markets,
+    vault,
+    asset,
+    rewards,
+    rewardAPY,
+  } = poolVault;
 
   const { managerDetails } = useManagerDetails(manager);
   const { user } = useAppDataContext();
@@ -80,13 +80,13 @@ export const LendingPositionsListItem = ({
         ))}
       </ListColumn>
 
-      <ListValueColumn
+      {/* <ListValueColumn
         symbol={symbol}
         value={Number(approvedCredit)}
         subValue={approvedCreditUsd}
         withTooltip
         disabled={Number(vault?.loanAmount) === 0}
-      />
+      /> */}
 
       <ListValueColumn
         symbol={symbol}
@@ -101,21 +101,28 @@ export const LendingPositionsListItem = ({
         incentives={[
           {
             incentiveAPR: rewardAPY,
-            rewardTokenAddress: reward?.rewardToken || '',
-            rewardTokenSymbol: reward?.rewardTokenSymbol || '',
+            rewardTokenAddress: rewards?.length ? rewards[0].rewardToken : '',
+            rewardTokenSymbol: rewards?.length ? rewards[0].rewardTokenSymbol : '',
           },
         ]}
         symbol={symbol}
-        endDate={reward?.endedAt}
+        endDate={rewards?.length ? rewards[0].endedAt : ''}
       />
 
       <ListButtonsColumn>
         <Button
           disabled={!isActive || Number(availableBalance) <= 0}
           variant="contained"
+          onClick={() => openManageVault(poolVault)}
+        >
+          <Trans>Withdraw</Trans>
+        </Button>
+        <Button
+          disabled={!isActive || Number(availableBalance) <= 0}
+          variant="outlined"
           onClick={() => openCreditDelegation(id, underlyingAsset)}
         >
-          <Trans>Manage</Trans>
+          <Trans>Lend</Trans>
         </Button>
       </ListButtonsColumn>
     </ListItemWrapper>
