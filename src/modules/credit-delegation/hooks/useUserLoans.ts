@@ -14,8 +14,8 @@ import {
   AtomicaSubgraphLoanChunk,
   AtomicaSubgraphLoanRequest,
   AtomicaSubgraphPolicy,
-  LoanApplicationStatus,
-  PoliciesAndLoanRequest,
+  CreditLine,
+  LoanStatus,
 } from '../types';
 import useAsyncMemo from './useAsyncMemo';
 import { useSubgraph } from './useSubgraph';
@@ -80,8 +80,10 @@ export const useUserLoans = (
       return [];
     }
 
-    return data.loans.map((loan) => {
-      const policy = policies?.find((policy) => policy.policyId === loan.policyId);
+    const requests = data.loanRequests.map((request) => {
+      const policy = policies?.find((policy) => policy.policyId === request.policyId);
+
+      const loan = data.loans.find((loan) => loan.loanRequestId === request.id);
 
       const asset = tokenData?.find((token) => token.address === policy?.market.capitalToken);
 
@@ -91,16 +93,28 @@ export const useUserLoans = (
         return reserve.symbol.toLowerCase() === asset?.symbol.toLowerCase();
       });
 
-      const borrowedAmount = normalizeBN(loan.borrowedAmount, asset?.decimals ?? 18);
+      const borrowedAmount = normalizeBN(
+        loan?.borrowedAmount ?? request.amount,
+        asset?.decimals ?? 18
+      );
 
-      const chunks = chunksData.loanChunks
-        .filter((chunk) => chunk.loanId === loan.id)
-        .map((chunk) => ({
-          ...chunk,
-          borrowedAmount: normalize(chunk.borrowedAmount, asset?.decimals ?? 18),
-          repaidAmount: normalize(chunk.repaidAmount, asset?.decimals ?? 18),
-          rate: normalize(chunk.rate, LOAN_CHUNK_RATE_DECIMALS),
-        }));
+      const borrowedAmountUsd = amountToUsd(
+        borrowedAmount,
+        reserve?.formattedPriceInMarketReferenceCurrency ?? '1',
+        marketReferencePriceInUsd
+      );
+
+      const chunks =
+        loan !== undefined
+          ? chunksData.loanChunks
+              .filter((chunk) => chunk.loanId === loan.id)
+              .map((chunk) => ({
+                ...chunk,
+                borrowedAmount: normalize(chunk.borrowedAmount, asset?.decimals ?? 18),
+                repaidAmount: normalize(chunk.repaidAmount, asset?.decimals ?? 18),
+                rate: normalize(chunk.rate, LOAN_CHUNK_RATE_DECIMALS),
+              }))
+          : [];
 
       const repaidAmount = chunks.reduce((acc, chunk) => {
         return acc.plus(valueToBigNumber(chunk.repaidAmount));
@@ -119,22 +133,37 @@ export const useUserLoans = (
         marketReferencePriceInUsd
       );
 
-      const apr = chunks.reduce((acc, chunk) => {
-        return acc.plus(
-          valueToBigNumber(chunk.rate)
-            .times(SECONDS_IN_A_YEAR)
-            .times(valueToBigNumber(chunk.borrowedAmount).div(borrowedAmount))
-        );
-      }, valueToBigNumber(0));
+      const ratePerSec =
+        loan !== undefined
+          ? chunks.reduce((acc, chunk) => {
+              return acc.plus(
+                valueToBigNumber(chunk.rate).times(
+                  valueToBigNumber(chunk.borrowedAmount).div(borrowedAmount)
+                )
+              );
+            }, valueToBigNumber(0))
+          : normalizeBN(request.maxPremiumRatePerSec, LOAN_CHUNK_RATE_DECIMALS);
 
-      const borrowedAmountUsd = amountToUsd(
-        borrowedAmount,
+      const apr = ratePerSec.times(SECONDS_IN_A_YEAR).toNumber();
+
+      const interestRepaid = normalize(loan?.interestRepaid ?? '0', asset?.decimals ?? 18);
+
+      const interestRepaidUsd = amountToUsd(
+        interestRepaid,
         reserve?.formattedPriceInMarketReferenceCurrency ?? '1',
         marketReferencePriceInUsd
-      );
+      ).toString();
+
+      const interestCharged = loan?.interestCharged ?? '0';
+
+      const interestChargedUsd = amountToUsd(
+        interestCharged,
+        reserve?.formattedPriceInMarketReferenceCurrency ?? '1',
+        marketReferencePriceInUsd
+      ).toString();
 
       return {
-        ...loan,
+        ...request,
         policy,
         asset,
         usdRate: amountToUsd(
@@ -142,28 +171,44 @@ export const useUserLoans = (
           reserve?.formattedPriceInMarketReferenceCurrency ?? '1',
           marketReferencePriceInUsd
         ).toString(),
-        chunks,
+        chunks: [],
         borrowedAmount: borrowedAmount.toString(),
         borrowedAmountUsd: borrowedAmountUsd.toString(),
-        apr: apr.toNumber(),
+        ratePerSec: ratePerSec.toString(),
+        apr,
         repaidAmount: repaidAmount.toString(),
         repaidAmountUsd: repaidAmountUsd.toString(),
         requiredRepayAmount: requiredRepayAmount.toString(),
         requiredRepayAmountUsd: requiredRepayAmountUsd.toString(),
+        status: loan === undefined ? LoanStatus.Pending : LoanStatus.Active,
+        interestCharged,
+        interestChargedUsd,
+        interestRepaid,
+        interestRepaidUsd,
+        data: loan?.data ?? null,
+        loanRequestId: request.id,
+        lastUpdateTs: loan?.lastUpdateTs ?? undefined,
       };
     });
-  }, [data?.loans, chunksData?.loanChunks]);
 
-  const loanRequests: PoliciesAndLoanRequest[] = useMemo(() => {
+    return requests;
+  }, [
+    data?.loans,
+    data?.loanRequests,
+    chunksData?.loanChunks,
+    tokenData,
+    marketReferencePriceInUsd,
+    loadingTokenData,
+    reserves,
+    policies,
+  ]);
+
+  const creditLines: CreditLine[] = useMemo(() => {
     if (!policies) {
       return [];
     }
 
     return policies?.map((policy) => {
-      const loanRequest = data?.loanRequests.find(
-        (loan) => policy.policyId.toLowerCase() === loan.policyId.toLowerCase()
-      );
-
       const asset = tokenData?.find(
         (token) => token.address.toLowerCase() === policy?.market.capitalToken.toLowerCase()
       );
@@ -199,32 +244,25 @@ export const useUserLoans = (
         marketId: policy.marketId,
         market,
         title: `${market?.product.title}:${market?.title}`,
-        status:
-          loanRequest === undefined
-            ? LoanApplicationStatus.Available
-            : LoanApplicationStatus.Requested,
         asset,
         symbol: asset?.symbol ?? '',
-        loanRequestId: loanRequest?.id,
-        minAmount: loanRequest?.minAmount,
-        approvedAmount: loanRequest?.approvedAmount,
-        filledAmount: loanRequest?.filledAmount,
-        maxPremiumRatePerSec: loanRequest?.maxPremiumRatePerSec,
-        receiveOnApprove: loanRequest?.receiveOnApprove,
       };
     });
-  }, [policies, reserves, tokenData, data?.loanRequests, marketReferencePriceInUsd]);
+  }, [policies, reserves, tokenData, data?.loanRequests, marketReferencePriceInUsd, markets]);
 
-  const refetchLoans = useCallback(async (blockNumber?: number) => {
-    sync(blockNumber);
-    syncChunks(blockNumber);
-  }, []);
+  const refetchLoans = useCallback(
+    async (blockNumber?: number) => {
+      sync(blockNumber);
+      syncChunks(blockNumber);
+    },
+    [sync, syncChunks]
+  );
 
   return {
     loading: loading || loadingChunks,
     error: error || chunksError,
     loans,
-    loanRequests,
+    creditLines,
     refetchLoans,
   };
 };

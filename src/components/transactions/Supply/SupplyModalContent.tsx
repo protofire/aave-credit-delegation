@@ -15,7 +15,6 @@ import { useProtocolDataContext } from 'src/hooks/useProtocolDataContext';
 import { ERC20TokenType } from 'src/libs/web3-data-provider/Web3Provider';
 import { useRootStore } from 'src/store/root';
 import { getMaxAmountAvailableToSupply } from 'src/utils/getMaxAmountAvailableToSupply';
-import { isFeatureEnabled } from 'src/utils/marketsAndNetworksConfig';
 import { roundToTokenDecimals } from 'src/utils/utils';
 
 import { useAppDataContext } from '../../../hooks/app-data-provider/useAppDataProvider';
@@ -32,7 +31,6 @@ import {
   TxModalDetails,
 } from '../FlowCommons/TxModalDetails';
 import { getAssetCollateralType } from '../utils';
-import { AAVEWarning } from '../Warnings/AAVEWarning';
 import { IsolationModeWarning } from '../Warnings/IsolationModeWarning';
 import { SNXWarning } from '../Warnings/SNXWarning';
 import { SupplyActions } from './SupplyActions';
@@ -51,7 +49,7 @@ export const SupplyModalContent = React.memo(
     tokenBalance,
   }: ModalWrapperProps) => {
     const { marketReferencePriceInUsd, user } = useAppDataContext();
-    const { currentMarketData, currentNetworkConfig } = useProtocolDataContext();
+    const { currentNetworkConfig } = useProtocolDataContext();
     const { mainTxState: supplyTxState, gasLimit, txError } = useModalContext();
     const { supplyCap: supplyCapUsage, debtCeiling: debtCeilingUsage } = useAssetCaps();
     const minRemainingBaseTokenBalance = useRootStore(
@@ -195,9 +193,7 @@ export const SupplyModalContent = React.memo(
             <AMPLWarning />
           </Warning>
         )}
-        {process.env.NEXT_PUBLIC_ENABLE_STAKING === 'true' &&
-          poolReserve.symbol === 'AAVE' &&
-          isFeatureEnabled.staking(currentMarketData) && <AAVEWarning />}
+
         {poolReserve.symbol === 'SNX' && maxAmountToSupply !== '0' && <SNXWarning />}
 
         <AssetInput

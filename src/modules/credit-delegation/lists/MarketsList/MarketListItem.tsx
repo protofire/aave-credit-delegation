@@ -47,7 +47,7 @@ export const MarketListItem = ({
         }
       />
 
-      <ListAPRColumn value={Number(apr)} symbol={symbol} />
+      <ListAPRColumn value={Number(apr) / 100} symbol={symbol} />
 
       <ListButtonsColumn>
         <Button variant="contained" onClick={() => openRequestLoan(id, underlyingAsset)}>

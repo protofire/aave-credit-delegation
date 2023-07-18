@@ -15,7 +15,6 @@ import React, { ReactNode, useState } from 'react';
 import { WalletIcon } from 'src/components/icons/WalletIcon';
 import { getMarketInfoById } from 'src/components/MarketSwitcher';
 import { FormattedNumber } from 'src/components/primitives/FormattedNumber';
-import { Warning } from 'src/components/primitives/Warning';
 import { StyledTxModalToggleButton } from 'src/components/StyledToggleButton';
 import { StyledTxModalToggleGroup } from 'src/components/StyledToggleButtonGroup';
 import { ConnectWalletButton } from 'src/components/WalletConnection/ConnectWalletButton';
@@ -36,7 +35,6 @@ import { amountToUsd } from 'src/utils/utils';
 
 import { CapType } from '../../components/caps/helper';
 import { AvailableTooltip } from '../../components/infoTooltips/AvailableTooltip';
-import { Link, ROUTES } from '../../components/primitives/Link';
 import { useReserveActionState } from '../../hooks/useReserveActionState';
 
 interface ReserveActionsProps {
@@ -126,9 +124,7 @@ export const ReserveActions = ({ reserve }: ReserveActionsProps) => {
         marketTitle={market.marketTitle}
       />
       {reserve.isFrozen ? (
-        <Box sx={{ mt: 3 }}>
-          <FrozenWarning />
-        </Box>
+        <Box sx={{ mt: 3 }} />
       ) : (
         <>
           <Divider sx={{ my: 6 }} />
@@ -154,17 +150,6 @@ export const ReserveActions = ({ reserve }: ReserveActionsProps) => {
         </>
       )}
     </PaperWrapper>
-  );
-};
-
-const FrozenWarning = () => {
-  return (
-    <Warning sx={{ mb: 0 }} severity="error" icon={true}>
-      <Trans>
-        Since this asset is frozen, the only available actions are withdraw and repay which can be
-        accessed from the <Link href={ROUTES.dashboard}>Dashboard</Link>
-      </Trans>
-    </Warning>
   );
 };
 

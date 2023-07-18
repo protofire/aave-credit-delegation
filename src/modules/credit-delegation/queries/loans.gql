@@ -7,7 +7,6 @@ query loans($policyIds: [String]!) {
     minAmount
     approvedAmount
     filledAmount
-    loanId
     maxPremiumRatePerSec
     receiveOnApprove
   }

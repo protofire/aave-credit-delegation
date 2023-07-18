@@ -1,15 +1,16 @@
 import { ExternalLinkIcon } from '@heroicons/react/outline';
 import { Trans } from '@lingui/macro';
 import { Button, SvgIcon, Typography } from '@mui/material';
+import { BigNumber } from 'bignumber.js';
 import { ListColumn } from 'src/components/lists/ListColumn';
 import { Link } from 'src/components/primitives/Link';
 import { useModalContext } from 'src/hooks/useModal';
 
-import { AtomicaLoan } from '../../types';
+import { AtomicaLoan, LoanStatus } from '../../types';
 import { ListAPRColumn } from '../ListAPRColumn';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListItemWrapper } from '../ListItemWrapper';
-import { ListValueColumn } from '../ListValueColumn';
+import { ListRepaidColumn } from './ListRepaidColumn';
 
 export const LoanListItem = (loan: AtomicaLoan) => {
   const { openRepayLoan } = useModalContext();
@@ -22,7 +23,30 @@ export const LoanListItem = (loan: AtomicaLoan) => {
     requiredRepayAmount,
     requiredRepayAmountUsd,
     data,
+    interestRepaid,
+    interestRepaidUsd,
+    repaidAmount,
+    repaidAmountUsd,
+    status,
+    ratePerSec,
+    usdRate,
   } = loan;
+
+  const interestAccrued = BigNumber.max(
+    new BigNumber(ratePerSec)
+      .times(new BigNumber(Date.now()).div(1000).minus(loan?.lastUpdateTs ?? 0))
+      .decimalPlaces(asset?.decimals ?? 18),
+    0
+  );
+
+  const interestAccruedUsd = interestAccrued.times(usdRate);
+
+  const interestRemaining = BigNumber.max(interestAccrued.minus(interestRepaid), 0);
+
+  const interestRemainingUsd = BigNumber.max(
+    Number(interestAccruedUsd) - Number(interestRepaidUsd),
+    0
+  );
 
   return (
     <ListItemWrapper
@@ -33,47 +57,73 @@ export const LoanListItem = (loan: AtomicaLoan) => {
       <ListColumn>
         {market?.product.title}: {market?.title}
       </ListColumn>
-      <ListValueColumn
-        symbol={asset?.symbol}
-        value={Number(borrowedAmount)}
-        subValue={Number(borrowedAmountUsd)}
-        disabled={Number(borrowedAmount) === 0}
-        withTooltip
+      <ListRepaidColumn
+        remaining={Number(requiredRepayAmount)}
+        repaid={Number(repaidAmount)}
+        original={Number(borrowedAmount)}
+        remainingUsd={requiredRepayAmountUsd}
+        repaidUsd={repaidAmountUsd}
+        originalUsd={borrowedAmountUsd}
+        status={status}
       />
 
       <ListAPRColumn symbol={asset?.symbol ?? 'unknown'} value={apr} />
 
-      <ListValueColumn
-        symbol={asset?.symbol}
-        value={Number(requiredRepayAmount)}
-        subValue={Number(requiredRepayAmountUsd)}
-        disabled={Number(requiredRepayAmount) === 0}
-        withTooltip
-      />
+      {status === LoanStatus.Active ? (
+        <ListRepaidColumn
+          original={Number(interestAccrued)}
+          originalUsd={interestAccruedUsd.toString()}
+          remaining={interestRemaining.toString()}
+          remainingUsd={interestRemainingUsd.toString()}
+          repaid={Number(interestRepaid)}
+          repaidUsd={interestRepaidUsd}
+          status={status}
+        />
+      ) : (
+        <ListColumn>0</ListColumn>
+      )}
 
       <ListColumn>
-        <Button
-          endIcon={
-            <SvgIcon sx={{ width: 14, height: 14 }}>
-              <ExternalLinkIcon />
-            </SvgIcon>
-          }
-          component={Link}
-          href={`https://ipfs.io/ipfs/${data}`}
-          variant="outlined"
-          size="small"
-          disabled={!data}
-        >
-          <Typography variant="buttonS">
-            <Trans>open agreement</Trans>
-          </Typography>
-        </Button>
+        <Typography color={status === LoanStatus.Active ? 'success.main' : 'warning.main'}>
+          <Trans>{status}</Trans>
+        </Typography>
+      </ListColumn>
+
+      <ListColumn>
+        {status === LoanStatus.Active ? (
+          <Button
+            endIcon={
+              <SvgIcon sx={{ width: 14, height: 14 }}>
+                <ExternalLinkIcon />
+              </SvgIcon>
+            }
+            component={Link}
+            href={`https://ipfs.io/ipfs/${data}`}
+            variant="outlined"
+            size="small"
+            disabled={!data}
+          >
+            <Typography variant="buttonS">
+              <Trans>open agreement</Trans>
+            </Typography>
+          </Button>
+        ) : (
+          ''
+        )}
       </ListColumn>
 
       <ListButtonsColumn>
-        <Button variant="contained" onClick={() => openRepayLoan(loan)}>
-          <Trans>Repay</Trans>
-        </Button>
+        {status === LoanStatus.Active ? (
+          <Button
+            variant="contained"
+            onClick={() => openRepayLoan(loan)}
+            disabled={Number(requiredRepayAmount) + interestRemaining.toNumber() === 0}
+          >
+            <Trans>Repay</Trans>
+          </Button>
+        ) : (
+          ''
+        )}
       </ListButtonsColumn>
     </ListItemWrapper>
   );

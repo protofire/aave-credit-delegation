@@ -8,7 +8,6 @@ import { DashboardReserve } from 'src/utils/dashboardSortUtils';
 import { CapsHint } from '../../../../components/caps/CapsHint';
 import { CapType } from '../../../../components/caps/helper';
 import { IncentivesCard } from '../../../../components/incentives/IncentivesCard';
-import { Link, ROUTES } from '../../../../components/primitives/Link';
 import { Row } from '../../../../components/primitives/Row';
 import { useModalContext } from '../../../../hooks/useModal';
 import { ListMobileItemWrapper } from '../ListMobileItemWrapper';
@@ -105,14 +104,6 @@ export const BorrowAssetsListMobileItem = ({
           fullWidth
         >
           <Trans>Borrow</Trans>
-        </Button>
-        <Button
-          variant="outlined"
-          component={Link}
-          href={ROUTES.reserveOverview(underlyingAsset, currentMarket)}
-          fullWidth
-        >
-          <Trans>Details</Trans>
         </Button>
       </Box>
     </ListMobileItemWrapper>
