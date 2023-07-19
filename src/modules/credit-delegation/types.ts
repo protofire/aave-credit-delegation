@@ -185,10 +185,11 @@ export interface AtomicaBorrowMarket {
 export interface AtomicaLoan {
   id: string;
   policyId: string;
+  loanRequestId: string;
+  loanId?: string;
   data: string | null;
   borrowedAmount: string;
   borrowedAmountUsd: string;
-  loanRequestId: string;
   requiredRepayAmount: string;
   requiredRepayAmountUsd: string;
   repaidAmount: string;

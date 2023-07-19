@@ -188,6 +188,7 @@ export const useUserLoans = (
         data: loan?.data ?? null,
         loanRequestId: request.id,
         lastUpdateTs: loan?.lastUpdateTs ?? undefined,
+        loanId: loan?.id ?? undefined,
       };
     });
 

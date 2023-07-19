@@ -84,7 +84,7 @@ export const RepayLoanModalContent = memo(
     requiredRepayAmountUsd,
     userReserve,
     isWrongNetwork,
-    id,
+    loanId,
     poolReserve,
     lastUpdateTs,
     ratePerSec,
@@ -136,7 +136,7 @@ export const RepayLoanModalContent = memo(
       .shiftedBy(-USD_DECIMALS);
 
     const actionProps = {
-      loanId: id,
+      loanId: loanId ?? '',
       amount,
       isWrongNetwork,
       asset,
