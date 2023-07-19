@@ -89,6 +89,7 @@ export const RepayLoanModalContent = memo(
     lastUpdateTs,
     ratePerSec,
     interestRepaid,
+    borrowedAmount,
   }: RepayLoanModalContentProps) => {
     const { mainTxState: supplyTxState, gasLimit, txError, setTxError } = useModalContext();
     const { walletBalances } = useWalletBalances();
@@ -104,11 +105,14 @@ export const RepayLoanModalContent = memo(
       [walletBalances, asset]
     );
 
-    const interestAccrued = Number(ratePerSec) * (Date.now() / 1000 - (Number(lastUpdateTs) ?? 0));
+    const interestAccrued = new BigNumber(ratePerSec)
+      .times(new BigNumber(Date.now()).div(1000).minus(lastUpdateTs ?? 0))
+      .times(borrowedAmount);
 
-    const interestRemaining = new BigNumber(interestAccrued - Number(interestRepaid))
-      .decimalPlaces(asset?.decimals ?? 18)
-      .toString();
+    const interestRemaining = BigNumber.max(
+      interestAccrued.minus(interestRepaid).decimalPlaces(asset?.decimals ?? 18),
+      0
+    ).toString();
 
     const [repayType, setRepayType] = useState<RepayType>(
       interestRemaining === '0' ? RepayType.PRINCIPAL : RepayType.INTEREST
