@@ -1,4 +1,3 @@
-import { Tooltip, Typography } from '@mui/material';
 import { ReactNode } from 'react';
 import { BorrowDisabledToolTip } from 'src/components/infoTooltips/BorrowDisabledToolTip';
 import { BUSDOffBoardingTooltip } from 'src/components/infoTooltips/BUSDOffboardingToolTip';
@@ -12,8 +11,6 @@ import { FrozenTooltip } from '../../../components/infoTooltips/FrozenTooltip';
 import { RenFILToolTip } from '../../../components/infoTooltips/RenFILToolTip';
 import { ListColumn } from '../../../components/lists/ListColumn';
 import { ListItem } from '../../../components/lists/ListItem';
-import { Link, ROUTES } from '../../../components/primitives/Link';
-import { TokenIcon } from '../../../components/primitives/TokenIcon';
 
 interface ListItemWrapperProps {
   symbol: string;
@@ -55,18 +52,6 @@ export const ListItemWrapper = ({
   return (
     <ListItem {...rest}>
       <ListColumn maxWidth={DASHBOARD_LIST_COLUMN_WIDTHS.CELL} isRow>
-        <Link
-          href={ROUTES.reserveOverview(detailsAddress, currentMarket)}
-          noWrap
-          sx={{ display: 'inline-flex', alignItems: 'center' }}
-        >
-          <TokenIcon symbol={iconSymbol} fontSize="large" />
-          <Tooltip title={`${name} (${symbol})`} arrow placement="top">
-            <Typography variant="subheader1" sx={{ ml: 3 }} noWrap data-cy={`assetName`}>
-              {symbol}
-            </Typography>
-          </Tooltip>
-        </Link>
         {showFrozenTooltip && <FrozenTooltip symbol={symbol} currentMarket={currentMarket} />}
         {showRenFilTooltip && <RenFILToolTip />}
         {showAmplTooltip && <AMPLToolTip />}

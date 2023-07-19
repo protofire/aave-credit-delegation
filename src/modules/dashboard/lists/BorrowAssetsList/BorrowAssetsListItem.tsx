@@ -6,7 +6,6 @@ import { DashboardReserve } from 'src/utils/dashboardSortUtils';
 
 import { CapsHint } from '../../../../components/caps/CapsHint';
 import { CapType } from '../../../../components/caps/helper';
-import { Link, ROUTES } from '../../../../components/primitives/Link';
 import { ListAPRColumn } from '../ListAPRColumn';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListItemWrapper } from '../ListItemWrapper';
@@ -74,13 +73,6 @@ export const BorrowAssetsListItem = ({
           onClick={() => openBorrow(underlyingAsset)}
         >
           <Trans>Borrow</Trans>
-        </Button>
-        <Button
-          variant="outlined"
-          component={Link}
-          href={ROUTES.reserveOverview(underlyingAsset, currentMarket)}
-        >
-          <Trans>Details</Trans>
         </Button>
       </ListButtonsColumn>
     </ListItemWrapper>

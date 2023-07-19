@@ -11,7 +11,7 @@ export const usePoolsApy = () => {
 
   useEffect(() => {
     (async function () {
-      const url = `${process.env.NEXT_PUBLIC_ATOMICA_API_URL}v1/deployments/any/products/any/markets/any/pools/any/apy?take=999`;
+      const url = `${process.env.NEXT_PUBLIC_ATOMICA_API_URL}v1/deployments/dev-mumbai-v2/products/any/markets/any/pools/any/apy?take=999`;
 
       try {
         const response = await fetch(url);

@@ -11,15 +11,15 @@ import { getErrorTextFromError, TxAction } from 'src/ui-config/errorMapping';
 import { useCreditDelegationContext } from '../../CreditDelegationContext';
 import { useControllerAddress } from '../../hooks/useControllerAddress';
 
-export interface ManageLoanActionProps extends BoxProps {
+export interface ManageCreditLineActionProps extends BoxProps {
   policyId: string;
   amount: string;
   isWrongNetwork: boolean;
   asset?: TokenMetadataType;
 }
 
-export const ManageLoanActions = React.memo(
-  ({ policyId, amount, isWrongNetwork, asset, sx, ...props }: ManageLoanActionProps) => {
+export const ManageCreditLineActions = React.memo(
+  ({ policyId, amount, isWrongNetwork, asset, sx, ...props }: ManageCreditLineActionProps) => {
     const { mainTxState, loadingTxns, setMainTxState, setGasLimit, setTxError, close } =
       useModalContext();
 
@@ -32,7 +32,7 @@ export const ManageLoanActions = React.memo(
       setGasLimit('40000');
     }, [setGasLimit]);
 
-    const modifyLoanRequest = useCallback(async () => {
+    const modifyCreditLine = useCallback(async () => {
       try {
         if (provider === undefined || riskPoolController === undefined) {
           throw new Error('Wallet not connected');
@@ -76,7 +76,7 @@ export const ManageLoanActions = React.memo(
         preparingTransactions={loadingTxns}
         actionText={<Trans>Modify loan request</Trans>}
         actionInProgressText={<Trans>Modifying loan request...</Trans>}
-        handleAction={modifyLoanRequest}
+        handleAction={modifyCreditLine}
         requiresApproval={false}
         sx={sx}
         {...props}

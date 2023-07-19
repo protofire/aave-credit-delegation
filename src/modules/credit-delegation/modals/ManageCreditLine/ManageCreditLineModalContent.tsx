@@ -12,35 +12,35 @@ import { useWalletBalances } from 'src/hooks/app-data-provider/useWalletBalances
 import { useModalContext } from 'src/hooks/useModal';
 import { roundToTokenDecimals } from 'src/utils/utils';
 
-import { PoliciesAndLoanRequest } from '../../types';
-import { ManageLoanActions } from './ManageLoanActions';
+import { CreditLine } from '../../types';
+import { ManageCreditLineActions } from './ManageCreditLineActions';
 
-interface ManageLoanModalContentProps extends ModalWrapperProps {
-  policy: PoliciesAndLoanRequest;
+interface ManageCreditLineModalContentProps extends ModalWrapperProps {
+  creditLine: CreditLine;
 }
 
-export const ManageLoanModalContent = memo(
-  ({ policy, isWrongNetwork }: ManageLoanModalContentProps) => {
+export const ManageCreditLineModalContent = memo(
+  ({ creditLine, isWrongNetwork }: ManageCreditLineModalContentProps) => {
     const { mainTxState: supplyTxState, gasLimit, txError } = useModalContext();
     const { walletBalances } = useWalletBalances();
 
-    const [newAmount, setNewAmount] = useState(policy.amount);
+    const [newAmount, setNewAmount] = useState(creditLine.amount);
 
     // TODO: Atomica USDC doesnt show in the wallet balance
     const walletBalance = useMemo(
-      () => walletBalances[policy.asset?.address || '']?.amount,
+      () => walletBalances[creditLine.asset?.address || '']?.amount,
       [walletBalances]
     );
 
     const handleChange = (value: string) => {
-      const decimalTruncatedValue = roundToTokenDecimals(value, policy.asset?.decimals || 18);
+      const decimalTruncatedValue = roundToTokenDecimals(value, creditLine.asset?.decimals || 18);
       setNewAmount(decimalTruncatedValue);
     };
 
     const actionProps = {
-      policyId: policy.policyId,
+      policyId: creditLine.policyId,
       amount: newAmount,
-      asset: policy.asset,
+      asset: creditLine.asset,
       isWrongNetwork,
     };
 
@@ -48,20 +48,20 @@ export const ManageLoanModalContent = memo(
       <>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
           <Typography color="text.secondary">
-            <Trans>This transaction will modify the requested loan amount.</Trans>
+            <Trans>This transaction will modify the credit line.</Trans>
           </Typography>
         </Box>
         <Box sx={{ pt: 5 }}>
           <AssetInput
             value={newAmount}
             onChange={handleChange}
-            usdValue={policy.amountUsd}
-            symbol={policy.asset?.symbol || ''}
+            usdValue={creditLine.amountUsd}
+            symbol={creditLine.asset?.symbol || ''}
             assets={[
               {
                 balance: walletBalance,
-                symbol: policy.asset?.symbol || '',
-                iconSymbol: policy.asset?.symbol || '',
+                symbol: creditLine.asset?.symbol || '',
+                iconSymbol: creditLine.asset?.symbol || '',
               },
             ]}
             disabled={supplyTxState.loading}
@@ -76,7 +76,7 @@ export const ManageLoanModalContent = memo(
 
         {txError && <GasEstimationError txError={txError} />}
 
-        <ManageLoanActions {...actionProps} />
+        <ManageCreditLineActions {...actionProps} />
       </>
     );
   }

@@ -11490,10 +11490,10 @@ rlp@^2.0.0, rlp@^2.2.3, rlp@^2.2.4:
   dependencies:
     bn.js "^5.2.0"
 
-rm-react-components@^1.0.14:
-  version "1.0.14"
-  resolved "https://registry.yarnpkg.com/rm-react-components/-/rm-react-components-1.0.14.tgz#63eb5808d3edd4c03627bc3826e643b7b7c9c254"
-  integrity sha512-j+N/pOuWg5Azx1eP6RlhhIQIhjmOmOL0BYoLuEWUDkjP6ag1GncVJlo6vWtbUjgrmvfx5JZ8BxhRA5s+vE1k0g==
+rm-react-components@^1.0.18:
+  version "1.0.18"
+  resolved "https://registry.yarnpkg.com/rm-react-components/-/rm-react-components-1.0.18.tgz#f6cc59bab0313e2f14a9ee73328658e6c71ae725"
+  integrity sha512-TSYJsUDBFPseXtKU1xbH5kK19vHnciN/6RkD2QG+EJ8Zh0KqVL5+xewOGwXhWgqG5DyC9jO0SsZiObuCDGpKMg==
   dependencies:
     "@ethersproject/providers" "^5.7.2"
     bignumber.js "^9.1.1"

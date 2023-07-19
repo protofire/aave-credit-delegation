@@ -6,7 +6,7 @@ import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
 import {
   AtomicaDelegationPool,
   AtomicaLoan,
-  PoliciesAndLoanRequest,
+  CreditLine,
 } from 'src/modules/credit-delegation/types';
 import { TxErrorType } from 'src/ui-config/errorMapping';
 
@@ -31,7 +31,7 @@ export enum ModalType {
   RevokeGovDelegation,
   CreditDelegation,
   RequestLoan,
-  ManageLoan,
+  ManageCreditLine,
   RepayLoan,
   ManageVault,
 }
@@ -59,8 +59,8 @@ export interface ModalArgsType {
   marketId?: string;
   loanRequest?: ModalManageLoanArgs;
   loan?: AtomicaLoan;
-  policy?: PoliciesAndLoanRequest;
   poolVault?: AtomicaDelegationPool;
+  creditLine?: CreditLine;
 }
 
 export type TxStateType = {
@@ -91,7 +91,7 @@ export interface ModalContextType<T extends ModalArgsType> {
   openGovVote: (proposalId: number, support: boolean, power: string) => void;
   openCreditDelegation: (poolId: string, underlyingAsset: string) => void;
   openRequestLoan: (marketId: string, underlyingAsset: string) => void;
-  openManageLoan: (loanRequest: ModalManageLoanArgs) => void;
+  openManageCreditLine: (creditLine: CreditLine) => void;
   openRepayLoan: (loan: AtomicaLoan) => void;
   openManageVault: (poolVault: AtomicaDelegationPool) => void;
   close: () => void;
@@ -204,9 +204,9 @@ export const ModalContextProvider: React.FC = ({ children }) => {
           setType(ModalType.RequestLoan);
           setArgs({ marketId, underlyingAsset });
         },
-        openManageLoan: (policy) => {
-          setType(ModalType.ManageLoan);
-          setArgs({ policy });
+        openManageCreditLine: (policy) => {
+          setType(ModalType.ManageCreditLine);
+          setArgs({ creditLine: policy });
         },
         openRepayLoan: (loan) => {
           setType(ModalType.RepayLoan);

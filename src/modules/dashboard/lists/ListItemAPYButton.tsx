@@ -1,10 +1,5 @@
 import { InterestRate } from '@aave/contract-helpers';
-import {
-  CheckIcon,
-  ChevronDownIcon,
-  ChevronUpIcon,
-  ExternalLinkIcon,
-} from '@heroicons/react/outline';
+import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/outline';
 import { Trans } from '@lingui/macro';
 import {
   Box,
@@ -19,7 +14,6 @@ import {
 } from '@mui/material';
 import * as React from 'react';
 import { FormattedNumber } from 'src/components/primitives/FormattedNumber';
-import { Link, ROUTES } from 'src/components/primitives/Link';
 import { CustomMarket } from 'src/ui-config/marketsConfig';
 
 interface ListItemAPYButtonProps {
@@ -40,8 +34,6 @@ export const ListItemAPYButton = ({
   onClick,
   stableBorrowAPY,
   variableBorrowAPY,
-  underlyingAsset,
-  currentMarket,
 }: ListItemAPYButtonProps) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -125,22 +117,7 @@ export const ListItemAPYButton = ({
 
         <Divider />
 
-        <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-          <Button
-            sx={{ my: 2, ml: 4 }}
-            size="small"
-            component={Link}
-            target="_blank"
-            href={ROUTES.reserveOverview(underlyingAsset, currentMarket)}
-            endIcon={
-              <SvgIcon>
-                <ExternalLinkIcon />
-              </SvgIcon>
-            }
-          >
-            <Trans>SEE CHARTS</Trans>
-          </Button>
-        </Box>
+        <Box sx={{ display: 'flex', flexDirection: 'row' }} />
       </Menu>
     </>
   );

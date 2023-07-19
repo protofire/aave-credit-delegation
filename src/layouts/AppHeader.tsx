@@ -18,7 +18,6 @@ import { ENABLE_TESTNET } from 'src/utils/marketsAndNetworksConfig';
 import { Link } from '../components/primitives/Link';
 import { uiConfig } from '../uiConfig';
 import { NavItems } from './components/NavItems';
-import { MobileMenu } from './MobileMenu';
 import { SettingsMenu } from './SettingsMenu';
 import WalletWidget from './WalletWidget';
 
@@ -157,16 +156,6 @@ export function AppHeader() {
         <Box sx={{ display: { xs: 'none', md: 'block' } }}>
           <SettingsMenu />
         </Box>
-
-        {!walletWidgetOpen && (
-          <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
-            <MobileMenu
-              open={mobileMenuOpen}
-              setOpen={setMobileMenuOpen}
-              headerHeight={headerHeight}
-            />
-          </Box>
-        )}
       </Box>
     </HideOnScroll>
   );

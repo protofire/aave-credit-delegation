@@ -5,17 +5,14 @@ import { Trans } from '@lingui/macro';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import { Box, Button, SvgIcon, Typography, useTheme } from '@mui/material';
 import { IncentivesCard } from 'src/components/incentives/IncentivesCard';
-import { MigrationDisabledTooltip } from 'src/components/infoTooltips/MigrationDisabledTooltip';
 import { IsolatedEnabledBadge } from 'src/components/isolationMode/IsolatedBadge';
 import { ListColumn } from 'src/components/lists/ListColumn';
 import { ListItem } from 'src/components/lists/ListItem';
 import { FormattedNumber } from 'src/components/primitives/FormattedNumber';
-import { ROUTES } from 'src/components/primitives/Link';
 import { NoData } from 'src/components/primitives/NoData';
 import { Row } from 'src/components/primitives/Row';
 import { TokenIcon } from 'src/components/primitives/TokenIcon';
 import { ComputedUserReserveData } from 'src/hooks/app-data-provider/useAppDataProvider';
-import { useRootStore } from 'src/store/root';
 import { MigrationDisabled, V3Rates } from 'src/store/v3MigrationSelectors';
 
 import { MigrationListItemToggler } from './MigrationListItemToggler';
@@ -48,7 +45,6 @@ export const MigrationListMobileItem = ({
   disabled,
   enableAsCollateral,
   isIsolated,
-  enteringIsolation,
   borrowApyType,
   userReserve,
   v3Rates,
@@ -70,7 +66,6 @@ export const MigrationListMobileItem = ({
     ? v3Rates?.vIncentivesData || []
     : v3Rates?.aIncentivesData || [];
 
-  const { currentMarket, currentMarketData } = useRootStore();
   const theme = useTheme();
   const baseColorSecondary = disabled === undefined ? 'text.secondary' : 'text.muted';
   const baseColorPrimary = disabled === undefined ? 'text.primary' : 'text.muted';
@@ -130,14 +125,6 @@ export const MigrationListMobileItem = ({
               <Typography variant="subheader1" color={baseColorPrimary} noWrap sx={{ pr: 1 }}>
                 {userReserve.reserve.symbol}
               </Typography>
-              {disabled !== undefined && (
-                <MigrationDisabledTooltip
-                  dashboardLink={ROUTES.dashboard + '/?marketName=' + currentMarket + '_v3'}
-                  marketName={currentMarketData.marketTitle}
-                  warningType={disabled}
-                  isolatedV3={enteringIsolation}
-                />
-              )}
             </Box>
           </Row>
         </ListColumn>

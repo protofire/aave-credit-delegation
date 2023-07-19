@@ -1,8 +1,6 @@
 import { Trans } from '@lingui/macro';
 import { Button, Stack, Typography } from '@mui/material';
-import { Link, ROUTES } from 'src/components/primitives/Link';
 import { Warning } from 'src/components/primitives/Warning';
-import { getEmodeMessage } from 'src/components/transactions/Emode/EmodeNaming';
 import {
   ComputedReserveData,
   useAppDataContext,
@@ -27,7 +25,7 @@ export const useReserveActionState = ({
   maxAmountToBorrow,
   reserve,
 }: ReserveActionStateProps) => {
-  const { user, eModes } = useAppDataContext();
+  const { user } = useAppDataContext();
   const { supplyCap, borrowCap, debtCeiling } = useAssetCaps();
   const { currentNetworkConfig, currentChainId } = useRootStore();
   const { openFaucet } = useModalContext();
@@ -89,35 +87,6 @@ export const useReserveActionState = ({
         {isolationModeBorrowDisabled && (
           <Warning sx={{ mb: 0 }} severity="warning" icon={false}>
             <Trans>Collateral usage is limited because of Isolation mode.</Trans>
-          </Warning>
-        )}
-
-        {eModeBorrowDisabled && isolationModeBorrowDisabled && (
-          <Warning sx={{ mb: 0 }} severity="info" icon={false}>
-            <Trans>
-              Borrowing is unavailable because you’ve enabled Efficiency Mode (E-Mode) and Isolation
-              mode. To manage E-Mode and Isolation mode visit your{' '}
-              <Link href={ROUTES.dashboard}>Dashboard</Link>.
-            </Trans>
-          </Warning>
-        )}
-
-        {eModeBorrowDisabled && !isolationModeBorrowDisabled && (
-          <Warning sx={{ mb: 0 }} severity="info" icon={false}>
-            <Trans>
-              Borrowing is unavailable because you’ve enabled Efficiency Mode (E-Mode) for{' '}
-              {getEmodeMessage(eModes[user.userEmodeCategoryId].label)} category. To manage E-Mode
-              categories visit your <Link href={ROUTES.dashboard}>Dashboard</Link>.
-            </Trans>
-          </Warning>
-        )}
-
-        {!eModeBorrowDisabled && isolationModeBorrowDisabled && (
-          <Warning sx={{ mb: 0 }} severity="info" icon={false}>
-            <Trans>
-              Borrowing is unavailable because you’re using Isolation mode. To manage Isolation mode
-              visit your <Link href={ROUTES.dashboard}>Dashboard</Link>.
-            </Trans>
           </Warning>
         )}
 

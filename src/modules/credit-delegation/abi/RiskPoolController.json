@@ -543,13 +543,13 @@
             {
                 "indexed": false,
                 "internalType": "uint256",
-                "name": "amount",
+                "name": "premiumTokenAmount",
                 "type": "uint256"
             }
         ],
-        "name": "LogLoanInterestRepayed",
+        "name": "LogLoanInterestPaid",
         "type": "event",
-        "signature": "0x8294e5c255253a53228aec5a1aeea755c002522a7ef70c3eb223628766bc49b7"
+        "signature": "0x5d20a7245624d778431a55c04af4407b1766d32eb1fccfaa05e9663dd97d4ea1"
     },
     {
         "anonymous": false,
@@ -569,13 +569,19 @@
             {
                 "indexed": false,
                 "internalType": "uint256",
-                "name": "amount",
+                "name": "repaidPremiumTokenAmount",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "repaidCapitalTokenAmount",
                 "type": "uint256"
             }
         ],
-        "name": "LogLoanPrincipalRepayed",
+        "name": "LogLoanPrincipalRepaid",
         "type": "event",
-        "signature": "0x08d2ff7f61909058589de102e81d7a6380038266a5f0fc0f97f052124c3ed246"
+        "signature": "0xf49262fbb9875ff470fc2a2a4176d5e2f574e134a2fb0b090b7c8a9fbb7bd113"
     },
     {
         "anonymous": false,
@@ -727,11 +733,17 @@
                 "internalType": "uint256",
                 "name": "capitalTokenAmount",
                 "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "premiumRatePerSec",
+                "type": "uint256"
             }
         ],
         "name": "LogLoanTransferred",
         "type": "event",
-        "signature": "0x655cd1864fe289f2a3ea3317ba592a3612f1abbefab24e724dc962ea082abac9"
+        "signature": "0x1504072c5a38128818ed23c454d2ac286be36bf853cb0dd9b810334b964193e0"
     },
     {
         "anonymous": false,
@@ -2166,6 +2178,11 @@
                 "internalType": "uint256",
                 "name": "tailCover",
                 "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "premiumRatePerSec",
+                "type": "uint256"
             }
         ],
         "stateMutability": "view",
@@ -2280,6 +2297,11 @@
                 "internalType": "address",
                 "name": "recipient",
                 "type": "address"
+            },
+            {
+                "internalType": "string",
+                "name": "details",
+                "type": "string"
             }
         ],
         "name": "applyForPolicy",
@@ -2292,7 +2314,7 @@
         ],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0x5f575a36"
+        "signature": "0xd765eeb3"
     },
     {
         "inputs": [
@@ -4335,7 +4357,7 @@
             },
             {
                 "internalType": "uint256",
-                "name": "rate",
+                "name": "premiumRatePerSec",
                 "type": "uint256"
             },
             {
@@ -4345,7 +4367,17 @@
             },
             {
                 "internalType": "uint256",
-                "name": "repayedAmount",
+                "name": "repaidAmount",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "accruedInterest",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "lastUpdateTs",
                 "type": "uint256"
             }
         ],
@@ -4430,6 +4462,11 @@
                 "type": "bool"
             },
             {
+                "internalType": "string",
+                "name": "details",
+                "type": "string"
+            },
+            {
                 "internalType": "enum IRiskPoolsControllerStorageModel.LoanRequestStatus",
                 "name": "status",
                 "type": "uint8"
@@ -4487,7 +4524,7 @@
             },
             {
                 "internalType": "string",
-                "name": "data",
+                "name": "details",
                 "type": "string"
             }
         ],
@@ -5275,6 +5312,11 @@
                 "internalType": "uint256",
                 "name": "underlyingCover",
                 "type": "uint256"
+            },
+            {
+                "internalType": "string",
+                "name": "details",
+                "type": "string"
             }
         ],
         "stateMutability": "view",
@@ -6007,6 +6049,11 @@
                 "internalType": "bool",
                 "name": "receiveOnApprove",
                 "type": "bool"
+            },
+            {
+                "internalType": "string",
+                "name": "details",
+                "type": "string"
             }
         ],
         "name": "requestLoan",
@@ -6019,7 +6066,7 @@
         ],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0xc40f9816"
+        "signature": "0xb7d6b32f"
     },
     {
         "inputs": [

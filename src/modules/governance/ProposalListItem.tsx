@@ -4,7 +4,7 @@ import { Trans } from '@lingui/macro';
 import { Box, Typography, useTheme } from '@mui/material';
 import { GovernancePageProps } from 'pages/governance/index.governance';
 import { CheckBadge } from 'src/components/primitives/CheckBadge';
-import { Link, ROUTES } from 'src/components/primitives/Link';
+import { Link } from 'src/components/primitives/Link';
 
 import { FormattedProposalTime } from './FormattedProposalTime';
 import { StateBadge } from './StateBadge';
@@ -32,11 +32,6 @@ export function ProposalListItem({
         borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
       }}
       component={Link}
-      href={
-        prerendered
-          ? ROUTES.prerenderedProposal(proposal.id)
-          : ROUTES.dynamicRenderedProposal(proposal.id)
-      }
     >
       <Box
         sx={{

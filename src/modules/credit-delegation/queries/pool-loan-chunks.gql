@@ -5,7 +5,6 @@ query poolLoanChunks($poolIds: [String]!) {
     poolId
     rate
     repaidAmount
-    chunkIndex
     borrowedAmount
   }
 

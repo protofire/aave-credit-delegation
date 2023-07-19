@@ -35,7 +35,6 @@ import { GovernanceDataProvider } from 'src/hooks/governance-data-provider/Gover
 import { usePolling } from 'src/hooks/usePolling';
 import { MainLayout } from 'src/layouts/MainLayout';
 import { FormattedProposalTime } from 'src/modules/governance/FormattedProposalTime';
-import { ProposalTopPanel } from 'src/modules/governance/proposal/ProposalTopPanel';
 import { VoteInfo } from 'src/modules/governance/proposal/VoteInfo';
 import { VotersListContainer } from 'src/modules/governance/proposal/VotersListContainer';
 import { StateBadge } from 'src/modules/governance/StateBadge';
@@ -171,7 +170,6 @@ export default function ProposalPage({
           description={ipfs.shortDescription}
         />
       )}
-      <ProposalTopPanel />
 
       <ContentContainer>
         <Grid container spacing={4}>
