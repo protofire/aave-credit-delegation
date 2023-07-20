@@ -32,12 +32,9 @@ export const LoanListItem = (loan: AtomicaLoan) => {
     usdRate,
   } = loan;
 
-  const interestAccrued = BigNumber.max(
-    new BigNumber(ratePerSec)
-      .times(new BigNumber(Date.now()).div(1000).minus(loan?.lastUpdateTs ?? 0))
-      .decimalPlaces(asset?.decimals ?? 18),
-    0
-  );
+  const interestAccrued = new BigNumber(ratePerSec)
+    .times(new BigNumber(Date.now()).div(1000).minus(loan?.lastUpdateTs ?? 0))
+    .times(borrowedAmount);
 
   const interestAccruedUsd = interestAccrued.times(usdRate);
 
