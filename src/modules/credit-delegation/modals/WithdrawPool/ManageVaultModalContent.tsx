@@ -82,8 +82,15 @@ export const ManageVaultModalContent = memo(
   }: ManageVaultModalContentProps) => {
     const { mainTxState: supplyTxState, gasLimit, txError } = useModalContext();
     const { marketReferencePriceInUsd } = useAppDataContext();
-    const { getUserPoolBalance, generateWithdrawTx, calculatePoolRewards, generateClaimRewardsTx } =
-      useRiskPool(id);
+    const {
+      generateWithdrawTx,
+      calculatePoolRewards,
+      generateClaimRewardsTx,
+      totalAmount,
+      normalizedBalance,
+      poolBalanceState,
+      getUserPoolBalance,
+    } = useRiskPool(id, asset);
 
     const { reserve } = userReserve;
 
@@ -92,9 +99,6 @@ export const ManageVaultModalContent = memo(
     const [_amount, setAmount] = useState('');
     const [manageType, setManageType] = useState<ManageType>(ManageType.LIQUIDITY);
     const [receiveAmount, setReceiveAmount] = useState<string>('0');
-    const [normalizedBalance, setNormalizedBalance] = useState<string>('0');
-    const [totalAmount, setTotalAmount] = useState<string>('0');
-    const [poolBalanceState, setPoolBalanceState] = useState();
     const [currentlyEarned, setCurrentlyEarned] = useState<BigNumber>(new BigNumber(0));
     const [currentlyEarnedInUSD, setCurrentlyEarnedInUSD] = useState<number>(0);
     const [rewardEarningsState, setRewardEarningsState] = useState<PoolRewards>();
@@ -110,11 +114,8 @@ export const ManageVaultModalContent = memo(
     );
 
     const fetchPoolBalance = useCallback(async () => {
-      const poolBalance = await getUserPoolBalance();
-      setPoolBalanceState(poolBalance);
-      setNormalizedBalance(normalize(poolBalance.toString(), 18));
-      setTotalAmount(normalize(poolBalance.toString(), asset?.decimals || 18));
-    }, [getUserPoolBalance, asset?.decimals]);
+      await getUserPoolBalance();
+    }, [getUserPoolBalance]);
 
     const fetchCalculatePoolRewards = useCallback(async () => {
       const rewardEarnings = await calculatePoolRewards(

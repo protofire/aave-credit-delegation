@@ -71,7 +71,6 @@ export const ManageVaultModalActions = memo(
             txHash: undefined,
             loading: false,
           });
-          close();
         }
       }
     }, [
@@ -109,7 +108,6 @@ export const ManageVaultModalActions = memo(
             txHash: undefined,
             loading: false,
           });
-          close();
         }
       }
     }, [
@@ -152,6 +150,7 @@ export const ManageVaultModalActions = memo(
             requiresApproval={false}
             sx={sx}
             requiresAmount={true}
+            amount={earnedRewardIds.length ? '1' : '0'}
             {...props}
           />
         )}

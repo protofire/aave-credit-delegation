@@ -1,8 +1,9 @@
 import { TokenMetadataType } from '@aave/contract-helpers/dist/esm/erc20-contract';
-import { normalizeBN } from '@aave/math-utils';
+import { normalize, normalizeBN } from '@aave/math-utils';
 import BigNumber from 'bignumber.js';
 import { Contract, PopulatedTransaction } from 'ethers';
 import { Interface } from 'ethers/lib/utils';
+import { useState } from 'react';
 import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
 import { useRootStore } from 'src/store/root';
 
@@ -21,10 +22,14 @@ export type TokenMap = {
   [key: string]: Reward;
 };
 
-export const useRiskPool = (pool: string) => {
+export const useRiskPool = (pool: string, asset?: TokenMetadataType) => {
   const { provider } = useWeb3Context();
   const [account] = useRootStore((state) => [state.account]);
   const { getPriceMap, getPrice } = useCoinRate();
+
+  const [normalizedBalance, setNormalizedBalance] = useState<string>('0');
+  const [totalAmount, setTotalAmount] = useState<string>('0');
+  const [poolBalanceState, setPoolBalanceState] = useState();
 
   const contract = new Contract(pool, RISK_POOL_ABI, provider?.getSigner());
   const jsonInterface = new Interface(RISK_POOL_ABI);
@@ -33,6 +38,9 @@ export const useRiskPool = (pool: string) => {
 
   const getUserPoolBalance = async () => {
     const balance = await contract.balanceOf(account.toLowerCase());
+    setPoolBalanceState(balance);
+    setNormalizedBalance(normalize(balance.toString(), 18));
+    setTotalAmount(normalize(balance.toString(), asset?.decimals || 18));
     return balance;
   };
 
@@ -238,5 +246,8 @@ export const useRiskPool = (pool: string) => {
     generateWithdrawTx,
     calculatePoolRewards,
     generateClaimRewardsTx,
+    normalizedBalance,
+    totalAmount,
+    poolBalanceState,
   };
 };

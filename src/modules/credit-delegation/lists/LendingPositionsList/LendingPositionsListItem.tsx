@@ -1,6 +1,7 @@
 import { normalize, valueToBigNumber } from '@aave/math-utils';
 import { Trans } from '@lingui/macro';
 import { Button } from '@mui/material';
+import { useCallback, useEffect } from 'react';
 import { ListColumn } from 'src/components/lists/ListColumn';
 import { Link } from 'src/components/primitives/Link';
 import { Row } from 'src/components/primitives/Row';
@@ -11,11 +12,13 @@ import {
 import { useModalContext } from 'src/hooks/useModal';
 
 import { useManagerDetails } from '../../hooks/useManagerDetails';
+import { useRiskPool } from '../../hooks/useRiskPool';
 import { AtomicaDelegationPool } from '../../types';
 import { ListAPRColumn } from '../ListAPRColumn';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListItemWrapper } from '../ListItemWrapper';
 import { ListValueColumn } from '../ListValueColumn';
+import { ListItemActive } from './ListItemActive';
 
 export const LendingPositionsListItem = (poolVault: AtomicaDelegationPool) => {
   const { openCreditDelegation, openManageVault } = useModalContext();
@@ -40,6 +43,11 @@ export const LendingPositionsListItem = (poolVault: AtomicaDelegationPool) => {
 
   const { managerDetails } = useManagerDetails(manager);
   const { user } = useAppDataContext();
+  const { getUserPoolBalance, totalAmount } = useRiskPool(id, asset);
+
+  const fetchPoolBalance = useCallback(async () => {
+    await getUserPoolBalance();
+  }, [getUserPoolBalance]);
 
   const amount = normalize(vault?.loanAmount || '0', asset?.decimals || 18);
 
@@ -47,7 +55,12 @@ export const LendingPositionsListItem = (poolVault: AtomicaDelegationPool) => {
     return underlyingAsset === userReserve.underlyingAsset;
   }) as ComputedUserReserveData;
 
+  useEffect(() => {
+    fetchPoolBalance();
+  }, []);
+
   const usdValue = valueToBigNumber(amount).multipliedBy(reserve.priceInUSD);
+  const normalizedBalanceUSD = valueToBigNumber(totalAmount).multipliedBy(reserve.priceInUSD);
 
   return (
     <ListItemWrapper symbol={symbol} iconSymbol={iconSymbol} name={name}>
@@ -80,18 +93,18 @@ export const LendingPositionsListItem = (poolVault: AtomicaDelegationPool) => {
         ))}
       </ListColumn>
 
-      {/* <ListValueColumn
-        symbol={symbol}
-        value={Number(approvedCredit)}
-        subValue={approvedCreditUsd}
-        withTooltip
-        disabled={Number(vault?.loanAmount) === 0}
-      /> */}
-
       <ListValueColumn
         symbol={symbol}
         value={Number(amount)}
         subValue={usdValue.toString(10)}
+        withTooltip
+        disabled={Number(vault?.loanAmount) === 0}
+      />
+
+      <ListValueColumn
+        symbol={symbol}
+        value={Number(totalAmount)}
+        subValue={normalizedBalanceUSD.toString(10)}
         withTooltip
         disabled={Number(vault?.loanAmount) === 0}
       />
@@ -108,6 +121,10 @@ export const LendingPositionsListItem = (poolVault: AtomicaDelegationPool) => {
         symbol={symbol}
         endDate={rewards?.length ? rewards[0].endedAtConverted : ''}
       />
+
+      <ListColumn>
+        <ListItemActive isActive={Number(totalAmount) > 0} />
+      </ListColumn>
 
       <ListButtonsColumn>
         <Button

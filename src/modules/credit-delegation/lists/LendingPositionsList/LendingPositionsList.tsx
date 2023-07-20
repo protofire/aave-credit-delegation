@@ -21,8 +21,10 @@ const head = [
   { title: <Trans key="title">Pool Description</Trans>, sortKey: 'metadata.Label' },
   { title: <Trans key="manager">Pool Manager</Trans>, sortKey: 'manager' },
   { title: <Trans key="borrowers">Borrowers</Trans>, sortKey: 'borrowers' },
-  { title: <Trans key="lended">Amount Used</Trans>, sortKey: 'lended' },
+  { title: <Trans key="lended">Lent Amount</Trans>, sortKey: 'lended' },
+  { title: <Trans key="balance">Balance</Trans>, sortKey: 'balance' },
   { title: <Trans key="APY">APY</Trans>, sortKey: 'supplyAPY' },
+  { title: <Trans key="active">Active</Trans>, sortKey: 'active' },
 ];
 
 interface HeaderProps {
@@ -81,7 +83,7 @@ export const LendingPositionsList = ({ type }: LendingPositionsListProps) => {
   );
 
   const deficitPools = pools.filter(
-    (pool) => Number(pool.supplyAPY) <= 0 || Number(pool.rewardAPY) <= 0
+    (pool) => Number(pool.supplyAPY) <= 0 && Number(pool.rewardAPY) <= 0
   );
 
   const sortedPools = useMemo(
