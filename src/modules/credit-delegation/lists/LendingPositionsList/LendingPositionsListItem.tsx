@@ -1,4 +1,5 @@
-import { normalize, valueToBigNumber } from '@aave/math-utils';
+// import { normalize, valueToBigNumber } from '@aave/math-utils';
+import { valueToBigNumber } from '@aave/math-utils';
 import { Trans } from '@lingui/macro';
 import { Button } from '@mui/material';
 import { useCallback, useEffect } from 'react';
@@ -49,7 +50,7 @@ export const LendingPositionsListItem = (poolVault: AtomicaDelegationPool) => {
     await getUserPoolBalance();
   }, [getUserPoolBalance]);
 
-  const amount = normalize(vault?.loanAmount || '0', asset?.decimals || 18);
+  // const amount = normalize(vault?.loanAmount || '0', asset?.decimals || 18);
 
   const { reserve } = user?.userReservesData.find((userReserve) => {
     return underlyingAsset === userReserve.underlyingAsset;
@@ -59,7 +60,7 @@ export const LendingPositionsListItem = (poolVault: AtomicaDelegationPool) => {
     fetchPoolBalance();
   }, []);
 
-  const usdValue = valueToBigNumber(amount).multipliedBy(reserve.priceInUSD);
+  // const usdValue = valueToBigNumber(amount).multipliedBy(reserve.priceInUSD);
   const normalizedBalanceUSD = valueToBigNumber(totalAmount).multipliedBy(reserve.priceInUSD);
 
   return (
@@ -93,13 +94,13 @@ export const LendingPositionsListItem = (poolVault: AtomicaDelegationPool) => {
         ))}
       </ListColumn>
 
-      <ListValueColumn
+      {/* <ListValueColumn
         symbol={symbol}
         value={Number(amount)}
         subValue={usdValue.toString(10)}
         withTooltip
         disabled={Number(vault?.loanAmount) === 0}
-      />
+      /> */}
 
       <ListValueColumn
         symbol={symbol}

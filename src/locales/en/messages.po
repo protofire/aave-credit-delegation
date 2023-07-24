@@ -362,7 +362,6 @@ msgstr "Back to Dashboard"
 
 #: src/components/transactions/AssetInput.tsx
 #: src/components/transactions/ClaimRewards/ClaimRewardsModalContent.tsx
-#: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
 #: src/modules/dashboard/lists/BorrowedPositionsList/BorrowedPositionsList.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsList.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsList.tsx
@@ -1131,10 +1130,6 @@ msgstr "Lended"
 msgid "Lent"
 msgstr "Lent"
 
-#: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
-msgid "Lent Amount"
-msgstr "Lent Amount"
-
 #: src/modules/dashboard/LiquidationRiskParametresModal/components/LTVContent.tsx
 msgid "Liquidation <0/> threshold"
 msgstr "Liquidation <0/> threshold"
@@ -1282,6 +1277,10 @@ msgstr "Modify loan request"
 #: src/modules/credit-delegation/modals/ManageCreditLine/ManageCreditLineActions.tsx
 msgid "Modifying loan request..."
 msgstr "Modifying loan request..."
+
+#: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
+msgid "My Balance"
+msgstr "My Balance"
 
 #: src/modules/credit-delegation/modals/WithdrawPool/ManageVaultModalContent.tsx
 msgid "My Pool Balance"

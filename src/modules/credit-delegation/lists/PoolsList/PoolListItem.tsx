@@ -27,7 +27,6 @@ export const PoolListItem = ({
   markets,
   rewardAPY,
   rewards,
-  vault,
 }: AtomicaDelegationPool) => {
   const { openCreditDelegation } = useModalContext();
 
@@ -87,7 +86,7 @@ export const PoolListItem = ({
 
       <ListButtonsColumn>
         <Button
-          disabled={!isActive || Number(availableBalance) <= 0 || Boolean(vault)}
+          disabled={!isActive || Number(availableBalance) <= 0}
           variant="contained"
           onClick={() => openCreditDelegation(id, underlyingAsset)}
         >

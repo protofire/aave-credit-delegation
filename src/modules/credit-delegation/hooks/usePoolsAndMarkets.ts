@@ -257,6 +257,11 @@ export const usePoolsAndMarkets = () => {
         (token) => token.symbol === pool.capitalTokenSymbol
       );
 
+      // const { getUserPoolBalance, totalAmount, normalizedBalance, poolBalanceState } = useRiskPool(
+      //   pool.id,
+      //   tokenToBorrow
+      // );
+
       const poolMetadata = metadata?.find(
         (data) => data.EntityId.toLowerCase() === pool.id.toLowerCase()
       );
