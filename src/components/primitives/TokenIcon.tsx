@@ -62,7 +62,7 @@ export function Base64Token({
         );
       }
     }
-  }, [loading, aToken]);
+  }, [loading, aToken, onImageGenerated]);
   return (
     <div
       style={{
