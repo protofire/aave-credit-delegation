@@ -65,7 +65,18 @@ export const ManageCreditLineActions = React.memo(
           loading: false,
         });
       }
-    }, [amount, policyId, mainTxState, setMainTxState, provider, setTxError, close]);
+    }, [
+      amount,
+      policyId,
+      mainTxState,
+      setMainTxState,
+      provider,
+      setTxError,
+      close,
+      asset?.decimals,
+      riskPoolController,
+      refetchLoans,
+    ]);
 
     return (
       <TxActionsWrapper

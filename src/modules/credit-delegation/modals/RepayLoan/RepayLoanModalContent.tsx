@@ -153,7 +153,7 @@ export const RepayLoanModalContent = memo(
         setAmount('');
         setTxError(undefined);
       },
-      [setRepayType, setAmount]
+      [setRepayType, setAmount, setTxError]
     );
 
     return (

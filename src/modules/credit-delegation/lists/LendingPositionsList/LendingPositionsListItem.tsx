@@ -2,7 +2,7 @@
 import { valueToBigNumber } from '@aave/math-utils';
 import { Trans } from '@lingui/macro';
 import { Button } from '@mui/material';
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import { ListColumn } from 'src/components/lists/ListColumn';
 import { Link } from 'src/components/primitives/Link';
 import { Row } from 'src/components/primitives/Row';
@@ -46,10 +46,6 @@ export const LendingPositionsListItem = (poolVault: AtomicaDelegationPool) => {
   const { user } = useAppDataContext();
   const { getUserPoolBalance, totalAmount } = useRiskPool(id, asset);
 
-  const fetchPoolBalance = useCallback(async () => {
-    await getUserPoolBalance();
-  }, [getUserPoolBalance]);
-
   // const amount = normalize(vault?.loanAmount || '0', asset?.decimals || 18);
 
   const { reserve } = user?.userReservesData.find((userReserve) => {
@@ -57,8 +53,8 @@ export const LendingPositionsListItem = (poolVault: AtomicaDelegationPool) => {
   }) as ComputedUserReserveData;
 
   useEffect(() => {
-    fetchPoolBalance();
-  }, []);
+    getUserPoolBalance();
+  }, [getUserPoolBalance]);
 
   // const usdValue = valueToBigNumber(amount).multipliedBy(reserve.priceInUSD);
   const normalizedBalanceUSD = valueToBigNumber(totalAmount).multipliedBy(reserve.priceInUSD);

@@ -112,7 +112,6 @@ export const useUserLoans = (
                 ...chunk,
                 borrowedAmount: normalize(chunk.borrowedAmount, asset?.decimals ?? 18),
                 repaidAmount: normalize(chunk.repaidAmount, asset?.decimals ?? 18),
-                accruedInterest: normalize(chunk.accruedInterest, asset?.decimals ?? 18),
                 rate: normalize(chunk.rate, LOAN_CHUNK_RATE_DECIMALS),
               }))
           : [];
@@ -196,13 +195,13 @@ export const useUserLoans = (
     return requests;
   }, [
     data?.loans,
-    data?.loanRequests,
     chunksData?.loanChunks,
     tokenData,
     marketReferencePriceInUsd,
     loadingTokenData,
     reserves,
     policies,
+    data?.loanRequests,
   ]);
 
   const creditLines: CreditLine[] = useMemo(() => {
@@ -250,7 +249,7 @@ export const useUserLoans = (
         symbol: asset?.symbol ?? '',
       };
     });
-  }, [policies, reserves, tokenData, data?.loanRequests, marketReferencePriceInUsd, markets]);
+  }, [policies, reserves, tokenData, marketReferencePriceInUsd, markets]);
 
   const refetchLoans = useCallback(
     async (blockNumber?: number) => {
