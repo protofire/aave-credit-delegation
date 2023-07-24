@@ -10,14 +10,12 @@ import * as React from 'react';
 import { AddressBlocked } from 'src/components/AddressBlocked';
 import { Meta } from 'src/components/Meta';
 import { BorrowModal } from 'src/components/transactions/Borrow/BorrowModal';
-import { ClaimRewardsModal } from 'src/components/transactions/ClaimRewards/ClaimRewardsModal';
 import { CollateralChangeModal } from 'src/components/transactions/CollateralChange/CollateralChangeModal';
 import { EmodeModal } from 'src/components/transactions/Emode/EmodeModal';
 import { FaucetModal } from 'src/components/transactions/Faucet/FaucetModal';
 import { GasStationProvider } from 'src/components/transactions/GasStation/GasStationProvider';
 import { MigrateV3Modal } from 'src/components/transactions/MigrateV3/MigrateV3Modal';
 import { RateSwitchModal } from 'src/components/transactions/RateSwitch/RateSwitchModal';
-import { RepayModal } from 'src/components/transactions/Repay/RepayModal';
 import { SupplyModal } from 'src/components/transactions/Supply/SupplyModal';
 import { SwapModal } from 'src/components/transactions/Swap/SwapModal';
 import { WithdrawModal } from 'src/components/transactions/Withdraw/WithdrawModal';
@@ -78,10 +76,8 @@ export default function MyApp(props: MyAppProps) {
                           <SupplyModal />
                           <WithdrawModal />
                           <BorrowModal />
-                          <RepayModal />
                           <CollateralChangeModal />
                           <RateSwitchModal />
-                          <ClaimRewardsModal />
                           <EmodeModal />
                           <SwapModal />
                           <FaucetModal />

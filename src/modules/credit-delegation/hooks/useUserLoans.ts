@@ -112,6 +112,7 @@ export const useUserLoans = (
                 ...chunk,
                 borrowedAmount: normalize(chunk.borrowedAmount, asset?.decimals ?? 18),
                 repaidAmount: normalize(chunk.repaidAmount, asset?.decimals ?? 18),
+                accruedInterest: normalize(chunk.accruedInterest, asset?.decimals ?? 18),
                 rate: normalize(chunk.rate, LOAN_CHUNK_RATE_DECIMALS),
               }))
           : [];
