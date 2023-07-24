@@ -3,7 +3,6 @@ import { Box, Typography } from '@mui/material';
 import { useState } from 'react';
 import StyledToggleButton from 'src/components/StyledToggleButton';
 import StyledToggleButtonGroup from 'src/components/StyledToggleButtonGroup';
-import { usePermissions } from 'src/hooks/usePermissions';
 import { CreditDelegationProvider } from 'src/modules/credit-delegation/CreditDelegationContext';
 import { CreditDelegationTopPanel } from 'src/modules/credit-delegation/CreditDelegationTopPanel';
 
@@ -15,7 +14,6 @@ import { CreditDelegationContentWrapper } from '../src/modules/credit-delegation
 
 export default function CreditDelegation() {
   const { currentAccount, loading: web3Loading } = useWeb3Context();
-  const { isPermissionsLoading } = usePermissions();
 
   const [mode, setMode] = useState<'delegate' | 'borrow' | ''>('delegate');
 
@@ -49,7 +47,7 @@ export default function CreditDelegation() {
           </StyledToggleButtonGroup>
         </Box>
 
-        {currentAccount && !isPermissionsLoading ? (
+        {currentAccount ? (
           <CreditDelegationContentWrapper isBorrow={mode === 'borrow'} />
         ) : (
           <ConnectWalletPaper loading={web3Loading} />

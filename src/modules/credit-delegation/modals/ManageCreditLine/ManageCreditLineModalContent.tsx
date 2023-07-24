@@ -29,7 +29,7 @@ export const ManageCreditLineModalContent = memo(
     // TODO: Atomica USDC doesnt show in the wallet balance
     const walletBalance = useMemo(
       () => walletBalances[creditLine.asset?.address || '']?.amount,
-      [walletBalances]
+      [walletBalances, creditLine.asset?.address]
     );
 
     const handleChange = (value: string) => {

@@ -41,7 +41,7 @@ export const RequestLoanModalContent = React.memo(
       const blockNumber = await provider.getBlockNumber();
       await refetchAll(blockNumber);
       close();
-    }, []);
+    }, [close, provider, refetchAll]);
 
     if (supplyTxState.success) {
       return (

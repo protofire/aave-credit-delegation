@@ -113,10 +113,6 @@ export const ManageVaultModalContent = memo(
       [poolBalanceState]
     );
 
-    const fetchPoolBalance = useCallback(async () => {
-      await getUserPoolBalance();
-    }, [getUserPoolBalance]);
-
     const fetchCalculatePoolRewards = useCallback(async () => {
       const rewardEarnings = await calculatePoolRewards(
         rewards || [],
@@ -138,12 +134,12 @@ export const ManageVaultModalContent = memo(
     }, [asset, calculatePoolRewards, getCurrentlyEarned, rewards, totalLiquidity]);
 
     useEffect(() => {
-      fetchPoolBalance();
-    }, []);
+      getUserPoolBalance();
+    }, [getUserPoolBalance]);
 
     useEffect(() => {
       fetchCalculatePoolRewards();
-    }, []);
+    }, [fetchCalculatePoolRewards]);
 
     const isMaxSelected = _amount === '-1';
     const amount = isMaxSelected ? normalizedBalance : _amount;

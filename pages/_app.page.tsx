@@ -17,7 +17,6 @@ import { GasStationProvider } from 'src/components/transactions/GasStation/GasSt
 import { MigrateV3Modal } from 'src/components/transactions/MigrateV3/MigrateV3Modal';
 import { RateSwitchModal } from 'src/components/transactions/RateSwitch/RateSwitchModal';
 import { SupplyModal } from 'src/components/transactions/Supply/SupplyModal';
-import { SwapModal } from 'src/components/transactions/Swap/SwapModal';
 import { WithdrawModal } from 'src/components/transactions/Withdraw/WithdrawModal';
 import { BackgroundDataProvider } from 'src/hooks/app-data-provider/BackgroundDataProvider';
 import { AppDataProvider } from 'src/hooks/app-data-provider/useAppDataProvider';
@@ -79,7 +78,6 @@ export default function MyApp(props: MyAppProps) {
                           <CollateralChangeModal />
                           <RateSwitchModal />
                           <EmodeModal />
-                          <SwapModal />
                           <FaucetModal />
                           <MigrateV3Modal />
                         </GasStationProvider>

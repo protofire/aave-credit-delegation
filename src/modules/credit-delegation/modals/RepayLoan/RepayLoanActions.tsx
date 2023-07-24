@@ -34,7 +34,7 @@ export const RepayLoanActions = memo(
       setApprovalTxState,
       setLoadingTxns,
     } = useModalContext();
-    const { provider, currentAccount, sendTx } = useWeb3Context();
+    const { currentAccount, sendTx } = useWeb3Context();
     const { jsonRpcProvider } = useProtocolDataContext();
 
     const [requiresApproval, setRequiresApproval] = useState<boolean>(false);
@@ -85,6 +85,7 @@ export const RepayLoanActions = memo(
         asset,
         currentAccount,
         jsonRpcProvider,
+        riskPoolController,
       ]
     );
 
@@ -133,12 +134,12 @@ export const RepayLoanActions = memo(
       amount,
       mainTxState,
       setMainTxState,
-      provider,
       setTxError,
       close,
       loanId,
       asset,
       repayType,
+      riskPoolController,
     ]);
 
     const approval = async () => {

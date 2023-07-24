@@ -107,14 +107,11 @@ const CreditDelegationDataProvider = ({
     lendingCapacity,
   } = useLendingCapacity(loading ? undefined : pools);
   const { provider } = useWeb3Context();
-  const [account, chainId, getProvider, generateDelegationSignatureRequest] = useRootStore(
-    (state) => [
-      state.account,
-      state.currentChainId,
-      state.jsonRpcProvider,
-      state.generateDelegationSignatureRequest,
-    ]
-  );
+  const [account, getProvider, generateDelegationSignatureRequest] = useRootStore((state) => [
+    state.account,
+    state.jsonRpcProvider,
+    state.generateDelegationSignatureRequest,
+  ]);
 
   const { signTxData } = useWeb3Context();
 
@@ -209,8 +206,6 @@ const CreditDelegationDataProvider = ({
     },
     [
       account,
-      chainId,
-      getProvider,
       getUserDebtTokenNonce,
       getVaultAddress,
       pools,
