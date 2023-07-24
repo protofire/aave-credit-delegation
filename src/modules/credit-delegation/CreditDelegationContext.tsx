@@ -5,6 +5,7 @@ import { createContext, ReactNode, useCallback, useContext } from 'react';
 import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
 import { useRootStore } from 'src/store/root';
 
+import VAULT_ABI from './abi/CreditDelegationVault.json';
 import FACTORY_ABI from './abi/CreditDelegationVaultFactory.json';
 import STABLE_DEBT_TOKEN_ABI from './abi/StabeDebtTokenABI.json';
 import { client } from './apollo';
@@ -43,6 +44,11 @@ export interface CreditDelgationData {
     value: string;
     delegationPercentage?: number;
   }) => Promise<PopulatedTransaction>;
+  generateBorrowWithSig: (args: {
+    atomicaPool: string;
+    amount: string;
+    vaultAddress: string;
+  }) => Promise<PopulatedTransaction>;
   refetchLoans: (blockNumber?: number) => Promise<void>;
   refetchAll: (blockNumber?: number) => Promise<void>;
 }
@@ -64,6 +70,9 @@ export const CreditDelegationContext = createContext({
   fetchAllBorrowAllowances: () => Promise.reject(),
   fetchBorrowAllowance: () => Promise.reject(),
   generateDeployVault: () => {
+    throw new Error('Method not implemented');
+  },
+  generateBorrowWithSig: () => {
     throw new Error('Method not implemented');
   },
   refetchLoans: () => Promise.reject(),
@@ -210,6 +219,59 @@ const CreditDelegationDataProvider = ({
     ]
   );
 
+  const generateBorrowWithSig = useCallback(
+    async ({
+      atomicaPool,
+      amount,
+      vaultAddress,
+    }: {
+      atomicaPool: string;
+      amount: string;
+      vaultAddress: string;
+    }) => {
+      const pool = pools.find((pool) => pool.id.toLowerCase() === atomicaPool.toLowerCase());
+
+      if (pool && account) {
+        const nonce = await getUserDebtTokenNonce(pool.variableDebtTokenAddress);
+
+        const deadline = Date.now() + 1000 * 60 * 50;
+
+        const dataToSign = await generateDelegationSignatureRequest({
+          debtToken: pool.variableDebtTokenAddress.toLowerCase(),
+          delegatee: vaultAddress.toLowerCase(),
+          value: amount,
+          deadline: deadline,
+          nonce: Number(nonce),
+        });
+
+        const sig = await signTxData(dataToSign);
+
+        const { v, r, s } = utils.splitSignature(sig);
+
+        const jsonInterface = new Interface(VAULT_ABI);
+
+        const txData = jsonInterface.encodeFunctionData('borrowWithSig', [
+          amount,
+          deadline,
+          v,
+          r,
+          s,
+        ]);
+
+        const borrowWithSigTx: PopulatedTransaction = {
+          data: txData,
+          to: vaultAddress,
+          from: account,
+        };
+
+        return borrowWithSigTx;
+      }
+
+      throw new Error('Pool not found');
+    },
+    [account, generateDelegationSignatureRequest, getUserDebtTokenNonce, pools, signTxData]
+  );
+
   return (
     <CreditDelegationContext.Provider
       value={{
@@ -231,6 +293,7 @@ const CreditDelegationDataProvider = ({
         creditLines,
         refetchLoans,
         refetchAll,
+        generateBorrowWithSig,
       }}
     >
       {children}

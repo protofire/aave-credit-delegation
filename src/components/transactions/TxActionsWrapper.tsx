@@ -31,6 +31,7 @@ interface TxActionsWrapperProps extends BoxProps {
     handleClick: () => Promise<void>;
   };
   tryPermit?: boolean;
+  delegate?: boolean;
 }
 
 export const TxActionsWrapper = ({
@@ -51,6 +52,7 @@ export const TxActionsWrapper = ({
   fetchingData = false,
   errorParams,
   tryPermit,
+  delegate,
   ...rest
 }: TxActionsWrapperProps) => {
   const { txError } = useModalContext();
@@ -93,13 +95,17 @@ export const TxActionsWrapper = ({
     )
       return null;
     if (approvalTxState?.loading)
-      return { loading: true, disabled: true, content: <Trans>Approving {symbol}...</Trans> };
+      return {
+        loading: true,
+        disabled: true,
+        content: <Trans>{`${delegate ? 'Delegating' : 'Approving'} ${symbol}...`}</Trans>,
+      };
     if (approvalTxState?.success)
       return {
         disabled: true,
         content: (
           <>
-            <Trans>Approve Confirmed</Trans>
+            <Trans>{delegate ? 'Delegation confirmed' : 'Approve Confirmed'}</Trans>
             <SvgIcon sx={{ fontSize: 20, ml: 2 }}>
               <CheckIcon />
             </SvgIcon>
@@ -114,7 +120,7 @@ export const TxActionsWrapper = ({
           iconSize={20}
           iconMargin={2}
           color="white"
-          text={<Trans>Approve {symbol} to continue</Trans>}
+          text={<Trans>{`${delegate ? 'Delegate' : 'Approve'} ${symbol} to continue`}</Trans>}
         />
       ),
       handleClick: handleApproval,

@@ -13,6 +13,7 @@ interface IncentivesCardProps {
   symbolsVariant?: 'secondary14' | 'secondary16';
   align?: 'center' | 'flex-end';
   color?: string;
+  endDate?: string;
 }
 
 export const IncentivesCard = ({
@@ -23,6 +24,7 @@ export const IncentivesCard = ({
   symbolsVariant,
   align,
   color,
+  endDate,
 }: IncentivesCardProps) => {
   return (
     <Box
@@ -47,7 +49,7 @@ export const IncentivesCard = ({
         <NoData variant={variant} color={color || 'text.secondary'} />
       )}
 
-      <IncentivesButton incentives={incentives} symbol={symbol} />
+      <IncentivesButton incentives={incentives} symbol={symbol} endDate={endDate} />
     </Box>
   );
 };

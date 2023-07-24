@@ -134,6 +134,7 @@ export interface AtomicaDelegationPool {
   supplyCap: string;
   totalLiquidity: string;
   supplyAPY: string;
+  rewardAPY: string;
   underlyingAsset: string;
   isActive: boolean;
   availableBalance: string | number;
@@ -154,6 +155,7 @@ export interface AtomicaDelegationPool {
   }[];
   stableDebtTokenAddress: string;
   variableDebtTokenAddress: string;
+  rewards?: AtomicaSubgraphRewards[];
 }
 
 export interface AtomicaBorrowMarket {
@@ -249,4 +251,68 @@ export interface CreditLine {
   symbol: string;
   title: string;
   usdRate: string;
+}
+
+export interface AtomicaSubgraphRewards {
+  cid: string;
+  amount: string;
+  creator: string;
+  endedAt: string;
+  endedAtConverted: string;
+  id: string;
+  num: string;
+  poolId: string;
+  updatedAt: string;
+  startedAt: string;
+  rewardTokenSymbol: string;
+  rewardTokenName: string;
+  rewardTokenDecimals: string;
+  rewardToken: string;
+  rewardPerToken: string;
+  ratePerSecond: string;
+}
+
+export interface Reward {
+  id: string;
+  logoURI: string;
+  decimals: string;
+  symbol: string;
+  name: string;
+  amount: BigNumber;
+  duration: number;
+  earned: BigNumber;
+  rewardRate: BigNumber;
+  earnedRewardIds: string[];
+  endedAt: BigNumber;
+  startedAt: BigNumber;
+  tokenUsdPrice: number;
+  updatedAt?: number;
+}
+
+export interface AccountPoolReward {
+  reward: number;
+  poolId: string;
+  chainId: number;
+  rewardId: string;
+  updatedAt: number;
+}
+
+export interface EarnedToken {
+  id: string;
+  rewardRate: BigNumber;
+  earned: BigNumber;
+  earnedRewardIds: string[];
+  decimals: number;
+  symbol: string;
+  price: number;
+  logoUrl: string;
+  endedAt: BigNumber;
+  startedAt: BigNumber;
+  updatedAt?: number;
+}
+
+export interface PoolRewards {
+  apy: BigNumber;
+  lastReward?: Reward;
+  earnings: EarnedToken[];
 }

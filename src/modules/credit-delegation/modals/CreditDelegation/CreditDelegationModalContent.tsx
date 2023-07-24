@@ -1,15 +1,22 @@
 import { API_ETH_MOCK_ADDRESS } from '@aave/contract-helpers';
-import { USD_DECIMALS, valueToBigNumber } from '@aave/math-utils';
+import {
+  calculateHealthFactorFromBalancesBigUnits,
+  USD_DECIMALS,
+  valueToBigNumber,
+} from '@aave/math-utils';
 import { Trans } from '@lingui/macro';
 // import { AddressInput } from '../AddressInput';
-import { Box, Typography } from '@mui/material';
+import { Box, Checkbox, Typography } from '@mui/material';
 import BigNumber from 'bignumber.js';
 import React, { useState } from 'react';
+import { Warning } from 'src/components/primitives/Warning';
 import { AssetInput } from 'src/components/transactions/AssetInput';
 import { GasEstimationError } from 'src/components/transactions/FlowCommons/GasEstimationError';
 import { ModalWrapperProps } from 'src/components/transactions/FlowCommons/ModalWrapper';
 import { TxSuccessView } from 'src/components/transactions/FlowCommons/Success';
 import {
+  DetailsHFLine,
+  DetailsIncentivesLine,
   DetailsNumberLine,
   TxModalDetails,
 } from 'src/components/transactions/FlowCommons/TxModalDetails';
@@ -31,7 +38,7 @@ interface CreditDelegationModalContentProps extends ModalWrapperProps {
 
 export const CreditDelegationModalContent = React.memo(
   ({ poolId, underlyingAsset, poolReserve, isWrongNetwork }: CreditDelegationModalContentProps) => {
-    const { marketReferencePriceInUsd } = useAppDataContext();
+    const { marketReferencePriceInUsd, user } = useAppDataContext();
     const { currentNetworkConfig } = useProtocolDataContext();
     const { mainTxState: supplyTxState, gasLimit, txError } = useModalContext();
 
@@ -40,12 +47,9 @@ export const CreditDelegationModalContent = React.memo(
 
     // states
     const [amount, setAmount] = useState(pool?.approvedCredit ?? '0');
-
-    // const [address, setAddress] = useState('');
+    const [riskCheckboxAccepted, setRiskCheckboxAccepted] = useState(false);
 
     const supplyUnWrapped = underlyingAsset.toLowerCase() === API_ETH_MOCK_ADDRESS.toLowerCase();
-
-    const supplyApy = '0.0';
 
     const maxAmountToDelegate = valueToBigNumber(lendingCapacity)
       .minus(
@@ -97,20 +101,31 @@ export const CreditDelegationModalContent = React.memo(
         />
       );
 
+    // health factor calculations
+    const amountToBorrowInUsd = valueToBigNumber(amount)
+      .multipliedBy(poolReserve.formattedPriceInMarketReferenceCurrency)
+      .multipliedBy(marketReferencePriceInUsd)
+      .shiftedBy(-USD_DECIMALS);
+
+    const newHealthFactor = calculateHealthFactorFromBalancesBigUnits({
+      collateralBalanceMarketReferenceCurrency: user.totalCollateralUSD,
+      borrowBalanceMarketReferenceCurrency: valueToBigNumber(user.totalBorrowsUSD).plus(
+        amountToBorrowInUsd
+      ),
+      currentLiquidationThreshold: user.currentLiquidationThreshold,
+    });
+
+    const displayRiskCheckbox =
+      newHealthFactor.toNumber() < 1.5 && newHealthFactor.toString() !== '-1';
+
     return (
       <>
-        {/* <AddressInput
-          value={address}
-          onChange={setAddress}
-          inputTitle="Address to delegate to"
-          error={address && !isHexString(address, 20) ? 'Error' : undefined}
-        /> */}
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
           <Typography color="text.secondary">
             <Trans>
-              This transaction will use credit delegation to deposit into the pool{' '}
-              <b>({pool?.metadata?.Label ?? pool?.name})</b> and in exchange you will receive pool
-              tokens.
+              This transaction will use aave&apos;s credit delegation (variable rate) to deposit
+              into the pool <b>({pool?.metadata?.Label ?? pool?.name})</b> and in exchange you will
+              receive pool tokens.
             </Trans>
           </Typography>
         </Box>
@@ -133,17 +148,72 @@ export const CreditDelegationModalContent = React.memo(
             isMaxSelected={isMaxSelected}
             disabled={supplyTxState.loading}
             maxValue={maxAmountToDelegate}
-            balanceText={<Trans>Available credit</Trans>}
+            balanceText={<Trans>Available Aave credit</Trans>}
           />
         </Box>
 
-        <TxModalDetails gasLimit={gasLimit} skipLoad={true} disabled={Number(amount) === 0}>
-          <DetailsNumberLine description={<Trans>APY</Trans>} value={supplyApy} percent />
+        <TxModalDetails gasLimit={gasLimit}>
+          <DetailsIncentivesLine
+            incentives={poolReserve.vIncentivesData}
+            symbol={poolReserve.symbol}
+          />
+          <DetailsNumberLine
+            description={<Trans>Pool APY</Trans>}
+            value={Number(pool?.supplyAPY) + Number(pool?.rewardAPY) ?? '0.0'}
+            percent
+          />
+          <DetailsHFLine
+            visibleHfChange={!!amount}
+            healthFactor={user.healthFactor}
+            futureHealthFactor={newHealthFactor.toString(10)}
+          />
         </TxModalDetails>
 
         {txError && <GasEstimationError txError={txError} />}
 
-        <CreditDelegationActions {...supplyActionsProps} />
+        {displayRiskCheckbox && (
+          <>
+            <Warning severity="error" sx={{ my: 6 }}>
+              <Trans>
+                Borrowing this amount will reduce your health factor and increase risk of
+                liquidation.
+              </Trans>
+            </Warning>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+                mx: '24px',
+                mb: '12px',
+              }}
+            >
+              <Checkbox
+                checked={riskCheckboxAccepted}
+                onChange={() => setRiskCheckboxAccepted(!riskCheckboxAccepted)}
+                size="small"
+                data-cy={'risk-checkbox'}
+              />
+              <Typography variant="description">
+                <Trans>I acknowledge the risks involved.</Trans>
+              </Typography>
+            </Box>
+          </>
+        )}
+
+        <Warning severity="info" sx={{ my: 6 }}>
+          <Trans>
+            <b>Attention:</b> Parameter changes via governance can alter your account health factor
+            and risk of liquidation. Follow the{' '}
+            <a href="https://governance.aave.com/">Aave governance forum</a> for updates.
+          </Trans>
+        </Warning>
+
+        <CreditDelegationActions
+          {...supplyActionsProps}
+          blocked={displayRiskCheckbox && !riskCheckboxAccepted}
+        />
       </>
     );
   }

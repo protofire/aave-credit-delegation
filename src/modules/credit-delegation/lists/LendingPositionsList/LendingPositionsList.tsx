@@ -6,6 +6,7 @@ import { ListHeaderTitle } from 'src/components/lists/ListHeaderTitle';
 import { ListHeaderWrapper } from 'src/components/lists/ListHeaderWrapper';
 import { ListWrapper } from 'src/components/lists/ListWrapper';
 import { useAppDataContext } from 'src/hooks/app-data-provider/useAppDataProvider';
+import { useRootStore } from 'src/store/root';
 import { CREDIT_DELEGATION_LIST_COLUMN_WIDTHS } from 'src/utils/creditDelegationSortUtils';
 
 import { CreditDelegationContentNoData } from '../../CreditDelegationContentNoData';
@@ -20,8 +21,10 @@ const head = [
   { title: <Trans key="title">Pool Description</Trans>, sortKey: 'metadata.Label' },
   { title: <Trans key="manager">Pool Manager</Trans>, sortKey: 'manager' },
   { title: <Trans key="borrowers">Borrowers</Trans>, sortKey: 'borrowers' },
-  { title: <Trans key="lended">Amount</Trans>, sortKey: 'approvedCredit' },
+  // { title: <Trans key="lended">Lent Amount</Trans>, sortKey: 'lended' },
+  { title: <Trans key="balance">My Balance</Trans>, sortKey: 'balance' },
   { title: <Trans key="APY">APY</Trans>, sortKey: 'supplyAPY' },
+  { title: <Trans key="active">Active</Trans>, sortKey: 'active' },
 ];
 
 interface HeaderProps {
@@ -29,6 +32,10 @@ interface HeaderProps {
   sortDesc: boolean;
   setSortName: Dispatch<SetStateAction<string>>;
   setSortDesc: Dispatch<SetStateAction<boolean>>;
+}
+
+interface LendingPositionsListProps {
+  type: string;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -63,38 +70,55 @@ const Header: React.FC<HeaderProps> = ({
   );
 };
 
-export const LendingPositionsList = () => {
+export const LendingPositionsList = ({ type }: LendingPositionsListProps) => {
   const { loading } = useAppDataContext();
   const [sortName, setSortName] = useState('');
   const [sortDesc, setSortDesc] = useState(false);
 
   const { loading: loadingPools, pools } = useCreditDelegationContext();
+  const { account } = useRootStore();
+
+  const earningPools = pools.filter(
+    (pool) => Number(pool.supplyAPY) > 0 || Number(pool.rewardAPY) > 0
+  );
+
+  const deficitPools = pools.filter(
+    (pool) => Number(pool.supplyAPY) <= 0 && Number(pool.rewardAPY) <= 0
+  );
 
   const sortedPools = useMemo(
     () =>
       handleSortPools(
         sortDesc,
         sortName,
-        pools.filter((pool) => Number(pool.approvedCredit) > 0)
+        (type === 'earning' ? earningPools : deficitPools).filter(
+          (pool) => pool.vault?.owner.id === account
+        )
       ),
-    [sortDesc, sortName, pools]
+    [sortDesc, sortName, type, earningPools, deficitPools, account]
   );
 
   if (loading || loadingPools)
-    return <ListLoader title={<Trans>Your loans</Trans>} head={head.map((c) => c.title)} />;
+    return (
+      <ListLoader
+        title={<Trans>{`Your ${type} positions`}</Trans>}
+        head={head.map((c) => c.title)}
+      />
+    );
 
   return (
     <ListWrapper
       titleComponent={
         <Typography component="div" variant="h3" sx={{ mr: 4 }}>
-          <Trans>Your positions earning yield</Trans>
+          <Trans>{`Your ${type} positions`}</Trans>
         </Typography>
       }
       localStorageName="lendingPositionsCreditDelegationTableCollapse"
       noData={!sortedPools.length}
+      withTopMargin
     >
       {!sortedPools.length && (
-        <CreditDelegationContentNoData text={<Trans>Nothing borrowed yet</Trans>} />
+        <CreditDelegationContentNoData text={<Trans>Nothing lent yet</Trans>} />
       )}
 
       {!!sortedPools.length && (
