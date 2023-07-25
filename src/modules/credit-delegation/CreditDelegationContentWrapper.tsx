@@ -32,7 +32,7 @@ export const CreditDelegationContentWrapper = ({
       >
         <Box style={{ display: isBorrow ? 'none' : 'block' }}>
           {/* <LoanPositionsList /> */}
-          <LendingPositionsList type="deficit" />
+          <LendingPositionsList type="non-earning" />
           <LendingPositionsList type="earning" />
           <PoolsList />
         </Box>
