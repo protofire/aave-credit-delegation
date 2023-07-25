@@ -23,7 +23,8 @@ export const CreditDelegationTopPanel = () => {
   const theme = useTheme();
   const downToSM = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const { lendingCapacity, lended, loadingLendingCapacity } = useCreditDelegationContext();
+  const { lendingCapacity, lended, loadingLendingCapacity, averageApy } =
+    useCreditDelegationContext();
 
   const valueTypographyVariant = downToSM ? 'main16' : 'main21';
   const noDataTypographyVariant = downToSM ? 'secondary16' : 'secondary21';
@@ -101,7 +102,7 @@ export const CreditDelegationTopPanel = () => {
         >
           {currentAccount ? (
             <FormattedNumber
-              value={0}
+              value={averageApy}
               variant={valueTypographyVariant}
               visibleDecimals={2}
               percent

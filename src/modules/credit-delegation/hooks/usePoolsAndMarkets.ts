@@ -4,7 +4,7 @@ import {
   InterestRate,
   TokenMetadataType,
 } from '@aave/contract-helpers';
-import { normalize, USD_DECIMALS, valueToBigNumber } from '@aave/math-utils';
+import { normalize, normalizeBN, USD_DECIMALS, valueToBigNumber } from '@aave/math-utils';
 import { BigNumber } from 'bignumber.js';
 import { loader } from 'graphql.macro';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -176,13 +176,8 @@ export const usePoolsAndMarkets = () => {
         );
 
         if (poolReserve && vault) {
-          const { amount } = await getCreditDelegationApprovedAmount({
-            delegatee: vault.vault,
-            debtTokenAddress: vault.debtToken,
-          });
-
           setApprovedCredit((prev) => {
-            const amountUsdBig = valueToBigNumber(amount ?? '0')
+            const amountUsdBig = normalizeBN(vault.loanAmount ?? '0', poolReserve.decimals)
               .multipliedBy(poolReserve.formattedPriceInMarketReferenceCurrency)
               .multipliedBy(marketReferencePriceInUsd)
               .shiftedBy(-USD_DECIMALS);
@@ -190,7 +185,7 @@ export const usePoolsAndMarkets = () => {
             return {
               ...prev,
               [poolId.toLowerCase()]: {
-                amount,
+                amount: vault.loanAmount ?? '0',
                 amountUsdBig,
                 amountUsd: amountUsdBig.toFixed(2),
               },
