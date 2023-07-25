@@ -103,6 +103,7 @@ export const LendingPositionsList = ({ type }: LendingPositionsListProps) => {
       <ListLoader
         title={<Trans>{`Your ${type} positions`}</Trans>}
         head={head.map((c) => c.title)}
+        withTopMargin
       />
     );
 
