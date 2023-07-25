@@ -146,6 +146,44 @@ export const ListRepaidColumn = ({
     );
   }
 
+  if (status === LoanStatus.Declined) {
+    return (
+      <ListColumn>
+        <OptionalTooltip
+          title={
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <FormattedNumber
+                value={remainingUsd || 0}
+                symbol="USD"
+                variant="secondary14"
+                sx={{ mb: '2px' }}
+                symbolsColor="common.white"
+                compact={false}
+              />
+            </Box>
+          }
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <FormattedNumber
+              value={remaining}
+              variant="secondary14"
+              sx={{ mb: '2px' }}
+              color={disabled ? 'text.disabled' : 'text.main'}
+              data-cy={`nativeAmount`}
+            />
+          </Box>
+        </OptionalTooltip>
+      </ListColumn>
+    );
+  }
+
   return (
     <ListColumn>
       <OptionalTooltip

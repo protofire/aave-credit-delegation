@@ -5,6 +5,7 @@ import {
   AtomicaDelegationPool,
   AtomicaLendingPosition,
   CreditLine,
+  LoanStatus,
 } from './types';
 
 const handleSymbolSort = <T extends { symbol: string }>(sortDesc: boolean, pools: T[]) => {
@@ -64,3 +65,22 @@ export const handleSortCreditLines = (
 
 export const convertTimestampToDate = (timestamp: string) =>
   new Intl.DateTimeFormat('en-US').format(new Date(Number(timestamp) * 1000));
+
+export const getRequestStatus = (status: number) => {
+  if (status === 2) return LoanStatus.Declined;
+
+  return LoanStatus.Pending;
+};
+
+export const getStatusColor = (status: LoanStatus) => {
+  switch (status) {
+    case LoanStatus.Active:
+      return 'success.main';
+    case LoanStatus.Pending:
+      return 'warning.main';
+    case LoanStatus.Declined:
+      return 'error.main';
+    default:
+      return 'text.primary';
+  }
+};

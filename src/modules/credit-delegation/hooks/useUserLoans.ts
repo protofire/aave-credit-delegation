@@ -17,6 +17,7 @@ import {
   CreditLine,
   LoanStatus,
 } from '../types';
+import { getRequestStatus } from '../utils';
 import useAsyncMemo from './useAsyncMemo';
 import { useSubgraph } from './useSubgraph';
 
@@ -180,7 +181,7 @@ export const useUserLoans = (
         repaidAmountUsd: repaidAmountUsd.toString(),
         requiredRepayAmount: requiredRepayAmount.toString(),
         requiredRepayAmountUsd: requiredRepayAmountUsd.toString(),
-        status: loan === undefined ? LoanStatus.Pending : LoanStatus.Active,
+        status: loan === undefined ? getRequestStatus(request.status) : LoanStatus.Active,
         interestCharged,
         interestChargedUsd,
         interestRepaid,

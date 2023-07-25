@@ -7,6 +7,7 @@ import { Link } from 'src/components/primitives/Link';
 import { useModalContext } from 'src/hooks/useModal';
 
 import { AtomicaLoan, LoanStatus } from '../../types';
+import { getStatusColor } from '../../utils';
 import { ListAPRColumn } from '../ListAPRColumn';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListItemWrapper } from '../ListItemWrapper';
@@ -81,7 +82,7 @@ export const LoanListItem = (loan: AtomicaLoan) => {
       )}
 
       <ListColumn>
-        <Typography color={status === LoanStatus.Active ? 'success.main' : 'warning.main'}>
+        <Typography color={getStatusColor(status)}>
           <Trans>{status}</Trans>
         </Typography>
       </ListColumn>
