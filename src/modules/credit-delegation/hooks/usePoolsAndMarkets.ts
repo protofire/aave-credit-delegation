@@ -337,9 +337,14 @@ export const usePoolsAndMarkets = () => {
     }
 
     return (data?.markets ?? []).map((market: AtomicaSubgraphMarket) => {
-      const token = marketTokens?.find(
-        (token) => token.address.toLowerCase() === market.capitalToken.toLowerCase()
-      );
+      const token =
+        marketTokens?.find(
+          (token) => token.address.toLowerCase() === market.capitalToken.toLowerCase()
+        ) ??
+        tokensToBorrow.find(
+          (token) => token.address.toLowerCase() === market.capitalToken.toLowerCase()
+        );
+
       const userReserve = reserves.find((reserve) => reserve.symbol === token?.symbol);
 
       const apr =
