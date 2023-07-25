@@ -32,7 +32,7 @@ env:
   NEXT_PUBLIC_CD_API_URL: 'https://aave-cdm-backend-asvwsyulcq-ue.a.run.app/'
   NEXT_PUBLIC_CD_SUBGRAPH_URL: 'https://api.thegraph.com/subgraphs/name/atomica-dev/solvency-risk-markets-dev'
   NEXT_PUBLIC_ATOMICA_API_URL: 'https://api.atomica.org/srm-dev/'
-  NEXT_PUBLIC_CD_VAULTS_SUBGRAPH_URL: 'https://api.studio.thegraph.com/query/46833/aave-credit-delegation-v3/v1.0.4'
+  NEXT_PUBLIC_CD_VAULTS_SUBGRAPH_URL: 'https://api.studio.thegraph.com/query/46833/aave-credit-delegation-v3/version/latest'
   NEXT_PUBLIC_ATOMICA_META_SHEET_ID: '13wzHPjvgTbig-EXH9hzM9XqYn79EdRiFUn9l_XbYZn4'
 
 jobs:
