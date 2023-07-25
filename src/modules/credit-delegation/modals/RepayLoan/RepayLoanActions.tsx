@@ -104,11 +104,6 @@ export const RepayLoanActions = memo(
 
         setMainTxState({ ...mainTxState, loading: true });
 
-        console.log({
-          loanId,
-          amount: parseUnits(amount, asset?.decimals || 18).toString(),
-        });
-
         const response = await repayFunction(
           loanId,
           parseUnits(amount, asset?.decimals || 18).toString()

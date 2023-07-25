@@ -5,7 +5,6 @@ import { ListColumn } from 'src/components/lists/ListColumn';
 import { ListHeaderTitle } from 'src/components/lists/ListHeaderTitle';
 import { ListHeaderWrapper } from 'src/components/lists/ListHeaderWrapper';
 import { ListWrapper } from 'src/components/lists/ListWrapper';
-import { useAppDataContext } from 'src/hooks/app-data-provider/useAppDataProvider';
 import { CREDIT_DELEGATION_LIST_COLUMN_WIDTHS } from 'src/utils/creditDelegationSortUtils';
 
 import { CreditDelegationContentNoData } from '../../CreditDelegationContentNoData';
@@ -79,14 +78,13 @@ const Header: React.FC<HeaderProps> = ({
 };
 
 export const YourCreditLinesList = () => {
-  const { loading } = useAppDataContext();
   const theme = useTheme();
   const [sortName, setSortName] = useState('');
   const [sortDesc, setSortDesc] = useState(false);
 
   const downToXSM = useMediaQuery(theme.breakpoints.down('xsm'));
 
-  const { creditLines } = useCreditDelegationContext();
+  const { creditLines, loading } = useCreditDelegationContext();
 
   const sortedCreditLines = useMemo(
     () => handleSortCreditLines(sortDesc, sortName, creditLines),

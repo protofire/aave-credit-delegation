@@ -58,6 +58,7 @@ export interface AtomicaSubgraphPolicy {
 export enum LoanStatus {
   Pending = 'Pending',
   Active = 'Active',
+  Declined = 'Declined',
 }
 
 export interface AtomicaSubgraphLoanRequest {
