@@ -28,6 +28,7 @@ export interface CreditDelgationData {
   lended: string;
   loadingLendingCapacity: boolean;
   lendingCapacity: string;
+  averageApy: string;
   markets: AtomicaBorrowMarket[];
   loans: AtomicaLoan[];
   lendingPositions: AtomicaLendingPosition[];
@@ -58,6 +59,7 @@ export const CreditDelegationContext = createContext({
   lended: '0',
   loadingLendingCapacity: true,
   lendingCapacity: '0',
+  averageApy: '0',
   markets: [],
   loans: [],
   loading: true,
@@ -105,6 +107,7 @@ const CreditDelegationDataProvider = ({
     lended,
     loading: loadingLendingCapacity,
     lendingCapacity,
+    averageApy,
   } = useLendingCapacity(loading ? undefined : pools);
   const { provider } = useWeb3Context();
   const [account, getProvider, generateDelegationSignatureRequest] = useRootStore((state) => [
@@ -276,6 +279,7 @@ const CreditDelegationDataProvider = ({
         lended,
         loadingLendingCapacity,
         lendingCapacity,
+        averageApy,
         markets,
         loans,
         lendingPositions,
