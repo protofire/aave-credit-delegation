@@ -1,4 +1,4 @@
-import { USD_DECIMALS, valueToBigNumber } from '@aave/math-utils';
+import { USD_DECIMALS, valueToBigNumber, WEI_DECIMALS } from '@aave/math-utils';
 import { Trans } from '@lingui/macro';
 import { Box, Typography } from '@mui/material';
 import BigNumber from 'bignumber.js';
@@ -18,6 +18,7 @@ import { useWalletBalances } from 'src/hooks/app-data-provider/useWalletBalances
 import { useModalContext } from 'src/hooks/useModal';
 
 import { AtomicaLoan } from '../../types';
+import { calcAccruedInterest } from '../../utils';
 import { RepayLoanActions } from './RepayLoanActions';
 import { RepayTypeTooltip } from './RepayTypeTooltip';
 
@@ -86,10 +87,8 @@ export const RepayLoanModalContent = memo(
     isWrongNetwork,
     loanId,
     poolReserve,
-    lastUpdateTs,
-    ratePerSec,
     interestRepaid,
-    borrowedAmount,
+    chunks,
   }: RepayLoanModalContentProps) => {
     const { mainTxState: supplyTxState, gasLimit, txError, setTxError } = useModalContext();
     const { walletBalances } = useWalletBalances();
@@ -105,12 +104,15 @@ export const RepayLoanModalContent = memo(
       [walletBalances, asset]
     );
 
-    const interestAccrued = new BigNumber(ratePerSec)
-      .times(new BigNumber(Date.now()).div(1000).minus(lastUpdateTs ?? 0))
-      .times(borrowedAmount);
+    const nowTimestamp = Math.floor(Date.now() / 1000);
+
+    const interestAccrued = useMemo(
+      () => calcAccruedInterest(chunks, nowTimestamp),
+      [chunks, nowTimestamp]
+    );
 
     const interestRemaining = BigNumber.max(
-      interestAccrued.minus(interestRepaid).decimalPlaces(asset?.decimals ?? 18),
+      interestAccrued.minus(interestRepaid).decimalPlaces(asset?.decimals ?? WEI_DECIMALS),
       0
     ).toString();
 

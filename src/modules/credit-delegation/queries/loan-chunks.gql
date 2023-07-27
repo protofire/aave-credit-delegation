@@ -6,6 +6,8 @@ query loanChunks($loanIds: [String]!) {
     rate
     repaidAmount
     borrowedAmount
+    lastUpdateTs
+    accruedInterest
   }
 
   _meta {

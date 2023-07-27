@@ -1,5 +1,5 @@
 import { TokenMetadataType } from '@aave/contract-helpers/dist/esm/erc20-contract';
-import { normalize, normalizeBN } from '@aave/math-utils';
+import { normalize, normalizeBN, WEI_DECIMALS } from '@aave/math-utils';
 import BigNumber from 'bignumber.js';
 import { Contract, PopulatedTransaction } from 'ethers';
 import { Interface } from 'ethers/lib/utils';
@@ -39,8 +39,8 @@ export const useRiskPool = (pool: string, asset?: TokenMetadataType) => {
   const getUserPoolBalance = async () => {
     const balance = await contract.balanceOf(account.toLowerCase());
     setPoolBalanceState(balance);
-    setNormalizedBalance(normalize(balance.toString(), 18));
-    setTotalAmount(normalize(balance.toString(), asset?.decimals || 18));
+    setNormalizedBalance(normalize(balance.toString(), WEI_DECIMALS));
+    setTotalAmount(normalize(balance.toString(), asset?.decimals || WEI_DECIMALS));
     return balance;
   };
 
@@ -180,7 +180,7 @@ export const useRiskPool = (pool: string, asset?: TokenMetadataType) => {
           rewardRate: token.rewardRate,
           earned: token.earned,
           earnedRewardIds: token.earnedRewardIds,
-          decimals: Number(token.decimals) || 18,
+          decimals: Number(token.decimals) ?? WEI_DECIMALS,
           symbol: token.symbol || '?',
           price: token.tokenUsdPrice || 0,
           endedAt: token.endedAt,
@@ -232,7 +232,9 @@ export const useRiskPool = (pool: string, asset?: TokenMetadataType) => {
     const { annualRewardSummary, earnings, lastReward } = await calculateRewards(rewards);
     const poolRate = await getPrice([getCoinId(name)]);
 
-    const poolBalanceUsd = normalizeBN(totalLiquidity, asset?.decimals || 18).times(poolRate);
+    const poolBalanceUsd = normalizeBN(totalLiquidity, asset?.decimals || WEI_DECIMALS).times(
+      poolRate
+    );
 
     return {
       earnings,

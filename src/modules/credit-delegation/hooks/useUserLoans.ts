@@ -1,12 +1,12 @@
 import { ERC20Service, TokenMetadataType } from '@aave/contract-helpers';
-import { normalize, normalizeBN, valueToBigNumber } from '@aave/math-utils';
+import { normalize, normalizeBN, valueToBigNumber, WEI_DECIMALS } from '@aave/math-utils';
 import { loader } from 'graphql.macro';
 import { useCallback, useMemo } from 'react';
 import { useAppDataContext } from 'src/hooks/app-data-provider/useAppDataProvider';
 import { useProtocolDataContext } from 'src/hooks/useProtocolDataContext';
 import { amountToUsd } from 'src/utils/utils';
 
-import { LOAN_CHUNK_RATE_DECIMALS, SECONDS_IN_A_YEAR } from '../consts';
+import { SECONDS_IN_A_YEAR } from '../consts';
 import {
   AtomicaBorrowMarket,
   AtomicaLoan,
@@ -96,7 +96,7 @@ export const useUserLoans = (
 
       const borrowedAmount = normalizeBN(
         loan?.borrowedAmount ?? request.amount,
-        asset?.decimals ?? 18
+        asset?.decimals ?? WEI_DECIMALS
       );
 
       const borrowedAmountUsd = amountToUsd(
@@ -111,9 +111,9 @@ export const useUserLoans = (
               .filter((chunk) => chunk.loanId === loan.id)
               .map((chunk) => ({
                 ...chunk,
-                borrowedAmount: normalize(chunk.borrowedAmount, asset?.decimals ?? 18),
-                repaidAmount: normalize(chunk.repaidAmount, asset?.decimals ?? 18),
-                rate: normalize(chunk.rate, LOAN_CHUNK_RATE_DECIMALS),
+                borrowedAmount: normalize(chunk.borrowedAmount, asset?.decimals ?? WEI_DECIMALS),
+                repaidAmount: normalize(chunk.repaidAmount, asset?.decimals ?? WEI_DECIMALS),
+                rate: normalize(chunk.rate, WEI_DECIMALS),
               }))
           : [];
 
@@ -143,11 +143,14 @@ export const useUserLoans = (
                 )
               );
             }, valueToBigNumber(0))
-          : normalizeBN(request.maxPremiumRatePerSec, LOAN_CHUNK_RATE_DECIMALS);
+          : normalizeBN(request.maxPremiumRatePerSec, WEI_DECIMALS);
 
       const apr = ratePerSec.times(SECONDS_IN_A_YEAR).toNumber();
 
-      const interestRepaid = normalize(loan?.interestRepaid ?? '0', asset?.decimals ?? 18);
+      const interestRepaid = normalize(
+        loan?.interestRepaid ?? '0',
+        asset?.decimals ?? WEI_DECIMALS
+      );
 
       const interestRepaidUsd = amountToUsd(
         interestRepaid,
@@ -172,7 +175,7 @@ export const useUserLoans = (
           reserve?.formattedPriceInMarketReferenceCurrency ?? '1',
           marketReferencePriceInUsd
         ).toString(),
-        chunks: [],
+        chunks,
         borrowedAmount: borrowedAmount.toString(),
         borrowedAmountUsd: borrowedAmountUsd.toString(),
         ratePerSec: ratePerSec.toString(),

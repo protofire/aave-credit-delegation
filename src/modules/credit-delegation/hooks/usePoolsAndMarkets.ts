@@ -4,7 +4,13 @@ import {
   InterestRate,
   TokenMetadataType,
 } from '@aave/contract-helpers';
-import { normalize, normalizeBN, USD_DECIMALS, valueToBigNumber } from '@aave/math-utils';
+import {
+  normalize,
+  normalizeBN,
+  USD_DECIMALS,
+  valueToBigNumber,
+  WEI_DECIMALS,
+} from '@aave/math-utils';
 import { BigNumber } from 'bignumber.js';
 import { loader } from 'graphql.macro';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -22,12 +28,7 @@ import {
 } from 'src/utils/getMaxAmountAvailableToBorrow';
 import { amountToUsd } from 'src/utils/utils';
 
-import {
-  LOAN_CHUNK_RATE_DECIMALS,
-  POOL_MANAGER_IDS,
-  PRODUCT_IDS,
-  SECONDS_IN_A_YEAR,
-} from '../consts';
+import { POOL_MANAGER_IDS, PRODUCT_IDS, SECONDS_IN_A_YEAR } from '../consts';
 import {
   AtomicaBorrowMarket,
   AtomicaDelegationPool,
@@ -399,8 +400,11 @@ export const usePoolsAndMarkets = () => {
     return (
       poolLoanChunks?.map((chunk) => {
         const pool = pools.find((pool) => pool.id.toLowerCase() === chunk.poolId.toLowerCase());
-        const borrowedAmount = normalize(chunk.borrowedAmount, pool?.asset?.decimals ?? 18);
-        const rate = normalize(chunk.rate, LOAN_CHUNK_RATE_DECIMALS);
+        const borrowedAmount = normalize(
+          chunk.borrowedAmount,
+          pool?.asset?.decimals ?? WEI_DECIMALS
+        );
+        const rate = normalize(chunk.rate, WEI_DECIMALS);
         const apr = valueToBigNumber(rate).times(SECONDS_IN_A_YEAR).toNumber();
         const market = markets.find(
           (market) => market.marketId.toLowerCase() === chunk.policy?.marketId.toLowerCase()

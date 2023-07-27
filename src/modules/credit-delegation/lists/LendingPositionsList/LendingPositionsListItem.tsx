@@ -46,7 +46,7 @@ export const LendingPositionsListItem = (poolVault: AtomicaDelegationPool) => {
   const { user } = useAppDataContext();
   const { getUserPoolBalance, totalAmount } = useRiskPool(id, asset);
 
-  // const amount = normalize(vault?.loanAmount || '0', asset?.decimals || 18);
+  // const amount = normalize(vault?.loanAmount || '0', asset?.decimals || WEI_DECIMALS);
 
   const { reserve } = user?.userReservesData.find((userReserve) => {
     return underlyingAsset === userReserve.underlyingAsset;

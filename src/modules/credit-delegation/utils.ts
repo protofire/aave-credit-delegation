@@ -1,9 +1,11 @@
+import { valueToBigNumber } from '@aave/math-utils';
 import { orderBy } from 'lodash';
 
 import {
   AtomicaBorrowMarket,
   AtomicaDelegationPool,
   AtomicaLendingPosition,
+  AtomicaSubgraphLoanChunk,
   CreditLine,
   LoanStatus,
 } from './types';
@@ -83,4 +85,18 @@ export const getStatusColor = (status: LoanStatus) => {
     default:
       return 'text.primary';
   }
+};
+
+export const calcAccruedInterest = (chunks: AtomicaSubgraphLoanChunk[], timestamp: number) => {
+  return chunks.reduce((acc, loanChunk) => {
+    const leftToRepay = valueToBigNumber(loanChunk.borrowedAmount).minus(loanChunk.repaidAmount);
+
+    const accruedInterest = valueToBigNumber(timestamp)
+      .minus(loanChunk.lastUpdateTs)
+      .times(leftToRepay)
+      .times(loanChunk.rate)
+      .plus(loanChunk.accruedInterest);
+
+    return acc.plus(accruedInterest);
+  }, valueToBigNumber(0));
 };
