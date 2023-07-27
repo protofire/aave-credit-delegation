@@ -9,8 +9,6 @@ export const PRODUCT_IDS = ['1', '2', '3', '7'];
 
 export const POOL_MANAGER_IDS = ['0x31C2cb2cd72a0a35Bf1839a2e0d383566bf904b0'];
 
-export const LOAN_CHUNK_RATE_DECIMALS = 18;
-
 export const SECONDS_IN_A_YEAR = 31536000;
 
 export const POLLING_INTERVAL = 5000;

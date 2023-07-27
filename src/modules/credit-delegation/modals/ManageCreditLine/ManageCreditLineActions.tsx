@@ -1,4 +1,5 @@
 import { TokenMetadataType } from '@aave/contract-helpers';
+import { WEI_DECIMALS } from '@aave/math-utils';
 import { Trans } from '@lingui/macro';
 import { BoxProps } from '@mui/material';
 import { parseUnits } from 'ethers/lib/utils';
@@ -42,7 +43,7 @@ export const ManageCreditLineActions = React.memo(
 
         const response = await riskPoolController.changePolicyCover(
           policyId,
-          parseUnits(amount, asset?.decimals || 18).toString(),
+          parseUnits(amount, asset?.decimals ?? WEI_DECIMALS).toString(),
           0,
           0
         );

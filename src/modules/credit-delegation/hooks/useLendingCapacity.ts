@@ -41,15 +41,13 @@ export const useLendingCapacity = (pools?: AtomicaDelegationPool[]) => {
   }, [pools]);
 
   const averageApy = useMemo(() => {
-    if (pools === undefined) return '0';
+    if (pools === undefined || lended === '0') return '0';
 
     return pools
       .reduce((acc, pool) => {
-        console.log({
-          pool,
-          apy: valueToBigNumber(pool.supplyAPY).times(pool.approvedCreditUsd).toString(),
-        });
-        return valueToBigNumber(pool.supplyAPY).times(pool.approvedCreditUsd).plus(acc);
+        return valueToBigNumber(pool.supplyAPY ?? '0')
+          .times(pool.approvedCreditUsd ?? '0')
+          .plus(acc);
       }, valueToBigNumber(0))
       .dividedBy(lended)
       .toString();

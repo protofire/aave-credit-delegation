@@ -94,6 +94,8 @@ export interface AtomicaSubgraphLoanChunk {
   rate: string;
   repaidAmount: string;
   borrowedAmount: string;
+  lastUpdateTs: string;
+  accruedInterest: string;
 }
 
 export interface AtomicaSubgraphPoolLoanChunk {

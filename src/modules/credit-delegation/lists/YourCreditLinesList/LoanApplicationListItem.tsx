@@ -1,3 +1,4 @@
+import { WEI_DECIMALS } from '@aave/math-utils';
 import { TransactionReceipt } from '@ethersproject/providers';
 import { Trans } from '@lingui/macro';
 import { Box, Button, CircularProgress } from '@mui/material';
@@ -42,7 +43,7 @@ export const CreditLineListItem = (creditLine: CreditLine) => {
         policyId,
         parseUnits(amount, asset?.decimals),
         parseUnits(amount, asset?.decimals),
-        parseUnits('200', 18 - 2).div(SECONDS_IN_A_YEAR),
+        parseUnits('200', WEI_DECIMALS - 2).div(SECONDS_IN_A_YEAR),
         1,
         ''
       );
