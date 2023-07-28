@@ -2296,10 +2296,6 @@ msgstr "Your average APY"
 msgid "Your borrows"
 msgstr "Your borrows"
 
-#: src/modules/credit-delegation/lists/YourCreditLinesList/YourCreditLinesList.tsx
-msgid "Your credit lines"
-msgstr "Your credit lines"
-
 #: src/modules/dashboard/LiquidationRiskParametresModal/LiquidationRiskParametresModal.tsx
 msgid "Your current loan to value based on your collateral supplied."
 msgstr "Your current loan to value based on your collateral supplied."
@@ -2327,9 +2323,16 @@ msgid "Your loan requests"
 msgstr "Your loan requests"
 
 #: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
+msgid "Your loan withdrawals"
+msgstr "Your loan withdrawals"
+
 #: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
 msgid "Your loans"
 msgstr "Your loans"
+
+#: src/modules/credit-delegation/lists/YourCreditLinesList/YourCreditLinesList.tsx
+msgid "Your loans and credit lines"
+msgstr "Your loans and credit lines"
 
 #: src/modules/credit-delegation/lists/LendingPositionsList/ListItemActiveBadge.tsx
 msgid "Your position is inactive, you are not currently earning yield because you don't liquidity in this pool"

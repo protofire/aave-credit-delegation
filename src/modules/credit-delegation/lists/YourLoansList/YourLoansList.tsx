@@ -117,7 +117,7 @@ export const YourLoansList = () => {
     <ListWrapper
       titleComponent={
         <Typography component="div" variant="h3" sx={{ mr: 4 }}>
-          <Trans>Your loans</Trans>
+          <Trans>Your loan withdrawals</Trans>
         </Typography>
       }
       localStorageName="yourLoansCreditDelegationTableCollapse"
