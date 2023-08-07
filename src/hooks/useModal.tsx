@@ -29,6 +29,7 @@ export enum ModalType {
   GovVote,
   V3Migration,
   RevokeGovDelegation,
+  LoanApplication,
   CreditDelegation,
   RequestLoan,
   ManageCreditLine,
@@ -89,6 +90,7 @@ export interface ModalContextType<T extends ModalArgsType> {
   openRevokeGovDelegation: () => void;
   openV3Migration: () => void;
   openGovVote: (proposalId: number, support: boolean, power: string) => void;
+  openLoanApplication: () => void;
   openCreditDelegation: (poolId: string, underlyingAsset: string) => void;
   openRequestLoan: (marketId: string, underlyingAsset: string) => void;
   openManageCreditLine: (creditLine: CreditLine) => void;
@@ -195,6 +197,10 @@ export const ModalContextProvider: React.FC = ({ children }) => {
         },
         openV3Migration: () => {
           setType(ModalType.V3Migration);
+        },
+        openLoanApplication: () => {
+          setType(ModalType.LoanApplication);
+          setArgs({});
         },
         openCreditDelegation: (poolId, underlyingAsset) => {
           setType(ModalType.CreditDelegation);

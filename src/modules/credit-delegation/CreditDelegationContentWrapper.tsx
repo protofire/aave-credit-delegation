@@ -11,6 +11,7 @@ import { ManageCreditLineModal as ManageCreditLine } from './modals/ManageCredit
 import { RepayLoanModal } from './modals/RepayLoan/RepayLoanModal';
 import { RequestLoanModal } from './modals/RequestLoan/RequestLoanModal';
 import { ManageVaultModal } from './modals/WithdrawPool/ManageVaultModal';
+import { LoanApplicationModal } from './modals/LoanApplication/LoanApplicationModal';
 
 interface CreditDelegationContentWrapperProps {
   isBorrow: boolean;
@@ -43,6 +44,7 @@ export const CreditDelegationContentWrapper = ({
           <YourLoansList />
         </Box>
       </Box>
+      <LoanApplicationModal />
       <CreditDelegationModal />
       <RequestLoanModal />
       <ManageCreditLine />

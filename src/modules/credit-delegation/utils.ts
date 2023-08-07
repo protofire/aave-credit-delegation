@@ -1,7 +1,8 @@
-import { valueToBigNumber } from '@aave/math-utils';
+import { SECONDS_PER_YEAR, WEI_DECIMALS, normalizeBN, valueToBigNumber } from '@aave/math-utils';
 import { orderBy } from 'lodash';
 
 import {
+  AnyNumber,
   AtomicaBorrowMarket,
   AtomicaDelegationPool,
   AtomicaLendingPosition,
@@ -9,6 +10,7 @@ import {
   CreditLine,
   LoanStatus,
 } from './types';
+import { parseUnits } from 'ethers/lib/utils';
 
 const handleSymbolSort = <T extends { symbol: string }>(sortDesc: boolean, pools: T[]) => {
   if (sortDesc) {
@@ -100,3 +102,12 @@ export const calcAccruedInterest = (chunks: AtomicaSubgraphLoanChunk[], timestam
     return acc.plus(accruedInterest);
   }, valueToBigNumber(0));
 };
+
+export const denormalizeBn = (value: AnyNumber, decimals: number) =>
+  valueToBigNumber(value).div(valueToBigNumber(10).pow(decimals));
+
+export const convertRatePerSecToRatePerYear = (ratePerSec: AnyNumber) =>
+  normalizeBN(ratePerSec, WEI_DECIMALS - 2).times(SECONDS_PER_YEAR);
+
+export const convertRatePerYearToRatePerSec = (ratePerYear: string) =>
+  denormalizeBn(ratePerYear, WEI_DECIMALS - 2).div(SECONDS_PER_YEAR.toString());

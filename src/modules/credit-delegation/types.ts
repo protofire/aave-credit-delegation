@@ -3,6 +3,37 @@ import { BigNumber } from 'bignumber.js';
 
 import { PoolMetadata } from './hooks/usePoolsMetadata';
 
+export type AnyNumber = BigNumber | string | number;
+
+export interface AtomicaSubgraphProduct {
+  id: string;
+  productId: string;
+  title: string;
+  defaultPremiumToken: string;
+  defaultCapitalToken: string;
+  payoutRequester: string;
+  payoutApprover: string;
+}
+
+export interface AtomicaSubgraphMarketEntity {
+  ChainId: string;
+  ProductId: string;
+  Type: 'MarketEntity';
+  Config: {
+    title: string;
+    value: string;
+  }[];
+}
+
+export interface AtomicaSubgraphProductEntity {
+  ChainId: string;
+  ProductId: string;
+  ListId: string;
+  ListItemId: string;
+  Title: string;
+  Logo: string;
+}
+
 export interface AtomicaSubgraphPool {
   id: string;
   name: string;

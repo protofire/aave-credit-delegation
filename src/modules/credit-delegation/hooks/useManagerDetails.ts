@@ -1,7 +1,8 @@
 import { useCallback } from 'react';
 
-import GoogleSheetsApiService from '../google-sheet-service';
+import { GoogleSheetsApiService } from '../google-sheet-service';
 import useAsyncMemo from './useAsyncMemo';
+import { CREDIT_DELEGATION_ATOMICA_GOOGLE_SHEET_ID } from '../consts';
 
 const columns = ['Address', 'Type', 'Title', 'Logo', 'Website', 'Description'];
 
@@ -18,7 +19,9 @@ export const useManagerDetails = (managerAddress?: string) => {
   const getManagerDetails = useCallback(async () => {
     if (!managerAddress) return {} as ManagerDetails;
 
-    const conn = await GoogleSheetsApiService.getSheet('ManagerDetails');
+    const service = new GoogleSheetsApiService(CREDIT_DELEGATION_ATOMICA_GOOGLE_SHEET_ID);
+
+    const conn = await service.getSheet('ManagerDetails');
 
     if (!conn?.rows) {
       throw new Error('data source config error');

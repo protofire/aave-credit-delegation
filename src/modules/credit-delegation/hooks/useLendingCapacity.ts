@@ -8,8 +8,10 @@ import {
 } from 'src/utils/getMaxAmountAvailableToBorrow';
 
 import { AtomicaDelegationPool } from '../types';
+import { useRootStore } from 'src/store/root';
 
 export const useLendingCapacity = (pools?: AtomicaDelegationPool[]) => {
+  const account = useRootStore((state) => state.account);
   const { user, reserves, marketReferencePriceInUsd, loading } = useAppDataContext();
 
   const lendingCapacity = useMemo(() => {
@@ -31,7 +33,7 @@ export const useLendingCapacity = (pools?: AtomicaDelegationPool[]) => {
       .shiftedBy(-USD_DECIMALS);
 
     return vailableBorrowsUSD.toFixed(2);
-  }, [reserves, marketReferencePriceInUsd, user, loading, pools]);
+  }, [reserves, marketReferencePriceInUsd, user, loading, pools, account]);
 
   const lended = useMemo(() => {
     if (pools === undefined) return '0';
@@ -39,7 +41,7 @@ export const useLendingCapacity = (pools?: AtomicaDelegationPool[]) => {
       .reduce((acc, pool) => acc.plus(pool.approvedCreditUsdBig), valueToBigNumber(0))
       .decimalPlaces(2)
       .toString();
-  }, [pools]);
+  }, [pools, account]);
 
   const averageApy = useMemo(() => {
     if (pools === undefined || Number(lended) === 0) return '0';
