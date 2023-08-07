@@ -174,6 +174,10 @@ msgstr "Amount"
 msgid "Amount must be greater than 0"
 msgstr "Amount must be greater than 0"
 
+#: src/modules/credit-delegation/modals/LoanApplication/LoanApplicationActions.tsx
+msgid "Apply"
+msgstr "Apply"
+
 #: src/modules/credit-delegation/lists/MarketsList/MarketListItem.tsx
 msgid "Apply for loan"
 msgstr "Apply for loan"
@@ -598,10 +602,6 @@ msgstr "Copy error message"
 msgid "Copy error text"
 msgstr "Copy error text"
 
-#: src/modules/credit-delegation/lists/MarketsList/CreateMarketButton.tsx
-msgid "Create Market"
-msgstr "Create Market"
-
 #: src/ui-config/menu-items/index.tsx
 msgid "Credit Delegation"
 msgstr "Credit Delegation"
@@ -739,6 +739,10 @@ msgstr "Enabling this asset as collateral increases your borrowing power and Hea
 #: src/layouts/components/LanguageSwitcher.tsx
 msgid "English"
 msgstr "English"
+
+#: src/modules/credit-delegation/lists/MarketsList/CreateMarketButton.tsx
+msgid "Enroll as a borrower"
+msgstr "Enroll as a borrower"
 
 #: src/components/transactions/TxActionsWrapper.tsx
 msgid "Enter an amount"
@@ -1655,6 +1659,10 @@ msgstr "Staking balance"
 msgid "Status"
 msgstr "Status"
 
+#: src/modules/credit-delegation/modals/LoanApplication/LoanApplicationActions.tsx
+msgid "Submitting application"
+msgstr "Submitting application"
+
 #: src/components/transactions/Supply/SupplyModalContent.tsx
 msgid "Supplied"
 msgstr "Supplied"
@@ -2323,10 +2331,6 @@ msgid "Your loan requests"
 msgstr "Your loan requests"
 
 #: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
-msgid "Your loan withdrawals"
-msgstr "Your loan withdrawals"
-
-#: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
 msgid "Your loans"
 msgstr "Your loans"
 
@@ -2346,6 +2350,10 @@ msgstr "Your reward balance is 0"
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsList.tsx
 msgid "Your supplies"
 msgstr "Your supplies"
+
+#: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
+msgid "Your withdrawal requests"
+msgstr "Your withdrawal requests"
 
 #: src/modules/credit-delegation/lists/PoolsList/WalletEmptyInfo.tsx
 #: src/modules/dashboard/lists/SupplyAssetsList/WalletEmptyInfo.tsx

@@ -7,6 +7,7 @@ import { PoolsList } from './lists/PoolsList/PoolsList';
 import { YourCreditLinesList } from './lists/YourCreditLinesList/YourCreditLinesList';
 import { YourLoansList } from './lists/YourLoansList/YourLoansList';
 import { CreditDelegationModal } from './modals/CreditDelegation/CreditDelegationModal';
+import { LoanApplicationModal } from './modals/LoanApplication/LoanApplicationModal';
 import { ManageCreditLineModal as ManageCreditLine } from './modals/ManageCreditLine/ManageCreditLineModal';
 import { RepayLoanModal } from './modals/RepayLoan/RepayLoanModal';
 import { RequestLoanModal } from './modals/RequestLoan/RequestLoanModal';
@@ -43,6 +44,7 @@ export const CreditDelegationContentWrapper = ({
           <YourLoansList />
         </Box>
       </Box>
+      <LoanApplicationModal />
       <CreditDelegationModal />
       <RequestLoanModal />
       <ManageCreditLine />

@@ -52,7 +52,7 @@ export const useLendingCapacity = (pools?: AtomicaDelegationPool[]) => {
       }, valueToBigNumber(0))
       .dividedBy(lended)
       .toString();
-  }, [pools]);
+  }, [pools, lended]);
 
   return {
     loading: loading || pools === undefined,
