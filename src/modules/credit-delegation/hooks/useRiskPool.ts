@@ -1,5 +1,5 @@
 import { TokenMetadataType } from '@aave/contract-helpers/dist/esm/erc20-contract';
-import { normalize, normalizeBN, WEI_DECIMALS } from '@aave/math-utils';
+import { normalize, normalizeBN, SECONDS_PER_YEAR, WEI_DECIMALS } from '@aave/math-utils';
 import BigNumber from 'bignumber.js';
 import { Contract, PopulatedTransaction } from 'ethers';
 import { Interface } from 'ethers/lib/utils';
@@ -8,7 +8,7 @@ import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
 import { useRootStore } from 'src/store/root';
 
 import RISK_POOL_ABI from '../abi/RiskPool.json';
-import { DEFAULT_LOGO, SECONDS_IN_A_YEAR } from '../consts';
+import { DEFAULT_LOGO } from '../consts';
 import {
   AccountPoolReward,
   AtomicaSubgraphRewards,
@@ -203,7 +203,7 @@ export const useRiskPool = (pool: string, asset?: TokenMetadataType) => {
             normalizeBN(token.amount, Number(token.decimals))
               .times(token.tokenUsdPrice)
               .div(token.duration)
-              .times(SECONDS_IN_A_YEAR)) ||
+              .times(SECONDS_PER_YEAR)) ||
             0
         );
       }

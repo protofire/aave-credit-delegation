@@ -1,12 +1,17 @@
 import { ERC20Service, TokenMetadataType } from '@aave/contract-helpers';
-import { normalize, normalizeBN, valueToBigNumber, WEI_DECIMALS } from '@aave/math-utils';
+import {
+  normalize,
+  normalizeBN,
+  SECONDS_PER_YEAR,
+  valueToBigNumber,
+  WEI_DECIMALS,
+} from '@aave/math-utils';
 import { loader } from 'graphql.macro';
 import { useCallback, useMemo } from 'react';
 import { useAppDataContext } from 'src/hooks/app-data-provider/useAppDataProvider';
 import { useProtocolDataContext } from 'src/hooks/useProtocolDataContext';
 import { amountToUsd } from 'src/utils/utils';
 
-import { SECONDS_IN_A_YEAR } from '../consts';
 import {
   AtomicaBorrowMarket,
   AtomicaLoan,
@@ -145,7 +150,7 @@ export const useUserLoans = (
             }, valueToBigNumber(0))
           : normalizeBN(request.maxPremiumRatePerSec, WEI_DECIMALS);
 
-      const apr = ratePerSec.times(SECONDS_IN_A_YEAR).toNumber();
+      const apr = ratePerSec.times(SECONDS_PER_YEAR).toNumber();
 
       const interestRepaid = normalize(
         loan?.interestRepaid ?? '0',

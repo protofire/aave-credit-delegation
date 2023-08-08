@@ -2,9 +2,11 @@ import { ExternalLinkIcon } from '@heroicons/react/outline';
 import { Trans } from '@lingui/macro';
 import { Box, Button, SvgIcon, Typography } from '@mui/material';
 import { DarkTooltip } from 'src/components/infoTooltips/DarkTooltip';
-import { Link } from 'src/components/primitives/Link';
+import { useModalContext } from 'src/hooks/useModal';
 
 export const CreateMarketButton = () => {
+  const { openLoanApplication } = useModalContext();
+
   return (
     <Box
       sx={{
@@ -25,15 +27,12 @@ export const CreateMarketButton = () => {
               <ExternalLinkIcon />
             </SvgIcon>
           }
-          component={Link}
-          href={
-            'https://docs.google.com/forms/d/e/1FAIpQLSfbEtFJDDYTWxHdDLZYz_eFqdbZgDYpqJb9TFveQ-L-zRmB7g/viewform?usp=sf_link'
-          }
+          onClick={openLoanApplication}
           variant="outlined"
           size="small"
         >
           <Typography variant="buttonS">
-            <Trans>Create Market</Trans>
+            <Trans>Enroll as a borrower</Trans>
           </Typography>
         </Button>
       </DarkTooltip>

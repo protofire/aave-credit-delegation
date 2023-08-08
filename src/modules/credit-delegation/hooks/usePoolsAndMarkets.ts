@@ -7,6 +7,7 @@ import {
 import {
   normalize,
   normalizeBN,
+  SECONDS_PER_YEAR,
   USD_DECIMALS,
   valueToBigNumber,
   WEI_DECIMALS,
@@ -28,7 +29,7 @@ import {
 } from 'src/utils/getMaxAmountAvailableToBorrow';
 import { amountToUsd } from 'src/utils/utils';
 
-import { POOL_MANAGER_IDS, PRODUCT_IDS, SECONDS_IN_A_YEAR } from '../consts';
+import { POOL_MANAGER_IDS, PRODUCT_IDS } from '../consts';
 import {
   AtomicaBorrowMarket,
   AtomicaDelegationPool,
@@ -61,10 +62,7 @@ export const usePoolsAndMarkets = () => {
   } = useAppDataContext();
   const { currentNetworkConfig, jsonRpcProvider } = useProtocolDataContext();
   const { walletBalances } = useWalletBalances();
-  const [account, getCreditDelegationApprovedAmount] = useRootStore((state) => [
-    state.account,
-    state.getCreditDelegationApprovedAmount,
-  ]);
+  const account = useRootStore((state) => state.account);
   const metadata = usePoolsMetadata();
   const [marketsApr] = useMarketsApr();
   const poolsApy = usePoolsApy();
@@ -195,15 +193,7 @@ export const usePoolsAndMarkets = () => {
         }
       }
     },
-    [
-      approvedCredit,
-      data?.pools,
-      vaults,
-      reserves,
-      getCreditDelegationApprovedAmount,
-      setApprovedCredit,
-      marketReferencePriceInUsd,
-    ]
+    [approvedCredit, data?.pools, vaults, reserves, setApprovedCredit, marketReferencePriceInUsd]
   );
 
   const fetchAllBorrowAllowances = useCallback(
@@ -384,6 +374,7 @@ export const usePoolsAndMarkets = () => {
     loadingMarketTokens,
     mainLoading,
     appDataLoading,
+    tokensToBorrow,
   ]);
 
   const effectiveLendingPositions: AtomicaLendingPosition[] = useMemo(() => {
@@ -405,7 +396,7 @@ export const usePoolsAndMarkets = () => {
           pool?.asset?.decimals ?? WEI_DECIMALS
         );
         const rate = normalize(chunk.rate, WEI_DECIMALS);
-        const apr = valueToBigNumber(rate).times(SECONDS_IN_A_YEAR).toNumber();
+        const apr = valueToBigNumber(rate).times(SECONDS_PER_YEAR).toNumber();
         const market = markets.find(
           (market) => market.marketId.toLowerCase() === chunk.policy?.marketId.toLowerCase()
         );
