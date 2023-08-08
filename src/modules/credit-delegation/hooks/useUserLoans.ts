@@ -190,6 +190,7 @@ export const useUserLoans = (
         loanRequestId: request.id,
         lastUpdateTs: loan?.lastUpdateTs ?? undefined,
         loanId: loan?.id ?? undefined,
+        createdAt: loan?.createdAt ?? '0',
       };
     });
 

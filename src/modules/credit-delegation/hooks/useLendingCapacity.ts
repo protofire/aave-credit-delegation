@@ -45,15 +45,11 @@ export const useLendingCapacity = (pools?: AtomicaDelegationPool[]) => {
 
     return pools
       .reduce((acc, pool) => {
-        console.log({
-          pool,
-          apy: valueToBigNumber(pool.supplyAPY).times(pool.approvedCreditUsd).toString(),
-        });
         return valueToBigNumber(pool.supplyAPY).times(pool.approvedCreditUsd).plus(acc);
       }, valueToBigNumber(0))
       .dividedBy(lended)
       .toString();
-  }, [pools]);
+  }, [lended, pools]);
 
   return {
     loading: loading || pools === undefined,

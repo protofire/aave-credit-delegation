@@ -1,4 +1,5 @@
 import { API_ETH_MOCK_ADDRESS, InterestRate } from '@aave/contract-helpers';
+import { normalize, valueToBigNumber } from '@aave/math-utils';
 import { Trans } from '@lingui/macro';
 import {
   Box,
@@ -36,23 +37,32 @@ import { amountToUsd } from 'src/utils/utils';
 import { CapType } from '../../components/caps/helper';
 import { AvailableTooltip } from '../../components/infoTooltips/AvailableTooltip';
 import { useReserveActionState } from '../../hooks/useReserveActionState';
+import { useCreditDelegationContext } from '../credit-delegation/CreditDelegationContext';
+import { CreditDelegationModal } from '../credit-delegation/modals/CreditDelegation/CreditDelegationModal';
+import { ManageVaultModal } from '../credit-delegation/modals/WithdrawPool/ManageVaultModal';
+import { AtomicaDelegationPool } from '../credit-delegation/types';
+import { PanelItem } from './ReservePanels';
 
 interface ReserveActionsProps {
   reserve: ComputedReserveData;
+  poolId: string;
 }
 
-export const ReserveActions = ({ reserve }: ReserveActionsProps) => {
+export const ReserveActions = ({ reserve, poolId }: ReserveActionsProps) => {
   const [selectedAsset, setSelectedAsset] = useState<string>(reserve.symbol);
 
   const { currentAccount, loading: loadingWeb3Context } = useWeb3Context();
   const { isPermissionsLoading } = usePermissions();
-  const { openBorrow, openSupply } = useModalContext();
+  const { openCreditDelegation, openManageVault } = useModalContext();
   const { currentMarket, currentNetworkConfig } = useProtocolDataContext();
   const { user, loading: loadingReserves, marketReferencePriceInUsd } = useAppDataContext();
   const { walletBalances, loading: loadingWalletBalance } = useWalletBalances();
   const {
     poolComputed: { minRemainingBaseTokenBalance },
   } = useRootStore();
+  const { pools, loading: loadingPools } = useCreditDelegationContext();
+
+  const pool = pools.find((pool) => pool.id === poolId) as AtomicaDelegationPool;
 
   const { baseAssetSymbol } = currentNetworkConfig;
   let balance = walletBalances[reserve.underlyingAsset];
@@ -81,7 +91,20 @@ export const ReserveActions = ({ reserve }: ReserveActionsProps) => {
     marketReferencePriceInUsd
   ).toString();
 
-  const { disableSupplyButton, disableBorrowButton, alerts } = useReserveActionState({
+  const normalizedAvailableWithdrawUSD = valueToBigNumber(
+    pool?.balances?.capital ?? 0
+  ).multipliedBy(reserve.priceInUSD);
+
+  const interestBalanceUSD = valueToBigNumber(pool?.balances?.totalInterest ?? 0).multipliedBy(
+    reserve.priceInUSD
+  );
+
+  const rewardsBalanceUsd = normalize(
+    pool?.balances?.currentylEarnedUsd ?? 0,
+    pool?.balances?.earningDecimals ?? 18
+  );
+
+  const { disableSupplyButton, disableBorrowButton } = useReserveActionState({
     balance: balance?.amount || '0',
     maxAmountToSupply: maxAmountToSupply.toString(),
     maxAmountToBorrow: maxAmountToBorrow.toString(),
@@ -92,40 +115,30 @@ export const ReserveActions = ({ reserve }: ReserveActionsProps) => {
     return <ConnectWallet loading={loadingWeb3Context} />;
   }
 
-  if (loadingReserves || loadingWalletBalance) {
+  if (loadingReserves || loadingWalletBalance || loadingPools) {
     return <ActionsSkeleton />;
   }
-
-  const onSupplyClicked = () => {
-    if (reserve.isWrappedBaseAsset && selectedAsset === baseAssetSymbol) {
-      openSupply(API_ETH_MOCK_ADDRESS.toLowerCase());
-    } else {
-      openSupply(reserve.underlyingAsset);
-    }
-  };
 
   const { market } = getMarketInfoById(currentMarket);
 
   return (
-    <PaperWrapper>
-      {reserve.isWrappedBaseAsset && (
-        <Box>
-          <WrappedBaseAssetSelector
-            assetSymbol={reserve.symbol}
-            baseAssetSymbol={baseAssetSymbol}
-            selectedAsset={selectedAsset}
-            setSelectedAsset={setSelectedAsset}
-          />
-        </Box>
-      )}
-      <WalletBalance
-        balance={balance.amount}
-        symbol={selectedAsset}
-        marketTitle={market.marketTitle}
-      />
-      {reserve.isFrozen ? (
-        <Box sx={{ mt: 3 }} />
-      ) : (
+    <>
+      <PaperWrapper>
+        {reserve.isWrappedBaseAsset && (
+          <Box>
+            <WrappedBaseAssetSelector
+              assetSymbol={reserve.symbol}
+              baseAssetSymbol={baseAssetSymbol}
+              selectedAsset={selectedAsset}
+              setSelectedAsset={setSelectedAsset}
+            />
+          </Box>
+        )}
+        <WalletBalance
+          balance={balance.amount}
+          symbol={selectedAsset}
+          marketTitle={market.marketTitle}
+        />
         <>
           <Divider sx={{ my: 6 }} />
           <Stack gap={3}>
@@ -134,22 +147,25 @@ export const ReserveActions = ({ reserve }: ReserveActionsProps) => {
               usdValue={maxAmountToSupplyUsd}
               symbol={selectedAsset}
               disable={disableSupplyButton}
-              onActionClicked={onSupplyClicked}
+              onActionClicked={() => openCreditDelegation(poolId, pool?.underlyingAsset)}
             />
-            {reserve.borrowingEnabled && (
-              <BorrowAction
-                value={maxAmountToBorrow.toString()}
-                usdValue={maxAmountToBorrowUsd}
-                symbol={selectedAsset}
-                disable={disableBorrowButton}
-                onActionClicked={() => openBorrow(reserve.underlyingAsset)}
-              />
-            )}
-            {alerts}
+
+            <BorrowAction
+              value={maxAmountToBorrow.toString()}
+              usdValue={maxAmountToBorrowUsd}
+              symbol={selectedAsset}
+              disable={disableBorrowButton}
+              onActionClicked={() => openManageVault(pool)}
+              capitalUsd={normalizedAvailableWithdrawUSD.toString(10)}
+              interestBalanceUSD={interestBalanceUSD.toString(10)}
+              rewardsUsd={rewardsBalanceUsd}
+            />
           </Stack>
         </>
-      )}
-    </PaperWrapper>
+      </PaperWrapper>
+      <ManageVaultModal />
+      <CreditDelegationModal />
+    </>
   );
 };
 
@@ -230,6 +246,9 @@ interface ActionProps {
   symbol: string;
   disable: boolean;
   onActionClicked: () => void;
+  capitalUsd?: string;
+  interestBalanceUSD?: string;
+  rewardsUsd?: string;
 }
 
 const SupplyAction = ({ value, usdValue, symbol, disable, onActionClicked }: ActionProps) => {
@@ -237,7 +256,7 @@ const SupplyAction = ({ value, usdValue, symbol, disable, onActionClicked }: Act
     <Stack>
       <AvailableTooltip
         variant="description"
-        text={<Trans>Available to supply</Trans>}
+        text={<Trans>Available to lend</Trans>}
         capType={CapType.supplyCap}
       />
       <Stack
@@ -264,28 +283,35 @@ const SupplyAction = ({ value, usdValue, symbol, disable, onActionClicked }: Act
           variant="contained"
           data-cy="supplyButton"
         >
-          <Trans>Supply</Trans>
+          <Trans>Lend</Trans>
         </Button>
       </Stack>
     </Stack>
   );
 };
 
-const BorrowAction = ({ value, usdValue, symbol, disable, onActionClicked }: ActionProps) => {
+const BorrowAction = ({
+  disable,
+  onActionClicked,
+  capitalUsd,
+  interestBalanceUSD,
+  rewardsUsd,
+}: ActionProps) => {
   return (
-    <Stack>
+    <Stack alignItems="center">
       <AvailableTooltip
         variant="description"
-        text={<Trans>Available to borrow</Trans>}
+        text={<Trans>Available to withdraw</Trans>}
         capType={CapType.borrowCap}
       />
       <Stack
+        marginTop={5}
         sx={{ height: '44px' }}
         direction="row"
-        justifyContent="space-between"
+        justifyContent="space-evenly"
         alignItems="center"
       >
-        <Box>
+        {/* <Box>
           <ValueWithSymbol value={value} symbol={symbol} />
           <FormattedNumber
             value={usdValue}
@@ -294,18 +320,65 @@ const BorrowAction = ({ value, usdValue, symbol, disable, onActionClicked }: Act
             symbolsColor="text.muted"
             symbol="USD"
           />
-        </Box>
-        <Button
-          sx={{ height: '36px', width: '96px' }}
-          onClick={onActionClicked}
-          disabled={disable}
-          fullWidth={false}
-          variant="contained"
-          data-cy="borrowButton"
+        </Box> */}
+        <PanelItem
+          title={
+            <Box display="flex" alignItems="center">
+              <Trans>Capital</Trans>
+            </Box>
+          }
         >
-          <Trans>Borrow</Trans>
-        </Button>
+          <FormattedNumber
+            value={capitalUsd || '0'}
+            variant="subheader2"
+            color="text.muted"
+            symbolsColor="text.muted"
+            symbol="USD"
+          />
+        </PanelItem>
+
+        <PanelItem
+          title={
+            <Box display="flex" alignItems="center">
+              <Trans>Interest</Trans>
+            </Box>
+          }
+        >
+          <FormattedNumber
+            value={interestBalanceUSD || '0'}
+            variant="subheader2"
+            color="text.muted"
+            symbolsColor="text.muted"
+            symbol="USD"
+          />
+        </PanelItem>
+
+        <PanelItem
+          title={
+            <Box display="flex" alignItems="center">
+              <Trans>Rewards</Trans>
+            </Box>
+          }
+        >
+          <FormattedNumber
+            value={rewardsUsd || '0'}
+            variant="subheader2"
+            color="text.muted"
+            symbolsColor="text.muted"
+            symbol="USD"
+          />
+        </PanelItem>
       </Stack>
+      <Button
+        sx={{ height: '36px', width: '96px', marginTop: 5 }}
+        onClick={onActionClicked}
+        disabled={disable}
+        fullWidth={false}
+        variant="contained"
+        data-cy="borrowButton"
+      >
+        <Trans>Withdraw</Trans>
+      </Button>
     </Stack>
   );
 };

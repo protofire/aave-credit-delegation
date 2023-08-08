@@ -18,10 +18,22 @@ interface ManageVaultActionProps extends BoxProps {
   isWrongNetwork: boolean;
   asset?: TokenMetadataType;
   manageType: ManageType;
-  generateWithdrawTx: (poolTokenAmount: string) => Promise<PopulatedTransaction>;
-  generateClaimRewardsTx: (earnedRewardIds: string[]) => Promise<PopulatedTransaction>;
+  generateWithdrawTx: (poolTokenAmount: string, pool: string) => Promise<PopulatedTransaction>;
+  generateClaimRewardsTx: (
+    earnedRewardIds: string[],
+    pool: string
+  ) => Promise<PopulatedTransaction>;
+  generateClaimInterestTxs: (
+    erc20: string,
+    pool: string
+  ) => Promise<{
+    claimPremiumTx: PopulatedTransaction;
+    claimSettlementTx: PopulatedTransaction;
+  }>;
   earnedRewardIds: string[];
   lastReward?: Reward;
+  settlementAmount: string;
+  premiumAmount: string;
 }
 
 export const ManageVaultModalActions = memo(
@@ -35,6 +47,9 @@ export const ManageVaultModalActions = memo(
     earnedRewardIds,
     lastReward,
     asset,
+    settlementAmount,
+    premiumAmount,
+    generateClaimInterestTxs,
     sx,
     ...props
   }: ManageVaultActionProps) => {
@@ -49,7 +64,10 @@ export const ManageVaultModalActions = memo(
     const withdrawLiquidity = useCallback(async () => {
       if (poolId) {
         try {
-          const withdrawTxData = await generateWithdrawTx(parseUnits(amount, 18).toString());
+          const withdrawTxData = await generateWithdrawTx(
+            parseUnits(amount, 18).toString(),
+            poolId
+          );
 
           setMainTxState({ ...mainTxState, loading: true });
 
@@ -87,7 +105,7 @@ export const ManageVaultModalActions = memo(
     const claimRewards = useCallback(async () => {
       if (poolId) {
         try {
-          const claimRewardsTx = await generateClaimRewardsTx(earnedRewardIds);
+          const claimRewardsTx = await generateClaimRewardsTx(earnedRewardIds, poolId);
           setMainTxState({ ...mainTxState, loading: true });
 
           const response = await sendTx(claimRewardsTx);
@@ -121,6 +139,48 @@ export const ManageVaultModalActions = memo(
       setTxError,
     ]);
 
+    const claimInterest = useCallback(async () => {
+      try {
+        const { claimPremiumTx, claimSettlementTx } = await generateClaimInterestTxs(
+          asset?.address || '',
+          poolId
+        );
+        setMainTxState({ ...mainTxState, loading: true });
+
+        const [responsePremium, responseSettlement] = await Promise.all([
+          sendTx(claimPremiumTx),
+          sendTx(claimSettlementTx),
+        ]);
+
+        await responsePremium.wait(4);
+        await responseSettlement.wait(4);
+
+        setMainTxState({
+          txHash: responsePremium.hash,
+          loading: false,
+          success: true,
+        });
+        close();
+      } catch (error) {
+        const parsedError = getErrorTextFromError(error, TxAction.GAS_ESTIMATION, false);
+        console.error(error);
+        setTxError(parsedError);
+        setMainTxState({
+          txHash: undefined,
+          loading: false,
+        });
+      }
+    }, [
+      asset?.address,
+      close,
+      generateClaimInterestTxs,
+      mainTxState,
+      sendTx,
+      setMainTxState,
+      setTxError,
+      poolId,
+    ]);
+
     return (
       <>
         {manageType === ManageType.LIQUIDITY ? (
@@ -138,7 +198,7 @@ export const ManageVaultModalActions = memo(
             requiresAmount={true}
             {...props}
           />
-        ) : (
+        ) : manageType === ManageType.REWARDS ? (
           <TxActionsWrapper
             mainTxState={mainTxState}
             isWrongNetwork={isWrongNetwork}
@@ -151,6 +211,21 @@ export const ManageVaultModalActions = memo(
             sx={sx}
             requiresAmount={true}
             amount={earnedRewardIds.length ? '1' : '0'}
+            {...props}
+          />
+        ) : (
+          <TxActionsWrapper
+            mainTxState={mainTxState}
+            isWrongNetwork={isWrongNetwork}
+            symbol={asset?.symbol || ''}
+            preparingTransactions={loadingTxns}
+            actionText={<Trans>Withdraw {manageType}</Trans>}
+            actionInProgressText={<Trans>Withdrawing {manageType}...</Trans>}
+            handleAction={claimInterest}
+            requiresApproval={false}
+            sx={sx}
+            requiresAmount={true}
+            amount={Number(settlementAmount) > 0 || Number(premiumAmount) > 0 ? '1' : '0'}
             {...props}
           />
         )}

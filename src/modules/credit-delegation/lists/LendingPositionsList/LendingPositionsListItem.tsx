@@ -1,10 +1,9 @@
-// import { normalize, valueToBigNumber } from '@aave/math-utils';
-import { valueToBigNumber } from '@aave/math-utils';
+import { normalize, valueToBigNumber } from '@aave/math-utils';
 import { Trans } from '@lingui/macro';
 import { Button } from '@mui/material';
-import { useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { ListColumn } from 'src/components/lists/ListColumn';
-import { Link } from 'src/components/primitives/Link';
+import { Link, ROUTES } from 'src/components/primitives/Link';
 import { Row } from 'src/components/primitives/Row';
 import {
   ComputedUserReserveData,
@@ -13,16 +12,14 @@ import {
 import { useModalContext } from 'src/hooks/useModal';
 
 import { useManagerDetails } from '../../hooks/useManagerDetails';
-import { useRiskPool } from '../../hooks/useRiskPool';
 import { AtomicaDelegationPool } from '../../types';
 import { ListAPRColumn } from '../ListAPRColumn';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListItemWrapper } from '../ListItemWrapper';
 import { ListValueColumn } from '../ListValueColumn';
-import { ListItemActive } from './ListItemActive';
 
 export const LendingPositionsListItem = (poolVault: AtomicaDelegationPool) => {
-  const { openCreditDelegation, openManageVault } = useModalContext();
+  const { openManageVault } = useModalContext();
 
   const {
     symbol,
@@ -37,27 +34,28 @@ export const LendingPositionsListItem = (poolVault: AtomicaDelegationPool) => {
     manager,
     markets,
     vault,
-    asset,
     rewards,
     rewardAPY,
+    userAvailableWithdraw,
+    asset,
+    balances,
   } = poolVault;
 
   const { managerDetails } = useManagerDetails(manager);
   const { user } = useAppDataContext();
-  const { getUserPoolBalance, totalAmount } = useRiskPool(id, asset);
-
-  // const amount = normalize(vault?.loanAmount || '0', asset?.decimals || 18);
+  const router = useRouter();
 
   const { reserve } = user?.userReservesData.find((userReserve) => {
     return underlyingAsset === userReserve.underlyingAsset;
   }) as ComputedUserReserveData;
 
-  useEffect(() => {
-    getUserPoolBalance();
-  }, [getUserPoolBalance]);
+  const normalizedBalanceUSD = valueToBigNumber(
+    normalize(vault?.loanAmount || '0', asset?.decimals || 18)
+  ).multipliedBy(reserve.priceInUSD);
 
-  // const usdValue = valueToBigNumber(amount).multipliedBy(reserve.priceInUSD);
-  const normalizedBalanceUSD = valueToBigNumber(totalAmount).multipliedBy(reserve.priceInUSD);
+  const normalizedAvailableWithdrawUSD = valueToBigNumber(userAvailableWithdraw).multipliedBy(
+    reserve.priceInUSD
+  );
 
   return (
     <ListItemWrapper symbol={symbol} iconSymbol={iconSymbol} name={name}>
@@ -90,18 +88,26 @@ export const LendingPositionsListItem = (poolVault: AtomicaDelegationPool) => {
         ))}
       </ListColumn>
 
-      {/* <ListValueColumn
+      <ListValueColumn
         symbol={symbol}
-        value={Number(amount)}
-        subValue={usdValue.toString(10)}
+        value={Number(normalize(vault?.loanAmount || '0', asset?.decimals || 18))}
+        subValue={normalizedBalanceUSD.toString()}
         withTooltip
         disabled={Number(vault?.loanAmount) === 0}
-      /> */}
+      />
 
       <ListValueColumn
         symbol={symbol}
-        value={Number(totalAmount)}
-        subValue={normalizedBalanceUSD.toString(10)}
+        value={Number(userAvailableWithdraw)}
+        subValue={normalizedAvailableWithdrawUSD.toString(10)}
+        withTooltip
+        disabled={Number(vault?.loanAmount) === 0}
+      />
+
+      <ListValueColumn
+        symbol={symbol}
+        value={Number(normalize(balances?.currentlyEarned ?? 0, balances?.earningDecimals || 18))}
+        subValue={normalize(balances?.currentylEarnedUsd ?? 0, balances?.earningDecimals ?? 18)}
         withTooltip
         disabled={Number(vault?.loanAmount) === 0}
       />
@@ -111,17 +117,15 @@ export const LendingPositionsListItem = (poolVault: AtomicaDelegationPool) => {
         incentives={[
           {
             incentiveAPR: rewardAPY,
-            rewardTokenAddress: rewards?.length ? rewards[0].rewardToken : '',
-            rewardTokenSymbol: rewards?.length ? rewards[0].rewardTokenSymbol : '',
+            rewardTokenAddress: rewards?.rewards?.length ? rewards?.rewards[0].rewardToken : '',
+            rewardTokenSymbol: rewards?.rewards?.length
+              ? rewards?.rewards[0].rewardTokenSymbol
+              : '',
           },
         ]}
         symbol={symbol}
-        endDate={rewards?.length ? rewards[0].endedAtConverted : ''}
+        endDate={rewards?.rewards?.length ? rewards?.rewards[0].endedAtConverted : ''}
       />
-
-      <ListColumn>
-        <ListItemActive isActive={Number(totalAmount) > 0} />
-      </ListColumn>
 
       <ListButtonsColumn>
         <Button
@@ -134,9 +138,9 @@ export const LendingPositionsListItem = (poolVault: AtomicaDelegationPool) => {
         <Button
           disabled={!isActive || Number(availableBalance) <= 0}
           variant="outlined"
-          onClick={() => openCreditDelegation(id, underlyingAsset)}
+          onClick={() => router.push(ROUTES.poolDetails(id, underlyingAsset))}
         >
-          <Trans>Lend</Trans>
+          <Trans>Details</Trans>
         </Button>
       </ListButtonsColumn>
     </ListItemWrapper>

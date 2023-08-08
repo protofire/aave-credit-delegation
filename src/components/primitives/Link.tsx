@@ -115,4 +115,6 @@ export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(function Link
 export const ROUTES = {
   creditDelegation: '/',
   faucet: '/faucet',
+  poolDetails: (poolId: string, underlyingAsset: string) =>
+    `/pool-details/?pool=${poolId}&underlyingAsset=${underlyingAsset}`,
 };

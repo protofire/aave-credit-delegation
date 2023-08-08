@@ -1,4 +1,3 @@
-import { ExternalLinkIcon } from '@heroicons/react/outline';
 import { Trans } from '@lingui/macro';
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackOutlined';
 import {
@@ -12,10 +11,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { useRouter } from 'next/router';
-import { CircleIcon } from 'src/components/CircleIcon';
 import { getMarketInfoById, MarketLogo } from 'src/components/MarketSwitcher';
-import { FormattedNumber } from 'src/components/primitives/FormattedNumber';
-import { Link } from 'src/components/primitives/Link';
 import { useProtocolDataContext } from 'src/hooks/useProtocolDataContext';
 import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
 
@@ -25,19 +21,24 @@ import {
   ComputedReserveData,
   useAppDataContext,
 } from '../../hooks/app-data-provider/useAppDataProvider';
+import { useCreditDelegationContext } from '../credit-delegation/CreditDelegationContext';
+import { AtomicaDelegationPool } from '../credit-delegation/types';
 import { AddTokenDropdown } from './AddTokenDropdown';
 import { TokenLinkDropdown } from './TokenLinkDropdown';
 
 interface ReserveTopDetailsProps {
   underlyingAsset: string;
+  poolId: string;
 }
 
-export const ReserveTopDetails = ({ underlyingAsset }: ReserveTopDetailsProps) => {
+export const ReserveTopDetails = ({ underlyingAsset, poolId }: ReserveTopDetailsProps) => {
   const router = useRouter();
   const { reserves, loading } = useAppDataContext();
-  const { currentMarket, currentNetworkConfig, currentChainId } = useProtocolDataContext();
+  const { currentMarket, currentChainId } = useProtocolDataContext();
   const { market, network } = getMarketInfoById(currentMarket);
   const { addERC20Token, switchNetwork, chainId: connectedChainId, connected } = useWeb3Context();
+
+  const { pools, loading: loadingPools } = useCreditDelegationContext();
 
   const theme = useTheme();
   const downToSM = useMediaQuery(theme.breakpoints.down('sm'));
@@ -46,13 +47,14 @@ export const ReserveTopDetails = ({ underlyingAsset }: ReserveTopDetailsProps) =
     (reserve) => reserve.underlyingAsset === underlyingAsset
   ) as ComputedReserveData;
 
+  const pool = pools.find((pool) => pool.id === poolId) as AtomicaDelegationPool;
+
   const valueTypographyVariant = downToSM ? 'main16' : 'main21';
-  const symbolsTypographyVariant = downToSM ? 'secondary16' : 'secondary21';
 
   const ReserveIcon = () => {
     return (
       <Box mr={3} sx={{ mr: 3, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        {loading ? (
+        {loading || loadingPools ? (
           <Skeleton variant="circular" width={40} height={40} sx={{ background: '#383D51' }} />
         ) : (
           <img
@@ -66,16 +68,8 @@ export const ReserveTopDetails = ({ underlyingAsset }: ReserveTopDetailsProps) =
     );
   };
 
-  const iconStyling = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    color: '#A5A8B6',
-    '&:hover': { color: '#F1F1F3' },
-    cursor: 'pointer',
-  };
-
   const ReserveName = () => {
-    return loading ? (
+    return loading && loadingPools ? (
       <Skeleton width={60} height={28} sx={{ background: '#383D51' }} />
     ) : (
       <Typography variant={valueTypographyVariant}>{poolReserve.name}</Typography>
@@ -147,7 +141,7 @@ export const ReserveTopDetails = ({ underlyingAsset }: ReserveTopDetailsProps) =
                 )}
                 <Box sx={{ display: 'inline-flex', alignItems: 'center' }}>
                   <ReserveName />
-                  {loading ? (
+                  {loading && loadingPools ? (
                     <Skeleton width={16} height={16} sx={{ ml: 1, background: '#383D51' }} />
                   ) : (
                     <Box sx={{ display: 'flex' }}>
@@ -207,17 +201,19 @@ export const ReserveTopDetails = ({ underlyingAsset }: ReserveTopDetailsProps) =
           />
         </>
       )}
-      <TopInfoPanelItem title={<Trans>Reserve Size</Trans>} loading={loading} hideIcon>
-        <FormattedNumber
-          value={Math.max(Number(poolReserve?.totalLiquidityUSD), 0)}
+      <TopInfoPanelItem title={<Trans>Pool Name</Trans>} loading={loadingPools} hideIcon>
+        {/* <FormattedNumber
+          // value={Math.max(Number(poolReserve?.totalLiquidityUSD), 0)}
+          value={Math.max(Number(pool?.availableBalanceUsd), 0)}
           symbol="USD"
           variant={valueTypographyVariant}
           symbolsVariant={symbolsTypographyVariant}
           symbolsColor="#A5A8B6"
-        />
+        /> */}
+        <Trans>{pool?.metadata?.Label}</Trans>
       </TopInfoPanelItem>
 
-      <TopInfoPanelItem title={<Trans>Available liquidity</Trans>} loading={loading} hideIcon>
+      {/* <TopInfoPanelItem title={<Trans>Available liquidity</Trans>} loading={loading} hideIcon>
         <FormattedNumber
           value={Math.max(Number(poolReserve?.availableLiquidityUSD), 0)}
           symbol="USD"
@@ -225,9 +221,9 @@ export const ReserveTopDetails = ({ underlyingAsset }: ReserveTopDetailsProps) =
           symbolsVariant={symbolsTypographyVariant}
           symbolsColor="#A5A8B6"
         />
-      </TopInfoPanelItem>
+      </TopInfoPanelItem> */}
 
-      <TopInfoPanelItem title={<Trans>Utilization Rate</Trans>} loading={loading} hideIcon>
+      {/* <TopInfoPanelItem title={<Trans>Utilization Rate</Trans>} loading={loading} hideIcon>
         <FormattedNumber
           value={poolReserve?.borrowUsageRatio}
           percent
@@ -235,9 +231,9 @@ export const ReserveTopDetails = ({ underlyingAsset }: ReserveTopDetailsProps) =
           symbolsVariant={symbolsTypographyVariant}
           symbolsColor="#A5A8B6"
         />
-      </TopInfoPanelItem>
+      </TopInfoPanelItem> */}
 
-      <TopInfoPanelItem title={<Trans>Oracle price</Trans>} loading={loading} hideIcon>
+      {/* <TopInfoPanelItem title={<Trans>Oracle price</Trans>} loading={loading} hideIcon>
         <Box sx={{ display: 'inline-flex', alignItems: 'center' }}>
           <FormattedNumber
             value={poolReserve?.priceInUSD}
@@ -263,7 +259,7 @@ export const ReserveTopDetails = ({ underlyingAsset }: ReserveTopDetailsProps) =
             </CircleIcon>
           )}
         </Box>
-      </TopInfoPanelItem>
+      </TopInfoPanelItem> */}
     </TopInfoPanel>
   );
 };

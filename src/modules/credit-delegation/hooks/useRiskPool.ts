@@ -11,9 +11,10 @@ import RISK_POOL_ABI from '../abi/RiskPool.json';
 import { DEFAULT_LOGO, SECONDS_IN_A_YEAR } from '../consts';
 import {
   AccountPoolReward,
+  AtomicaSubgraphPool,
   AtomicaSubgraphRewards,
   EarnedToken,
-  PoolRewards,
+  PoolEarnings,
   Reward,
 } from '../types';
 import { useCoinRate } from './useCoinRate';
@@ -22,29 +23,90 @@ export type TokenMap = {
   [key: string]: Reward;
 };
 
-export const useRiskPool = (pool: string, asset?: TokenMetadataType) => {
+export const useRiskPool = () => {
   const { provider } = useWeb3Context();
   const [account] = useRootStore((state) => [state.account]);
   const { getPriceMap, getPrice } = useCoinRate();
 
-  const [normalizedBalance, setNormalizedBalance] = useState<string>('0');
-  const [totalAmount, setTotalAmount] = useState<string>('0');
-  const [poolBalanceState, setPoolBalanceState] = useState();
+  const [rewardEarningsStates, setRewardEarningsStates] = useState<PoolEarnings[]>([]);
 
-  const contract = new Contract(pool, RISK_POOL_ABI, provider?.getSigner());
   const jsonInterface = new Interface(RISK_POOL_ABI);
 
   const getCoinId = (tokenName: string) => tokenName.replace(' ', '-').toLowerCase();
 
-  const getUserPoolBalance = async () => {
-    const balance = await contract.balanceOf(account.toLowerCase());
-    setPoolBalanceState(balance);
-    setNormalizedBalance(normalize(balance.toString(), 18));
-    setTotalAmount(normalize(balance.toString(), asset?.decimals || 18));
-    return balance;
+  const getCurrentlyEarned = (
+    rewardRate: BigNumber,
+    earned: BigNumber,
+    updatedAt: number,
+    endedAt: number
+  ) => {
+    return rewardRate
+      .times(Math.min(new Date().getTime(), endedAt) - updatedAt)
+      .times(0)
+      .div(100)
+      .plus(earned);
   };
 
-  const generateWithdrawTx = async (poolTokenAmount: string) => {
+  const getUserAvailablePoolBalance = async (
+    pool: AtomicaSubgraphPool,
+    token: TokenMetadataType,
+    rewards: AtomicaSubgraphRewards[],
+    totalLiquidity: string
+  ) => {
+    const contract = new Contract(pool.id, RISK_POOL_ABI, provider?.getSigner());
+    const balance = await contract.balanceOf(account.toLowerCase());
+    const { capitalTokenBalance, poolTokenTotalSupply } = await contract.stats();
+    const { apy, earnings, lastReward } = await calculatePoolRewards(
+      rewards,
+      token.name,
+      totalLiquidity,
+      token
+    );
+
+    const newRewardEarningStates = [
+      ...rewardEarningsStates,
+      {
+        apy,
+        earnings,
+        lastReward,
+        poolId: pool.id,
+      },
+    ];
+    setRewardEarningsStates(newRewardEarningStates);
+    console.log({ rewardEarningsStates });
+
+    const currentylEarned = getCurrentlyEarned(
+      earnings[0]?.rewardRate || new BigNumber(0),
+      earnings[0]?.earned || new BigNumber(0),
+      new BigNumber(Math.floor(earnings[0]?.updatedAt || 0 / 1000)).toNumber(),
+      earnings[0]?.endedAt?.toNumber() || 0
+    );
+
+    const userTotalBalance = normalize(balance.toString(), 18);
+    const myPercentage =
+      (Number(userTotalBalance) / Number(normalize(poolTokenTotalSupply.toString(), 18))) * 100;
+    const myCapital = normalize((myPercentage / 100) * capitalTokenBalance, token.decimals || 18);
+    console.log(myCapital);
+    const { premium, settlement } = await getUserPoolSettlementPremiums(pool.id, token.address);
+
+    const normalizedPremium = Number(normalize(premium.toString(), token.decimals || 18));
+    const normalizedSettlement = Number(normalize(settlement.toString(), token.decimals || 18));
+
+    return {
+      id: pool.id,
+      availableWithdraw: Number(myCapital) + normalizedPremium + normalizedSettlement,
+      lpBalance: balance.toString(),
+      capital: myCapital,
+      settlement: normalizedSettlement,
+      premium: normalizedPremium,
+      currentlyEarned: currentylEarned,
+      currentylEarnedUsd: Number(currentylEarned) * (lastReward?.tokenUsdPrice || 0),
+      totalInterest: settlement + premium,
+      earningDecimals: earnings[0]?.decimals,
+    };
+  };
+
+  const generateWithdrawTx = async (poolTokenAmount: string, pool: string) => {
     const txData = jsonInterface.encodeFunctionData('withdraw', [poolTokenAmount]);
 
     const withdrawTx: PopulatedTransaction = {
@@ -56,7 +118,7 @@ export const useRiskPool = (pool: string, asset?: TokenMetadataType) => {
     return withdrawTx;
   };
 
-  const generateClaimRewardsTx = async (rewardIds: string[]) => {
+  const generateClaimRewardsTx = async (rewardIds: string[], pool: string) => {
     const txData = jsonInterface.encodeFunctionData('claimSelectedRewards', [rewardIds]);
 
     const claimRewardsTx: PopulatedTransaction = {
@@ -71,7 +133,7 @@ export const useRiskPool = (pool: string, asset?: TokenMetadataType) => {
   const getAccountPoolRewards = async (rewards: AtomicaSubgraphRewards[]) => {
     const url = `${process.env.NEXT_PUBLIC_ATOMICA_API_URL}pool/earned-reward-list`;
     const items = rewards.map((reward) => {
-      return { poolId: pool, chainId: 80001, rewardId: reward.num };
+      return { poolId: reward.poolId || '', chainId: 80001, rewardId: reward.num };
     });
 
     try {
@@ -228,7 +290,7 @@ export const useRiskPool = (pool: string, asset?: TokenMetadataType) => {
     name: string,
     totalLiquidity: string,
     asset?: TokenMetadataType
-  ): Promise<PoolRewards> => {
+  ): Promise<PoolEarnings> => {
     const { annualRewardSummary, earnings, lastReward } = await calculateRewards(rewards);
     const poolRate = await getPrice([getCoinId(name)]);
 
@@ -238,16 +300,46 @@ export const useRiskPool = (pool: string, asset?: TokenMetadataType) => {
       earnings,
       lastReward,
       apy: annualRewardSummary.div(poolBalanceUsd).times(100),
+      poolId: '1',
     };
   };
 
+  const getUserPoolSettlementPremiums = async (pool: string, token: string) => {
+    const contract = new Contract(pool, RISK_POOL_ABI, provider?.getSigner());
+    const settlementValue = await contract.accumulatedSettlement(account, token);
+    const premiumValue = await contract.accumulatedPremium(account, token);
+    return {
+      settlement: settlementValue,
+      premium: premiumValue,
+    };
+  };
+
+  const generateClaimInterestTxs = async (erc20: string, pool: string) => {
+    const txPremiumData = jsonInterface.encodeFunctionData('claimPremium', [erc20]);
+    const txSettlementData = jsonInterface.encodeFunctionData('claimSettlement', [erc20]);
+
+    const claimPremiumTx: PopulatedTransaction = {
+      data: txPremiumData,
+      to: pool,
+      from: account,
+    };
+
+    const claimSettlementTx: PopulatedTransaction = {
+      data: txSettlementData,
+      to: pool,
+      from: account,
+    };
+
+    return { claimPremiumTx, claimSettlementTx };
+  };
+
   return {
-    getUserPoolBalance,
     generateWithdrawTx,
     calculatePoolRewards,
     generateClaimRewardsTx,
-    normalizedBalance,
-    totalAmount,
-    poolBalanceState,
+    getUserPoolSettlementPremiums,
+    generateClaimInterestTxs,
+    getUserAvailablePoolBalance,
+    rewardEarningsStates,
   };
 };

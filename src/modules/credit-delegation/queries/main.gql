@@ -25,6 +25,9 @@ query main($productIds: [String]!, $managerIds: [String]!, $owner: String!) {
     capitalTokenAddress
     capitalTokenDecimals
     manager
+    managerFee
+    capitalRequirement
+    capitalTokenBalance
     markets {
       id
       title

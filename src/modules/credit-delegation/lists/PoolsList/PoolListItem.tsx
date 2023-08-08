@@ -76,12 +76,14 @@ export const PoolListItem = ({
         incentives={[
           {
             incentiveAPR: rewardAPY,
-            rewardTokenAddress: rewards?.length ? rewards[0].rewardToken : '',
-            rewardTokenSymbol: rewards?.length ? rewards[0].rewardTokenSymbol : '',
+            rewardTokenAddress: rewards?.rewards?.length ? rewards?.rewards[0].rewardToken : '',
+            rewardTokenSymbol: rewards?.rewards?.length
+              ? rewards?.rewards[0].rewardTokenSymbol
+              : '',
           },
         ]}
         symbol={symbol}
-        endDate={rewards?.length ? rewards[0].endedAtConverted : ''}
+        endDate={rewards?.rewards?.length ? rewards?.rewards[0].endedAtConverted : ''}
       />
 
       <ListButtonsColumn>

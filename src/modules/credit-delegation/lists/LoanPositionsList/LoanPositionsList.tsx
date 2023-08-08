@@ -16,12 +16,18 @@ import { ListLoader } from '../ListLoader';
 import { LoanPositionsListItem } from './LoanPositionsListItem';
 
 const head = [
-  { title: <Trans key="assets">Assets</Trans>, sortKey: 'symbol' },
-  { title: <Trans key="title">Pool Description</Trans>, sortKey: 'pool.metadata.Label' },
-  { title: <Trans key="manager">Pool Manager</Trans>, sortKey: 'pool.manager' },
-  { title: <Trans key="borrowers">Borrower</Trans>, sortKey: 'market.title' },
-  { title: <Trans key="lended">Loan amount</Trans>, sortKey: 'borrowedAmount' },
-  { title: <Trans key="APR">APR</Trans>, sortKey: 'apr' },
+  { title: <Trans key="assets">Asset</Trans>, sortKey: 'symbol' },
+  { title: <Trans key="loan-id">Loan ID</Trans>, sortKey: 'loanid' },
+  { title: <Trans key="pool">Pool</Trans>, sortKey: 'pool' },
+  { title: <Trans key="date">Date</Trans>, sortKey: 'date' },
+  { title: <Trans key="apy">APY</Trans>, sortKey: 'apy' },
+  { title: <Trans key="borrowed">Borrower</Trans>, sortKey: 'borrowed' },
+  { title: <Trans key="principal">Principal</Trans>, sortKey: 'principal' },
+  { title: <Trans key="interest">Interest</Trans>, sortKey: 'interest' },
+  {
+    title: <Trans>Agreement</Trans>,
+    sortKey: 'agreement',
+  },
 ];
 
 interface HeaderProps {
@@ -78,7 +84,7 @@ export const LoanPositionsList = () => {
   if (loading || loadingLendingPositions)
     return (
       <ListLoader
-        title={<Trans>Your deficit positions</Trans>}
+        title={<Trans>Your loan positions</Trans>}
         head={head.map((c) => c.title)}
         withTopMargin
       />
@@ -88,7 +94,7 @@ export const LoanPositionsList = () => {
     <ListWrapper
       titleComponent={
         <Typography component="div" variant="h3" sx={{ mr: 4 }}>
-          <Trans>Your deficit positions</Trans>
+          <Trans>Your loan positions</Trans>
         </Typography>
       }
       localStorageName="loanPositionsCreditDelegationTableCollapse"
@@ -106,6 +112,7 @@ export const LoanPositionsList = () => {
           sortName={sortName}
         />
       )}
+
       {sortedLendingPositions.map((item) => (
         <LoanPositionsListItem key={item.id} {...item} />
       ))}
