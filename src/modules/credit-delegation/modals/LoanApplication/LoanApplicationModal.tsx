@@ -5,10 +5,14 @@ import { ModalContextType, ModalType, useModalContext } from 'src/hooks/useModal
 import { LoanApplicationModalContentContent } from './LoanApplicationModalContent';
 
 export const LoanApplicationModal = () => {
-  const { type, close } = useModalContext() as ModalContextType<Record<string, never>>;
+  const { type, close, mainTxState } = useModalContext() as ModalContextType<Record<string, never>>;
 
   return (
-    <BasicModal open={type === ModalType.LoanApplication} setOpen={close} contentMaxWidth={1280}>
+    <BasicModal
+      open={type === ModalType.LoanApplication}
+      setOpen={close}
+      contentMaxWidth={mainTxState.success ? undefined : 1280}
+    >
       <LoanApplicationModalContentContent />
     </BasicModal>
   );
