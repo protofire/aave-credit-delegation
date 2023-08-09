@@ -2,7 +2,7 @@ import Ajv, { ErrorObject, JSONSchemaType } from 'ajv';
 import ajvErrors from 'ajv-errors';
 import addFormats from 'ajv-formats';
 
-const ajv = new Ajv({ coerceTypes: true, allErrors: true });
+const ajv = new Ajv({ coerceTypes: true, allErrors: true, $data: true });
 
 ajvErrors(ajv /*, {singleError: true} */);
 
@@ -46,7 +46,10 @@ const schema: JSONSchemaType<LoanApplicationData> = {
     },
     topUp: {
       type: 'number',
-      default: 0,
+      minimum: 0,
+      maximum: {
+        $data: '1/amount',
+      },
     },
     maxApr: {
       type: 'number',
@@ -63,7 +66,7 @@ const schema: JSONSchemaType<LoanApplicationData> = {
       state: 'Please select a state',
       productId: 'Please select a product',
       amount: 'Please enter a valid number',
-      topUp: 'Please enter a valid number',
+      topUp: 'Please enter a number between 0 and the loan amount',
       maxApr: 'Please enter a value between 0 and 100',
     },
   },
@@ -79,13 +82,6 @@ export const getValidationFunction = (
     | undefined
 ) => {
   const listIds = config?.map((config) => config.listId) ?? [];
-  const titles = config?.map((config) => config.title) ?? [];
-
-  console.log({
-    listIds,
-    titles,
-    config,
-  });
 
   return ajv.compile({
     ...schema,

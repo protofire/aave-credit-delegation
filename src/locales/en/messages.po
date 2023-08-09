@@ -140,6 +140,7 @@ msgid "All Assets"
 msgstr "All Assets"
 
 #: src/components/transactions/FlowCommons/Success.tsx
+#: src/modules/credit-delegation/modals/LoanApplication/Success.tsx
 msgid "All done!"
 msgstr "All done!"
 
@@ -622,6 +623,10 @@ msgstr "Dashboard"
 #: src/modules/reserve-overview/graphs/ApyGraphContainer.tsx
 msgid "Data couldn't be fetched, please reload graph."
 msgstr "Data couldn't be fetched, please reload graph."
+
+#: src/modules/credit-delegation/modals/LoanApplication/LoanApplicationActions.tsx
+msgid "Data source config error"
+msgstr "Data source config error"
 
 #: src/modules/dashboard/lists/BorrowedPositionsList/BorrowedPositionsList.tsx
 #: src/modules/dashboard/lists/BorrowedPositionsList/BorrowedPositionsListMobileItem.tsx
@@ -1225,6 +1230,7 @@ msgid "Notify"
 msgstr "Notify"
 
 #: src/components/transactions/FlowCommons/Success.tsx
+#: src/modules/credit-delegation/modals/LoanApplication/Success.tsx
 msgid "Ok, Close"
 msgstr "Ok, Close"
 
@@ -1239,6 +1245,10 @@ msgstr "Operation not supported"
 #: src/modules/reserve-overview/ReserveTopDetails.tsx
 msgid "Oracle price"
 msgstr "Oracle price"
+
+#: src/modules/credit-delegation/modals/LoanApplication/LoanApplicationModalContent.tsx
+msgid "Our team will review your application and get back to you within 24 hours."
+msgstr "Our team will review your application and get back to you within 24 hours."
 
 #: pages/404.page.tsx
 msgid "Page not found"
@@ -1942,8 +1952,8 @@ msgid "This transaction will modify the credit line."
 msgstr "This transaction will modify the credit line."
 
 #: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationModalContent.tsx
-msgid "This transaction will use aave's credit delegation (variable rate) to deposit into the pool <0>({0})</0> and in exchange you will receive pool tokens."
-msgstr "This transaction will use aave's credit delegation (variable rate) to deposit into the pool <0>({0})</0> and in exchange you will receive pool tokens."
+msgid "This transaction will use AAVE's credit delegation (variable rate) to deposit into the pool <0>({0})</0> and in exchange you will receive pool tokens."
+msgstr "This transaction will use AAVE's credit delegation (variable rate) to deposit into the pool <0>({0})</0> and in exchange you will receive pool tokens."
 
 #: src/modules/staking/StakingPanel.tsx
 msgid "Time left to be able to withdraw your staked asset."
@@ -2222,6 +2232,10 @@ msgstr "Withdrawing {symbol}"
 #: src/components/transactions/TxActionsWrapper.tsx
 msgid "Wrong Network"
 msgstr "Wrong Network"
+
+#: src/modules/credit-delegation/modals/LoanApplication/LoanApplicationModalContent.tsx
+msgid "You application has been submitted subccessfully."
+msgstr "You application has been submitted subccessfully."
 
 #: src/components/transactions/Warnings/IsolationModeWarning.tsx
 msgid "You are entering Isolation mode"

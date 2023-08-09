@@ -1,4 +1,5 @@
 // import { AddressInput } from '../AddressInput';
+import { Trans } from '@lingui/macro';
 import { Box, Typography } from '@mui/material';
 import { ErrorObject } from 'ajv';
 import React, { useMemo, useState } from 'react';
@@ -8,7 +9,7 @@ import { useModalContext } from 'src/hooks/useModal';
 import { Input } from './Input';
 import { LoanApplicationActions } from './LoanApplicationActions';
 import { Select } from './Select';
-import { useEntities } from './useEntities';
+import { SuccessView } from './Success';
 import { useInitialData } from './useInitialData';
 import { getErrorMessage, hasError } from './validation';
 
@@ -20,13 +21,9 @@ interface LoanApplicationModalContentProps {}
 
 export const LoanApplicationModalContentContent = React.memo(
   ({}: LoanApplicationModalContentProps) => {
-    const { data, products } = useInitialData();
+    const { products } = useInitialData();
 
-    const [entities, config] = useEntities();
-
-    console.log({ data, entities, config, products });
-
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const { mainTxState } = useModalContext();
 
     const { txError } = useModalContext();
     const [email, setEmail] = useState('');
@@ -41,6 +38,10 @@ export const LoanApplicationModalContentContent = React.memo(
     const [validationErrors, setValidationErrors] = useState<
       ErrorObject<string, Record<string, unknown>, unknown>[]
     >([]);
+
+    console.log({
+      validationErrors,
+    });
 
     const selectedProduct = useMemo(
       () => products?.find((product) => product.productId === productId),
@@ -58,14 +59,22 @@ export const LoanApplicationModalContentContent = React.memo(
       setMaxApr('');
     };
 
-    console.log({
-      validationErrors,
-    });
-
     const handleProductChange = (productId: string) => {
       setEntities({});
       setProductId(productId);
     };
+
+    if (mainTxState.success)
+      return (
+        <SuccessView
+          text={<Trans>You application has been submitted subccessfully.</Trans>}
+          subText={
+            <Trans>
+              Our team will review your application and get back to you within 24 hours.
+            </Trans>
+          }
+        />
+      );
 
     return (
       <>
@@ -81,7 +90,7 @@ export const LoanApplicationModalContentContent = React.memo(
                 label="Email"
                 fullWidth
                 error={hasError(validationErrors, 'email')}
-                disabled={isSubmitting}
+                disabled={mainTxState.loading}
               />
               <span className="error">{getErrorMessage(validationErrors, 'email')}</span>
             </Box>
@@ -92,7 +101,7 @@ export const LoanApplicationModalContentContent = React.memo(
                 label="Name"
                 fullWidth
                 error={hasError(validationErrors, 'name')}
-                disabled={isSubmitting}
+                disabled={mainTxState.loading}
               />
               <span className="error">{getErrorMessage(validationErrors, 'name')}</span>
             </Box>
@@ -103,7 +112,7 @@ export const LoanApplicationModalContentContent = React.memo(
                 label="State/Region"
                 fullWidth
                 error={hasError(validationErrors, 'state')}
-                disabled={isSubmitting}
+                disabled={mainTxState.loading}
               />
               <span className="error">{getErrorMessage(validationErrors, 'state')}</span>
             </Box>
@@ -123,7 +132,7 @@ export const LoanApplicationModalContentContent = React.memo(
                   })) ?? []
                 }
                 error={hasError(validationErrors, 'productId')}
-                disabled={isSubmitting}
+                disabled={mainTxState.loading}
               />
               <span className="error">{getErrorMessage(validationErrors, 'productId')}</span>
             </Box>
@@ -139,7 +148,7 @@ export const LoanApplicationModalContentContent = React.memo(
                     value: option,
                     label: option,
                   }))}
-                  disabled={isSubmitting}
+                  disabled={mainTxState.loading}
                   error={hasError(validationErrors, `selectedEntities`, {
                     missingProperty: config.listId,
                   })}
@@ -159,7 +168,7 @@ export const LoanApplicationModalContentContent = React.memo(
                 label="Loan amount"
                 fullWidth
                 error={hasError(validationErrors, 'amount')}
-                disabled={isSubmitting}
+                disabled={mainTxState.loading}
               />
               <span className="error">{getErrorMessage(validationErrors, 'amount')}</span>
             </Box>
@@ -171,7 +180,7 @@ export const LoanApplicationModalContentContent = React.memo(
                 label="Top-up for future interest payment (optional)"
                 fullWidth
                 error={hasError(validationErrors, 'topUp')}
-                disabled={isSubmitting}
+                disabled={mainTxState.loading}
               />
               <span className="error">{getErrorMessage(validationErrors, 'topUp')}</span>
             </Box>
@@ -183,7 +192,7 @@ export const LoanApplicationModalContentContent = React.memo(
                 label="Max APR"
                 fullWidth
                 error={hasError(validationErrors, 'maxApr')}
-                disabled={isSubmitting}
+                disabled={mainTxState.loading}
               />
               <span className="error">{getErrorMessage(validationErrors, 'maxApr')}</span>
             </Box>
@@ -203,8 +212,6 @@ export const LoanApplicationModalContentContent = React.memo(
             topUp,
             maxApr,
           }}
-          setIsSubmitting={setIsSubmitting}
-          isSubmitting={isSubmitting}
           setValidationErrors={setValidationErrors}
           clearForm={clearForm}
           selectedProduct={selectedProduct}

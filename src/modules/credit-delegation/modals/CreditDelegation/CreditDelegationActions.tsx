@@ -118,16 +118,14 @@ export const CreditDelegationActions = React.memo(
             loading: false,
             success: true,
           });
-          close();
         } catch (error) {
           const parsedError = getErrorTextFromError(error, TxAction.GAS_ESTIMATION, false);
-          console.error(error);
+
           setTxError(parsedError);
           setMainTxState({
             txHash: undefined,
             loading: false,
           });
-          close();
         }
       }
     }, [
