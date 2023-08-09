@@ -39,10 +39,6 @@ export const LoanApplicationModalContentContent = React.memo(
       ErrorObject<string, Record<string, unknown>, unknown>[]
     >([]);
 
-    console.log({
-      validationErrors,
-    });
-
     const selectedProduct = useMemo(
       () => products?.find((product) => product.productId === productId),
       [productId, products]
