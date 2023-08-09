@@ -34,6 +34,7 @@ env:
   NEXT_PUBLIC_ATOMICA_API_URL: 'https://api.atomica.org/srm-dev/'
   NEXT_PUBLIC_CD_VAULTS_SUBGRAPH_URL: 'https://api.studio.thegraph.com/query/46833/aave-credit-delegation-v3/version/latest'
   NEXT_PUBLIC_ATOMICA_META_SHEET_ID: '13wzHPjvgTbig-EXH9hzM9XqYn79EdRiFUn9l_XbYZn4'
+  NEXT_PUBLIC_BORROWERS_META_SHEET_ID: '1QEg-BVlt5hnrEzfjAPjbFWF0q6Y9ALPMzkz34b2Ro5Q'
 
 jobs:
   Build_Push_Deploy:
@@ -78,6 +79,7 @@ jobs:
           --build-arg next_public_atomica_api_url=$NEXT_PUBLIC_ATOMICA_API_URL \
           --build-arg next_public_cd_vaults_subgraph_url=$NEXT_PUBLIC_CD_VAULTS_SUBGRAPH_URL \
           --build-arg next_public_atomica_meta_sheet_id=$NEXT_PUBLIC_ATOMICA_META_SHEET_ID
+          --build-arg next_public_borrowers_meta_sheet_id=$NEXT_PUBLIC_BORROWERS_META_SHEET_ID
 
       - name: Push the image to the Google Container Registry (GCR)
         run: |-
