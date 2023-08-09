@@ -10,19 +10,15 @@ import { CREDIT_DELEGATION_LIST_COLUMN_WIDTHS } from 'src/utils/creditDelegation
 
 import { CreditDelegationContentNoData } from '../../CreditDelegationContentNoData';
 import { useCreditDelegationContext } from '../../CreditDelegationContext';
-import { handleSortLoans } from '../../utils';
+import { AtomicaDelegationPool } from '../../types';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListLoader } from '../ListLoader';
-import { DetailsLoanPositionsListItem } from './DetailsLoanPositionsListItem';
+import { BorrowerListItem } from './BorrowerListItem';
 
 const head = [
-  // { title: <Trans key="assets">Asset</Trans>, sortKey: 'symbol' },
-  { title: <Trans key="loan-id">Loan ID</Trans>, sortKey: 'loanid' },
-  { title: <Trans key="date">Date</Trans>, sortKey: 'date' },
-  { title: <Trans key="apy">APY</Trans>, sortKey: 'apy' },
-  { title: <Trans key="borrowed">Borrower</Trans>, sortKey: 'borrowed' },
-  { title: <Trans key="principal">Principal</Trans>, sortKey: 'principal' },
-  { title: <Trans key="interest">Interest</Trans>, sortKey: 'interest' },
+  { title: <Trans key="product">Product</Trans>, sortKey: 'product' },
+  { title: <Trans key="market">Market</Trans>, sortKey: 'market' },
+  { title: <Trans key="market">Details</Trans>, sortKey: 'details' },
 ];
 
 interface HeaderProps {
@@ -64,43 +60,39 @@ const Header: React.FC<HeaderProps> = ({
   );
 };
 
-export const DetailsLoanPositionsList = () => {
+export const BorrowerList = ({ poolId }: { poolId: string }) => {
   const { loading } = useAppDataContext();
   const [sortName, setSortName] = useState('');
   const [sortDesc, setSortDesc] = useState(false);
 
-  const { lendingPositions, loadingLendingPositions } = useCreditDelegationContext();
+  const { pools, loading: loadingPools } = useCreditDelegationContext();
 
-  const sortedLendingPositions = useMemo(
-    () => handleSortLoans(sortDesc, sortName, lendingPositions),
-    [sortDesc, sortName, lendingPositions]
+  const borrowersList = useMemo(
+    () => pools.filter((pool) => pool.id === poolId) as AtomicaDelegationPool[],
+    [poolId, pools]
   );
 
-  if (loading || loadingLendingPositions)
+  if (loading || loadingPools)
     return (
-      <ListLoader
-        title={<Trans>Your loan positions</Trans>}
-        head={head.map((c) => c.title)}
-        withTopMargin
-      />
+      <ListLoader title={<Trans>Borrowers</Trans>} head={head.map((c) => c.title)} withTopMargin />
     );
 
   return (
     <ListWrapper
       titleComponent={
         <Typography component="div" variant="h3" sx={{ mr: 4 }}>
-          <Trans>Your loan positions</Trans>
+          <Trans>Borrowers</Trans>
         </Typography>
       }
       localStorageName="loanPositionsCreditDelegationTableCollapse"
-      noData={!sortedLendingPositions.length}
+      noData={!borrowersList.length}
       withTopMargin
     >
-      {!sortedLendingPositions.length && (
-        <CreditDelegationContentNoData text={<Trans>Nothing lent yet</Trans>} />
+      {!borrowersList.length && (
+        <CreditDelegationContentNoData text={<Trans>No borrowers yet</Trans>} />
       )}
 
-      {!!sortedLendingPositions.length && (
+      {!!borrowersList.length && (
         <Header
           setSortDesc={setSortDesc}
           setSortName={setSortName}
@@ -108,15 +100,9 @@ export const DetailsLoanPositionsList = () => {
           sortName={sortName}
         />
       )}
-      {/* <Header
-        setSortDesc={setSortDesc}
-        setSortName={setSortName}
-        sortDesc={sortDesc}
-        sortName={sortName}
-      /> */}
-      {/* <DetailsLoanPositionsListItem key={1} {...[]} /> */}
-      {sortedLendingPositions.map((item) => (
-        <DetailsLoanPositionsListItem key={item.id} {...item} />
+
+      {borrowersList[0]?.markets.map((item) => (
+        <BorrowerListItem key={item.id} {...item} />
       ))}
     </ListWrapper>
   );

@@ -73,7 +73,6 @@ export const useRiskPool = () => {
       },
     ];
     setRewardEarningsStates(newRewardEarningStates);
-    console.log({ rewardEarningsStates });
 
     const currentylEarned = getCurrentlyEarned(
       earnings[0]?.rewardRate || new BigNumber(0),
@@ -86,7 +85,7 @@ export const useRiskPool = () => {
     const myPercentage =
       (Number(userTotalBalance) / Number(normalize(poolTokenTotalSupply.toString(), 18))) * 100;
     const myCapital = normalize((myPercentage / 100) * capitalTokenBalance, token.decimals || 18);
-    console.log(myCapital);
+
     const { premium, settlement } = await getUserPoolSettlementPremiums(pool.id, token.address);
 
     const normalizedPremium = Number(normalize(premium.toString(), token.decimals || 18));

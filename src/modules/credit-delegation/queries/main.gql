@@ -31,6 +31,8 @@ query main($productIds: [String]!, $managerIds: [String]!, $owner: String!) {
     markets {
       id
       title
+      details
+      wording
       product {
         id
         title

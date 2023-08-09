@@ -404,6 +404,8 @@ msgstr "Borrowed"
 msgid "Borrower"
 msgstr "Borrower"
 
+#: src/modules/credit-delegation/lists/BorrowerList/BorrowerList.tsx
+#: src/modules/credit-delegation/lists/BorrowerList/BorrowerList.tsx
 #: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
 #: src/modules/credit-delegation/lists/PoolsList/PoolsList.tsx
 msgid "Borrowers"
@@ -650,7 +652,9 @@ msgstr "Debt to pay"
 msgid "Deposited Amount"
 msgstr "Deposited Amount"
 
+#: src/modules/credit-delegation/lists/BorrowerList/BorrowerList.tsx
 #: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsListItem.tsx
+#: src/modules/credit-delegation/lists/PoolsList/PoolListItem.tsx
 msgid "Details"
 msgstr "Details"
 
@@ -886,6 +890,7 @@ msgstr "Inactive"
 msgid "Inconsistent flashloan parameters"
 msgstr "Inconsistent flashloan parameters"
 
+#: src/modules/credit-delegation/lists/LoanPositionsList/DetailsLoanPositionsList.tsx
 #: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
 #: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
 #: src/modules/credit-delegation/modals/RepayLoan/RepayLoanModalContent.tsx
@@ -1053,6 +1058,7 @@ msgstr "Manage"
 msgid "Manage credit line"
 msgstr "Manage credit line"
 
+#: src/modules/credit-delegation/lists/BorrowerList/BorrowerList.tsx
 #: src/modules/reserve-overview/ReserveTopDetails.tsx
 msgid "Market"
 msgstr "Market"
@@ -1170,6 +1176,10 @@ msgstr "New APY"
 #: src/modules/credit-delegation/modals/ManageCreditLine/ManageCreditLineModalContent.tsx
 msgid "New amount"
 msgstr "New amount"
+
+#: src/modules/credit-delegation/lists/BorrowerList/BorrowerList.tsx
+msgid "No borrowers yet"
+msgstr "No borrowers yet"
 
 #: src/components/transactions/StakeRewardClaim/StakeRewardClaimModalContent.tsx
 msgid "No rewards to claim"
@@ -1348,11 +1358,16 @@ msgstr "Price impact is the spread between the total value of the entry tokens s
 msgid "Price impact {0}%"
 msgstr "Price impact {0}%"
 
+#: src/modules/credit-delegation/lists/LoanPositionsList/DetailsLoanPositionsList.tsx
 #: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
 #: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
 #: src/modules/credit-delegation/modals/RepayLoan/RepayLoanModalContent.tsx
 msgid "Principal"
 msgstr "Principal"
+
+#: src/modules/credit-delegation/lists/BorrowerList/BorrowerList.tsx
+msgid "Product"
+msgstr "Product"
 
 #: src/components/infoTooltips/BorrowCapMaxedTooltip.tsx
 msgid "Protocol borrow cap at 100% for this asset. Further borrowing unavailable."
@@ -2241,6 +2256,10 @@ msgstr "Withdrawing {manageType}..."
 #: src/components/transactions/Withdraw/WithdrawActions.tsx
 msgid "Withdrawing {symbol}"
 msgstr "Withdrawing {symbol}"
+
+#: src/modules/credit-delegation/lists/BorrowerList/BorrowerListItem.tsx
+msgid "Wording"
+msgstr "Wording"
 
 #: src/components/transactions/DelegationTxsWrapper.tsx
 #: src/components/transactions/TxActionsWrapper.tsx

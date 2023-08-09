@@ -16,6 +16,8 @@ export interface AtomicaSubgraphPool {
   markets: {
     id: string;
     title: string;
+    wording: string;
+    details: string;
     product: {
       id: string;
       title: string;
@@ -153,6 +155,8 @@ export interface AtomicaDelegationPool {
   markets: {
     id: string;
     title: string;
+    wording: string;
+    details: string;
     product: {
       id: string;
       title: string;

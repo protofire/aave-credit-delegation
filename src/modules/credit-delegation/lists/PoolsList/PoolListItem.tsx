@@ -1,7 +1,8 @@
 import { Trans } from '@lingui/macro';
 import { Button } from '@mui/material';
+import { useRouter } from 'next/router';
 import { ListColumn } from 'src/components/lists/ListColumn';
-import { Link } from 'src/components/primitives/Link';
+import { Link, ROUTES } from 'src/components/primitives/Link';
 import { Row } from 'src/components/primitives/Row';
 import { useModalContext } from 'src/hooks/useModal';
 
@@ -29,6 +30,7 @@ export const PoolListItem = ({
   rewards,
 }: AtomicaDelegationPool) => {
   const { openCreditDelegation } = useModalContext();
+  const router = useRouter();
 
   const { managerDetails } = useManagerDetails(manager);
 
@@ -72,16 +74,16 @@ export const PoolListItem = ({
       />
 
       <ListAPRColumn
-        value={Number(supplyAPY)}
-        incentives={[
-          {
-            incentiveAPR: rewardAPY,
-            rewardTokenAddress: rewards?.rewards?.length ? rewards?.rewards[0].rewardToken : '',
-            rewardTokenSymbol: rewards?.rewards?.length
-              ? rewards?.rewards[0].rewardTokenSymbol
-              : '',
-          },
-        ]}
+        value={Number(supplyAPY) + Number(rewardAPY)}
+        // incentives={[
+        //   {
+        //     incentiveAPR: rewardAPY,
+        //     rewardTokenAddress: rewards?.rewards?.length ? rewards?.rewards[0].rewardToken : '',
+        //     rewardTokenSymbol: rewards?.rewards?.length
+        //       ? rewards?.rewards[0].rewardTokenSymbol
+        //       : '',
+        //   },
+        // ]}
         symbol={symbol}
         endDate={rewards?.rewards?.length ? rewards?.rewards[0].endedAtConverted : ''}
       />
@@ -93,6 +95,13 @@ export const PoolListItem = ({
           onClick={() => openCreditDelegation(id, underlyingAsset)}
         >
           <Trans>Lend</Trans>
+        </Button>
+        <Button
+          disabled={!isActive || Number(availableBalance) <= 0}
+          variant="outlined"
+          onClick={() => router.push(ROUTES.poolDetails(id, underlyingAsset))}
+        >
+          <Trans>Details</Trans>
         </Button>
       </ListButtonsColumn>
     </ListItemWrapper>

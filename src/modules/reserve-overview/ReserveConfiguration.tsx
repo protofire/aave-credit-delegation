@@ -15,7 +15,6 @@ import { useProtocolDataContext } from 'src/hooks/useProtocolDataContext';
 import { BROKEN_ASSETS } from 'src/hooks/useReservesHistory';
 
 import { useCreditDelegationContext } from '../credit-delegation/CreditDelegationContext';
-import { DetailsLoanPositionsList } from '../credit-delegation/lists/LoanPositionsList/DetailsLoanPositionsList';
 import { AtomicaDelegationPool } from '../credit-delegation/types';
 import { PanelRow, PanelTitle } from './ReservePanels';
 import { SupplyInfo } from './SupplyInfo';
@@ -239,8 +238,6 @@ export const ReserveConfiguration: React.FC<ReserveConfigurationProps> = ({ rese
           </>
         )} */}
       </Paper>
-
-      <DetailsLoanPositionsList />
     </>
   );
 };

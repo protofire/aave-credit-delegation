@@ -144,7 +144,7 @@ export const RepayLoanActions = memo(
 
         const approveTxData = erc20Service.approveTxData({
           user: currentAccount,
-          amount,
+          amount: parseUnits(amount, asset?.decimals || 18).toString(),
           spender: riskPoolController?.address,
           token: asset?.address || '',
         });

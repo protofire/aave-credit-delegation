@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box, Container } from '@mui/material';
 import { useRouter } from 'next/router';
 import {
   ComputedReserveData,
@@ -7,6 +7,8 @@ import {
 import { AssetCapsProvider } from 'src/hooks/useAssetCaps';
 import { MainLayout } from 'src/layouts/MainLayout';
 import { CreditDelegationProvider } from 'src/modules/credit-delegation/CreditDelegationContext';
+import { BorrowerList } from 'src/modules/credit-delegation/lists/BorrowerList/BorrowerList';
+import { DetailsLoanPositionsList } from 'src/modules/credit-delegation/lists/LoanPositionsList/DetailsLoanPositionsList';
 import { ReserveActions } from 'src/modules/reserve-overview/ReserveActions';
 import { ReserveConfiguration } from 'src/modules/reserve-overview/ReserveConfiguration';
 import { ReserveTopDetails } from 'src/modules/reserve-overview/ReserveTopDetails';
@@ -56,6 +58,19 @@ export default function PoolDetails() {
             </Box>
           </Box>
         </ContentContainer>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            flex: 1,
+            mt: { xs: '-32px', lg: '-46px', xl: '-44px', xxl: '-48px' },
+          }}
+        >
+          <Container>
+            <DetailsLoanPositionsList />
+            <BorrowerList poolId={poolId} />
+          </Container>
+        </Box>
       </AssetCapsProvider>
     </CreditDelegationProvider>
   );

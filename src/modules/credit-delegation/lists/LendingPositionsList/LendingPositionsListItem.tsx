@@ -113,16 +113,16 @@ export const LendingPositionsListItem = (poolVault: AtomicaDelegationPool) => {
       />
 
       <ListAPRColumn
-        value={Number(supplyAPY)}
-        incentives={[
-          {
-            incentiveAPR: rewardAPY,
-            rewardTokenAddress: rewards?.rewards?.length ? rewards?.rewards[0].rewardToken : '',
-            rewardTokenSymbol: rewards?.rewards?.length
-              ? rewards?.rewards[0].rewardTokenSymbol
-              : '',
-          },
-        ]}
+        value={Number(supplyAPY) + Number(rewardAPY)}
+        // incentives={[
+        //   {
+        //     incentiveAPR: rewardAPY,
+        //     rewardTokenAddress: rewards?.rewards?.length ? rewards?.rewards[0].rewardToken : '',
+        //     rewardTokenSymbol: rewards?.rewards?.length
+        //       ? rewards?.rewards[0].rewardTokenSymbol
+        //       : '',
+        //   },
+        // ]}
         symbol={symbol}
         endDate={rewards?.rewards?.length ? rewards?.rewards[0].endedAtConverted : ''}
       />

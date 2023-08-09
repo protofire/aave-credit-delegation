@@ -1,13 +1,9 @@
 import { valueToBigNumber } from '@aave/math-utils';
 import { Trans } from '@lingui/macro';
-// import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import { Box, Typography } from '@mui/material';
 import { CapsCircularStatus } from 'src/components/caps/CapsCircularStatus';
 import { DebtCeilingStatus } from 'src/components/caps/DebtCeilingStatus';
 import { IncentivesButton } from 'src/components/incentives/IncentivesButton';
-// import { LiquidationPenaltyTooltip } from 'src/components/infoTooltips/LiquidationPenaltyTooltip';
-// import { LiquidationThresholdTooltip } from 'src/components/infoTooltips/LiquidationThresholdTooltip';
-// import { MaxLTVTooltip } from 'src/components/infoTooltips/MaxLTVTooltip';
 import { FormattedNumber } from 'src/components/primitives/FormattedNumber';
 import { Link } from 'src/components/primitives/Link';
 import { ReserveOverviewBox } from 'src/components/ReserveOverviewBox';
@@ -178,10 +174,6 @@ export const SupplyInfo = ({
           <Typography variant="subheader1" color="text.main">
             <Trans>Pool Manager</Trans>
           </Typography>
-          {/* <CheckRoundedIcon fontSize="small" color="success" sx={{ ml: 2 }} />
-          <Typography variant="subheader1" sx={{ color: '#46BC4B' }}>
-            <Trans>Can be collateral</Trans>
-          </Typography> */}
         </Box>
       </div>
       {reserve.reserveLiquidationThreshold !== '0' && (
@@ -193,12 +185,6 @@ export const SupplyInfo = ({
           }}
         >
           <ReserveOverviewBox title={<Trans>Name</Trans>}>
-            {/* <FormattedNumber
-              value={reserve.formattedBaseLTVasCollateral}
-              percent
-              variant="secondary14"
-              visibleDecimals={2}
-            /> */}
             <Trans>Protofire.io</Trans>
           </ReserveOverviewBox>
 
@@ -231,25 +217,6 @@ export const SupplyInfo = ({
           )}
         </Box>
       )}
-      {/* {reserve.symbol == 'stETH' && (
-        <Box>
-          <Warning severity="info">
-            <AlertTitle>
-              <Trans>Staking Rewards</Trans>
-            </AlertTitle>
-            <Trans>
-              stETH supplied as collateral will continue to accrue staking rewards provided by daily
-              rebases.
-            </Trans>{' '}
-            <Link
-              href="https://blog.lido.fi/aave-integrates-lidos-steth-as-collateral/"
-              underline="always"
-            >
-              <Trans>Learn more</Trans>
-            </Link>
-          </Warning>
-        </Box>
-      )} */}
     </Box>
   );
 };
