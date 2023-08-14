@@ -1342,10 +1342,6 @@ msgstr "Pool addresses provider is not registered"
 msgid "Pools to lend to using your line of credit"
 msgstr "Pools to lend to using your line of credit"
 
-#: pages/credit-delegation.page.tsx
-msgid "Portfolio"
-msgstr "Portfolio"
-
 #: src/modules/dashboard/lists/SlippageList.tsx
 msgid "Powered by"
 msgstr "Powered by"

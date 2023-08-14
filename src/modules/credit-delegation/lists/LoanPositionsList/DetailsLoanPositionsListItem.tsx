@@ -37,10 +37,11 @@ export const DetailsLoanPositionsListItem = ({
     repaidAmountUsd,
     ratePerSec,
     usdRate,
+    lastUpdateTs,
   } = myLoans || {};
 
   const interestAccrued = new BigNumber(ratePerSec)
-    .times(new BigNumber(Date.now()).div(1000).minus(loan?.lastUpdateTs ?? 0))
+    .times(new BigNumber(Date.now()).div(1000).minus(lastUpdateTs ?? 0))
     .times(borrowedAmount);
 
   const interestAccruedUsd = interestAccrued.times(usdRate);

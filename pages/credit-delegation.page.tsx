@@ -15,7 +15,7 @@ import { CreditDelegationContentWrapper } from '../src/modules/credit-delegation
 export default function CreditDelegation() {
   const { currentAccount, loading: web3Loading } = useWeb3Context();
 
-  const [mode, setMode] = useState<'delegate' | 'borrow' | 'portfolio' | ''>('delegate');
+  const [mode, setMode] = useState<'delegate' | 'borrow' | ''>('delegate');
 
   return (
     <CreditDelegationProvider>
@@ -44,18 +44,13 @@ export default function CreditDelegation() {
                 <Trans>Borrow</Trans>
               </Typography>
             </StyledToggleButton>
-            <StyledToggleButton value="portfolio" disabled={mode === 'portfolio'}>
-              <Typography variant="subheader1">
-                <Trans>Portfolio</Trans>
-              </Typography>
-            </StyledToggleButton>
           </StyledToggleButtonGroup>
         </Box>
 
         {currentAccount ? (
-          // <CreditDelegationContentWrapper isBorrow={mode === 'borrow'} />
-          <CreditDelegationContentWrapper mode={mode} />
+          <CreditDelegationContentWrapper isBorrow={mode === 'borrow'} />
         ) : (
+          // <CreditDelegationContentWrapper mode={mode} />
           <ConnectWalletPaper loading={web3Loading} />
         )}
       </ContentContainer>

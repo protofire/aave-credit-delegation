@@ -100,7 +100,7 @@ export const useRiskPool = () => {
       premium: normalizedPremium,
       currentlyEarned: currentylEarned,
       currentylEarnedUsd: Number(currentylEarned) * (lastReward?.tokenUsdPrice || 0),
-      totalInterest: settlement + premium,
+      totalInterest: normalizedSettlement + normalizedPremium,
       earningDecimals: earnings[0]?.decimals,
     };
   };

@@ -16,7 +16,6 @@ import { ListLoader } from '../ListLoader';
 import { DetailsLoanPositionsListItem } from './DetailsLoanPositionsListItem';
 
 const head = [
-  // { title: <Trans key="assets">Asset</Trans>, sortKey: 'symbol' },
   { title: <Trans key="loan-id">Loan ID</Trans>, sortKey: 'loanid' },
   { title: <Trans key="date">Date</Trans>, sortKey: 'date' },
   { title: <Trans key="apy">APY</Trans>, sortKey: 'apy' },
@@ -64,7 +63,7 @@ const Header: React.FC<HeaderProps> = ({
   );
 };
 
-export const DetailsLoanPositionsList = () => {
+export const DetailsLoanPositionsList = ({ poolId }: { poolId: string }) => {
   const { loading } = useAppDataContext();
   const [sortName, setSortName] = useState('');
   const [sortDesc, setSortDesc] = useState(false);
@@ -72,8 +71,13 @@ export const DetailsLoanPositionsList = () => {
   const { lendingPositions, loadingLendingPositions } = useCreditDelegationContext();
 
   const sortedLendingPositions = useMemo(
-    () => handleSortLoans(sortDesc, sortName, lendingPositions),
-    [sortDesc, sortName, lendingPositions]
+    () =>
+      handleSortLoans(
+        sortDesc,
+        sortName,
+        lendingPositions.filter((item) => item.poolId === poolId)
+      ),
+    [sortDesc, sortName, lendingPositions, poolId]
   );
 
   if (loading || loadingLendingPositions)
@@ -108,13 +112,7 @@ export const DetailsLoanPositionsList = () => {
           sortName={sortName}
         />
       )}
-      {/* <Header
-        setSortDesc={setSortDesc}
-        setSortName={setSortName}
-        sortDesc={sortDesc}
-        sortName={sortName}
-      /> */}
-      {/* <DetailsLoanPositionsListItem key={1} {...[]} /> */}
+
       {sortedLendingPositions.map((item) => (
         <DetailsLoanPositionsListItem key={item.id} {...item} />
       ))}

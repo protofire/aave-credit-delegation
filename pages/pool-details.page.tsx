@@ -67,7 +67,7 @@ export default function PoolDetails() {
           }}
         >
           <Container>
-            <DetailsLoanPositionsList />
+            <DetailsLoanPositionsList poolId={poolId} />
             <BorrowerList poolId={poolId} />
           </Container>
         </Box>

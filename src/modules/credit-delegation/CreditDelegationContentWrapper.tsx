@@ -1,7 +1,6 @@
 import { Box } from '@mui/material';
 
 import { LendingPositionsList } from './lists/LendingPositionsList/LendingPositionsList';
-import { LoanPositionsList } from './lists/LoanPositionsList/LoanPositionsList';
 import { MarketsList } from './lists/MarketsList/MarketsList';
 import { PoolsList } from './lists/PoolsList/PoolsList';
 import { YourCreditLinesList } from './lists/YourCreditLinesList/YourCreditLinesList';
@@ -13,13 +12,11 @@ import { RequestLoanModal } from './modals/RequestLoan/RequestLoanModal';
 import { ManageVaultModal } from './modals/WithdrawPool/ManageVaultModal';
 
 interface CreditDelegationContentWrapperProps {
-  // isBorrow: boolean;
-  mode: string;
+  isBorrow: boolean;
 }
 
 export const CreditDelegationContentWrapper = ({
-  // isBorrow,
-  mode,
+  isBorrow,
 }: CreditDelegationContentWrapperProps) => {
   // const { breakpoints } = useTheme();
   // const isDesktop = useMediaQuery(breakpoints.up('lg'));
@@ -32,20 +29,16 @@ export const CreditDelegationContentWrapper = ({
           display: 'block',
         }}
       >
-        <Box style={{ display: mode === 'delegate' ? 'block' : 'none' }}>
+        <Box style={{ display: isBorrow ? 'none' : 'block' }}>
           <LendingPositionsList type="non-earning" />
           <LendingPositionsList type="earning" />
           <PoolsList />
         </Box>
 
-        <Box style={{ display: mode === 'borrow' ? 'block' : 'none' }}>
+        <Box style={{ display: isBorrow ? 'block' : 'none' }}>
           <MarketsList />
           <YourCreditLinesList />
           <YourLoansList />
-        </Box>
-
-        <Box style={{ display: mode === 'portfolio' ? 'block' : 'none' }}>
-          <LoanPositionsList />
         </Box>
       </Box>
       <CreditDelegationModal />

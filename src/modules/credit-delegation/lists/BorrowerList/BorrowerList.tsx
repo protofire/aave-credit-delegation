@@ -88,11 +88,11 @@ export const BorrowerList = ({ poolId }: { poolId: string }) => {
       noData={!borrowersList.length}
       withTopMargin
     >
-      {!borrowersList.length && (
+      {!borrowersList[0]?.markets?.length && (
         <CreditDelegationContentNoData text={<Trans>No borrowers yet</Trans>} />
       )}
 
-      {!!borrowersList.length && (
+      {!!borrowersList[0]?.markets?.length && (
         <Header
           setSortDesc={setSortDesc}
           setSortName={setSortName}
