@@ -277,14 +277,6 @@ msgstr "Available"
 msgid "Available Aave credit"
 msgstr "Available Aave credit"
 
-#: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
-msgid "Available Balance"
-msgstr "Available Balance"
-
-#: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
-msgid "Available Rewards"
-msgstr "Available Rewards"
-
 #: src/components/transactions/Emode/EmodeModalContent.tsx
 msgid "Available assets"
 msgstr "Available assets"
@@ -648,9 +640,9 @@ msgstr "Debt ceiling limits the amount possible to borrow against this asset by 
 msgid "Debt to pay"
 msgstr "Debt to pay"
 
-#: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
-msgid "Deposited Amount"
-msgstr "Deposited Amount"
+#: src/modules/reserve-overview/ReserveActions.tsx
+msgid "Deposited amount"
+msgstr "Deposited amount"
 
 #: src/modules/credit-delegation/lists/BorrowerList/BorrowerList.tsx
 #: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsListItem.tsx
@@ -1118,6 +1110,10 @@ msgstr "Modify loan request"
 msgid "Modifying loan request..."
 msgstr "Modifying loan request..."
 
+#: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
+msgid "My Balance"
+msgstr "My Balance"
+
 #: src/modules/credit-delegation/modals/WithdrawPool/ManageVaultModalContent.tsx
 msgid "My Interest Balance"
 msgstr "My Interest Balance"
@@ -1125,6 +1121,10 @@ msgstr "My Interest Balance"
 #: src/modules/credit-delegation/modals/WithdrawPool/ManageVaultModalContent.tsx
 msgid "My Pool Balance"
 msgstr "My Pool Balance"
+
+#: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
+msgid "My Rewards"
+msgstr "My Rewards"
 
 #: src/modules/credit-delegation/modals/WithdrawPool/ManageVaultModalContent.tsx
 msgid "My Rewards Balance"

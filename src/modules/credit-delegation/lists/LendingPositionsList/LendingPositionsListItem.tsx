@@ -5,6 +5,7 @@ import { useRouter } from 'next/router';
 import { ListColumn } from 'src/components/lists/ListColumn';
 import { Link, ROUTES } from 'src/components/primitives/Link';
 import { Row } from 'src/components/primitives/Row';
+import { TextWithTooltip } from 'src/components/TextWithTooltip';
 import {
   ComputedUserReserveData,
   useAppDataContext,
@@ -32,13 +33,12 @@ export const LendingPositionsListItem = (poolVault: AtomicaDelegationPool) => {
     metadata,
     id,
     manager,
-    markets,
     vault,
     rewards,
     rewardAPY,
     userAvailableWithdraw,
-    asset,
     balances,
+    markets,
   } = poolVault;
 
   const { managerDetails } = useManagerDetails(manager);
@@ -49,9 +49,9 @@ export const LendingPositionsListItem = (poolVault: AtomicaDelegationPool) => {
     return underlyingAsset === userReserve.underlyingAsset;
   }) as ComputedUserReserveData;
 
-  const normalizedBalanceUSD = valueToBigNumber(
-    normalize(vault?.loanAmount || '0', asset?.decimals || 18)
-  ).multipliedBy(reserve.priceInUSD);
+  // const normalizedBalanceUSD = valueToBigNumber(
+  //   normalize(vault?.loanAmount || '0', asset?.decimals || 18)
+  // ).multipliedBy(reserve.priceInUSD);
 
   const normalizedAvailableWithdrawUSD = valueToBigNumber(userAvailableWithdraw).multipliedBy(
     reserve.priceInUSD
@@ -59,7 +59,10 @@ export const LendingPositionsListItem = (poolVault: AtomicaDelegationPool) => {
 
   return (
     <ListItemWrapper symbol={symbol} iconSymbol={iconSymbol} name={name}>
-      <ListColumn>{metadata?.Label}</ListColumn>
+      <ListColumn maxWidth={360} minWidth={360}>
+        {metadata?.Label}
+      </ListColumn>
+
       <ListColumn>
         <Link
           href={managerDetails?.website ?? ''}
@@ -80,21 +83,26 @@ export const LendingPositionsListItem = (poolVault: AtomicaDelegationPool) => {
           {managerDetails?.title}
         </Link>
       </ListColumn>
-      <ListColumn sx={{ fontSize: 10 }}>
-        {markets?.map((market) => (
-          <Row key={market.id}>
-            {market.product.title}: {market.title}
-          </Row>
-        ))}
+
+      <ListColumn>
+        <TextWithTooltip>
+          <>
+            {markets?.map((market) => (
+              <Row key={market.id} sx={{ padding: 1 }}>
+                {market.product.title}: {market.title}
+              </Row>
+            ))}
+          </>
+        </TextWithTooltip>
       </ListColumn>
 
-      <ListValueColumn
+      {/* <ListValueColumn
         symbol={symbol}
         value={Number(normalize(vault?.loanAmount || '0', asset?.decimals || 18))}
         subValue={normalizedBalanceUSD.toString()}
         withTooltip
         disabled={Number(vault?.loanAmount) === 0}
-      />
+      /> */}
 
       <ListValueColumn
         symbol={symbol}
@@ -114,6 +122,8 @@ export const LendingPositionsListItem = (poolVault: AtomicaDelegationPool) => {
 
       <ListAPRColumn
         value={Number(supplyAPY) + Number(rewardAPY)}
+        symbol={symbol}
+        endDate={rewards?.rewards?.length ? rewards?.rewards[0].endedAtConverted : ''}
         // incentives={[
         //   {
         //     incentiveAPR: rewardAPY,
@@ -123,8 +133,6 @@ export const LendingPositionsListItem = (poolVault: AtomicaDelegationPool) => {
         //       : '',
         //   },
         // ]}
-        symbol={symbol}
-        endDate={rewards?.rewards?.length ? rewards?.rewards[0].endedAtConverted : ''}
       />
 
       <ListButtonsColumn>

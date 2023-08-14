@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import { ListColumn } from 'src/components/lists/ListColumn';
 import { Link, ROUTES } from 'src/components/primitives/Link';
 import { Row } from 'src/components/primitives/Row';
+import { TextWithTooltip } from 'src/components/TextWithTooltip';
 import { useModalContext } from 'src/hooks/useModal';
 
 import { useManagerDetails } from '../../hooks/useManagerDetails';
@@ -36,7 +37,10 @@ export const PoolListItem = ({
 
   return (
     <ListItemWrapper symbol={symbol} iconSymbol={iconSymbol} name={name}>
-      <ListColumn>{metadata?.Label}</ListColumn>
+      <ListColumn maxWidth={360} minWidth={360}>
+        {metadata?.Label}
+      </ListColumn>
+
       <ListColumn>
         <Link
           href={managerDetails?.website ?? ''}
@@ -57,12 +61,17 @@ export const PoolListItem = ({
           {managerDetails?.title}
         </Link>
       </ListColumn>
-      <ListColumn sx={{ fontSize: 10 }}>
-        {markets?.map((market) => (
-          <Row key={market.id}>
-            {market.product.title}: {market.title}
-          </Row>
-        ))}
+
+      <ListColumn>
+        <TextWithTooltip>
+          <>
+            {markets?.map((market) => (
+              <Row key={market.id} sx={{ padding: 1 }}>
+                {market.product.title}: {market.title}
+              </Row>
+            ))}
+          </>
+        </TextWithTooltip>
       </ListColumn>
 
       <ListValueColumn

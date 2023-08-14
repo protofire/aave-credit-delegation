@@ -104,6 +104,10 @@ export const ReserveActions = ({ reserve, poolId }: ReserveActionsProps) => {
     pool?.balances?.earningDecimals ?? 18
   );
 
+  const normalizedDepositedBalanceUSD = valueToBigNumber(
+    normalize(pool?.vault?.loanAmount || '0', pool?.asset?.decimals || 18)
+  ).multipliedBy(reserve.priceInUSD);
+
   const { disableSupplyButton, disableBorrowButton } = useReserveActionState({
     balance: balance?.amount || '0',
     maxAmountToSupply: maxAmountToSupply.toString(),
@@ -139,11 +143,16 @@ export const ReserveActions = ({ reserve, poolId }: ReserveActionsProps) => {
           symbol={selectedAsset}
           marketTitle={market.marketTitle}
         />
+        <DepositedAmount
+          value={normalize(pool?.vault?.loanAmount || '0', pool?.asset?.decimals || 18)}
+          usdValue={normalizedDepositedBalanceUSD.toString(10)}
+          symbol={pool?.asset?.symbol || ''}
+        />
         <>
           <Divider sx={{ my: 6 }} />
           <Stack gap={3}>
             <SupplyAction
-              value={maxAmountToSupply.toString()}
+              value={pool?.availableBalance.toString()}
               usdValue={maxAmountToSupplyUsd}
               symbol={selectedAsset}
               disable={disableSupplyButton}
@@ -311,16 +320,6 @@ const BorrowAction = ({
         justifyContent="space-evenly"
         alignItems="center"
       >
-        {/* <Box>
-          <ValueWithSymbol value={value} symbol={symbol} />
-          <FormattedNumber
-            value={usdValue}
-            variant="subheader2"
-            color="text.muted"
-            symbolsColor="text.muted"
-            symbol="USD"
-          />
-        </Box> */}
         <PanelItem
           title={
             <Box display="flex" alignItems="center">
@@ -465,6 +464,37 @@ const WalletBalance = ({ balance, symbol, marketTitle }: WalletBalanceProps) => 
           </Box>
         </ValueWithSymbol>
       </Box>
+    </Stack>
+  );
+};
+
+interface DepositedAmountProps {
+  value: string;
+  symbol: string;
+  usdValue: string;
+}
+
+const DepositedAmount = ({ value, symbol, usdValue }: DepositedAmountProps) => {
+  return (
+    <Stack sx={{ paddingTop: 3 }}>
+      <Trans>Deposited amount</Trans>
+      <Stack
+        sx={{ height: '44px' }}
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+      >
+        <Box>
+          <ValueWithSymbol value={value} symbol={symbol} />
+          <FormattedNumber
+            value={usdValue}
+            variant="subheader2"
+            color="text.muted"
+            symbolsColor="text.muted"
+            symbol="USD"
+          />
+        </Box>
+      </Stack>
     </Stack>
   );
 };

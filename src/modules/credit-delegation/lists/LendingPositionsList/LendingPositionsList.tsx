@@ -18,12 +18,12 @@ import { LendingPositionsListItem } from './LendingPositionsListItem';
 
 const head = [
   { title: <Trans key="assets">Assets</Trans>, sortKey: 'symbol' },
-  { title: <Trans key="title">Pool Description</Trans>, sortKey: 'metadata.Label' },
+  { title: <Trans key="title">Pool Description</Trans>, sortKey: 'title' },
   { title: <Trans key="manager">Pool Manager</Trans>, sortKey: 'manager' },
   { title: <Trans key="borrowers">Borrowers</Trans>, sortKey: 'borrowers' },
-  { title: <Trans key="deposited">Deposited Amount</Trans>, sortKey: 'deposited' },
-  { title: <Trans key="balance">Available Balance</Trans>, sortKey: 'balance' },
-  { title: <Trans key="rewards">Available Rewards</Trans>, sortKey: 'rewards' },
+  // { title: <Trans key="deposited">Deposited Amount</Trans>, sortKey: 'deposited' },
+  { title: <Trans key="balance">My Balance</Trans>, sortKey: 'balance' },
+  { title: <Trans key="rewards">My Rewards</Trans>, sortKey: 'rewards' },
   { title: <Trans key="APY">APY</Trans>, sortKey: 'supplyAPY' },
 ];
 
@@ -50,7 +50,18 @@ const Header: React.FC<HeaderProps> = ({
         <ListColumn
           isRow={col.sortKey === 'symbol'}
           maxWidth={
-            col.sortKey === 'symbol' ? CREDIT_DELEGATION_LIST_COLUMN_WIDTHS.ASSET : undefined
+            col.sortKey === 'symbol'
+              ? CREDIT_DELEGATION_LIST_COLUMN_WIDTHS.ASSET
+              : col.sortKey === 'title'
+              ? 360
+              : undefined
+          }
+          minWidth={
+            col.sortKey === 'symbol'
+              ? CREDIT_DELEGATION_LIST_COLUMN_WIDTHS.ASSET
+              : col.sortKey === 'title'
+              ? 360
+              : undefined
           }
           key={col.sortKey}
         >
