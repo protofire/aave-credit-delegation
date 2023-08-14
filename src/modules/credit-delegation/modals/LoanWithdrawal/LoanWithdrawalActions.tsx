@@ -113,14 +113,6 @@ export const LoanWithdrawalActions = React.memo(
 
       const valid = validate({ name, company, title, amount, signature });
 
-      console.log({
-        name,
-        company,
-        title,
-        amount,
-        signature,
-        valid,
-      });
       if (!valid) {
         setValidationErrors(validate.errors ?? []);
         return;

@@ -174,7 +174,7 @@ export const LoanWithdrawalModalContent = React.memo(
               I
               {name !== undefined && name !== '' && (
                 <>
-                  ,<strong>{name}</strong>
+                  , <strong>{name}</strong>
                 </>
               )}
               {company !== undefined && company !== '' ? (
