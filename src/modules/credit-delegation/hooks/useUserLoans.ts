@@ -256,6 +256,7 @@ export const useUserLoans = (
         title: `${market?.product.title}:${market?.title}`,
         asset,
         symbol: asset?.symbol ?? '',
+        aggreement: market?.product.wording ?? 'unknown',
       };
     });
   }, [policies, reserves, tokenData, marketReferencePriceInUsd, markets]);
