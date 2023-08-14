@@ -290,6 +290,14 @@ msgstr "Available assets"
 msgid "Available credit"
 msgstr "Available credit"
 
+#: src/modules/credit-delegation/modals/LoanWithdrawal/LoanWithdrawalModalContent.tsx
+msgid "Available credit line"
+msgstr "Available credit line"
+
+#: src/modules/reserve-overview/ReserveTopDetails.tsx
+msgid "Available liquidity"
+msgstr "Available liquidity"
+
 #: src/components/ChainAvailabilityText.tsx
 msgid "Available on"
 msgstr "Available on"
@@ -616,6 +624,7 @@ msgid "Data couldn't be fetched, please reload graph."
 msgstr "Data couldn't be fetched, please reload graph."
 
 #: src/modules/credit-delegation/modals/LoanApplication/LoanApplicationActions.tsx
+#: src/modules/credit-delegation/modals/LoanWithdrawal/LoanWithdrawalActions.tsx
 msgid "Data source config error"
 msgstr "Data source config error"
 
@@ -1491,18 +1500,23 @@ msgstr "Repaying loan {repayType}..."
 msgid "Repaying {symbol}"
 msgstr "Repaying {symbol}"
 
-#: src/modules/credit-delegation/lists/YourCreditLinesList/LoanApplicationListItem.tsx
-msgid "Request"
-msgstr "Request"
+#: src/modules/credit-delegation/modals/LoanWithdrawal/LoanWithdrawalModal.tsx
+msgid "Request a withdrawal"
+msgstr "Request a withdrawal"
 
 #: src/modules/credit-delegation/modals/RequestLoan/RequestLoanModal.tsx
 msgid "Request loan"
 msgstr "Request loan"
 
 #: src/modules/credit-delegation/lists/YourLoansList/ListRepaidColumn.tsx
+#: src/modules/credit-delegation/modals/LoanWithdrawal/LoanWithdrawalModalContent.tsx
 #: src/modules/credit-delegation/modals/RequestLoan/RequestLoanModalContent.tsx
 msgid "Requested"
 msgstr "Requested"
+
+#: src/modules/credit-delegation/modals/LoanWithdrawal/LoanWithdrawalActions.tsx
+msgid "Requesting"
+msgstr "Requesting"
 
 #: src/modules/credit-delegation/modals/RequestLoan/RequestLoanModalContent.tsx
 msgid "Requesting loan from <0>{0}</0>"
@@ -1602,9 +1616,17 @@ msgstr "Show"
 msgid "Show assets with 0 balance"
 msgstr "Show assets with 0 balance"
 
+#: src/modules/credit-delegation/modals/LoanWithdrawal/LoanWithdrawalActions.tsx
+msgid "Sign & request withdrawal"
+msgstr "Sign & request withdrawal"
+
 #: src/components/transactions/DelegationTxsWrapper.tsx
 msgid "Sign to continue"
 msgstr "Sign to continue"
+
+#: src/modules/credit-delegation/modals/LoanWithdrawal/SignatureInput.tsx
+msgid "Signature"
+msgstr "Signature"
 
 #: src/components/transactions/DelegationTxsWrapper.tsx
 msgid "Signatures ready"
@@ -2240,6 +2262,7 @@ msgstr "With testnet Faucet you can get free assets to test the Aave Protocol. M
 #: src/components/transactions/Withdraw/WithdrawModal.tsx
 #: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsListItem.tsx
 #: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsListItem.tsx
+#: src/modules/credit-delegation/lists/YourCreditLinesList/LoanApplicationListItem.tsx
 #: src/modules/credit-delegation/modals/WithdrawPool/ManageVaultModal.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsListItem.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsListMobileItem.tsx

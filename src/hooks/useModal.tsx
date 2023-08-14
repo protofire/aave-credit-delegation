@@ -35,6 +35,7 @@ export enum ModalType {
   ManageCreditLine,
   RepayLoan,
   ManageVault,
+  LoanWithdrawal,
 }
 
 export interface ModalManageLoanArgs {
@@ -93,6 +94,7 @@ export interface ModalContextType<T extends ModalArgsType> {
   openLoanApplication: () => void;
   openCreditDelegation: (poolId: string, underlyingAsset: string) => void;
   openRequestLoan: (marketId: string, underlyingAsset: string) => void;
+  openLoanWithdrawal: (creditLine: CreditLine) => void;
   openManageCreditLine: (creditLine: CreditLine) => void;
   openRepayLoan: (loan: AtomicaLoan) => void;
   openManageVault: (poolVault: AtomicaDelegationPool) => void;
@@ -210,9 +212,13 @@ export const ModalContextProvider: React.FC = ({ children }) => {
           setType(ModalType.RequestLoan);
           setArgs({ marketId, underlyingAsset });
         },
-        openManageCreditLine: (policy) => {
+        openLoanWithdrawal: (creditLine) => {
+          setType(ModalType.LoanWithdrawal);
+          setArgs({ creditLine });
+        },
+        openManageCreditLine: (creditLine) => {
           setType(ModalType.ManageCreditLine);
-          setArgs({ creditLine: policy });
+          setArgs({ creditLine });
         },
         openRepayLoan: (loan) => {
           setType(ModalType.RepayLoan);

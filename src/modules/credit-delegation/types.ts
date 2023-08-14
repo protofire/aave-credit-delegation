@@ -50,6 +50,7 @@ export interface AtomicaSubgraphPool {
     product: {
       id: string;
       title: string;
+      wording: string;
     };
   }[];
 }
@@ -69,6 +70,7 @@ export interface AtomicaSubgraphMarket {
   product: {
     id: string;
     title: string;
+    wording: string;
   };
 }
 
@@ -191,6 +193,7 @@ export interface AtomicaDelegationPool {
     product: {
       id: string;
       title: string;
+      wording: string;
     };
   }[];
   stableDebtTokenAddress: string;
@@ -227,6 +230,7 @@ export interface AtomicaBorrowMarket {
   product: {
     id: string;
     title: string;
+    wording: string;
   };
   asset?: TokenMetadataType;
 }
@@ -302,6 +306,7 @@ export interface CreditLine {
   symbol: string;
   title: string;
   usdRate: string;
+  aggreement: string;
 }
 
 export interface AtomicaSubgraphRewards {

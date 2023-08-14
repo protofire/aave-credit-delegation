@@ -78,7 +78,7 @@ jobs:
           --build-arg next_public_cd_subgraph_url=$NEXT_PUBLIC_CD_SUBGRAPH_URL \
           --build-arg next_public_atomica_api_url=$NEXT_PUBLIC_ATOMICA_API_URL \
           --build-arg next_public_cd_vaults_subgraph_url=$NEXT_PUBLIC_CD_VAULTS_SUBGRAPH_URL \
-          --build-arg next_public_atomica_meta_sheet_id=$NEXT_PUBLIC_ATOMICA_META_SHEET_ID
+          --build-arg next_public_atomica_meta_sheet_id=$NEXT_PUBLIC_ATOMICA_META_SHEET_ID \
           --build-arg next_public_borrowers_meta_sheet_id=$NEXT_PUBLIC_BORROWERS_META_SHEET_ID
 
       - name: Push the image to the Google Container Registry (GCR)
