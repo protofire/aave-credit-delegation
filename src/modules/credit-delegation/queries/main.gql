@@ -12,6 +12,7 @@ query main($productIds: [String]!, $managerIds: [String]!, $owner: String!) {
     product {
       id
       title
+      wording
     }
     desiredCover
     capitalToken
@@ -31,6 +32,7 @@ query main($productIds: [String]!, $managerIds: [String]!, $owner: String!) {
       product {
         id
         title
+        wording
       }
     }
   }

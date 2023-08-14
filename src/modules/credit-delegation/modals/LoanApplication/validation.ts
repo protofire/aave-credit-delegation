@@ -47,9 +47,6 @@ const schema: JSONSchemaType<LoanApplicationData> = {
     topUp: {
       type: 'number',
       minimum: 0,
-      maximum: {
-        $data: '1/amount',
-      },
     },
     maxApr: {
       type: 'number',
