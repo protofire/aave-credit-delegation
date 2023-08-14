@@ -37,19 +37,22 @@ export const useLendingCapacity = (pools?: AtomicaDelegationPool[]) => {
     if (pools === undefined) return '0';
     return pools
       .reduce((acc, pool) => acc.plus(pool.approvedCreditUsdBig), valueToBigNumber(0))
-      .toFixed(2);
+      .decimalPlaces(2)
+      .toString();
   }, [pools]);
 
   const averageApy = useMemo(() => {
-    if (pools === undefined) return '0';
+    if (pools === undefined || Number(lended) === 0) return '0';
 
     return pools
       .reduce((acc, pool) => {
-        return valueToBigNumber(pool.supplyAPY).times(pool.approvedCreditUsd).plus(acc);
+        return valueToBigNumber(pool.supplyAPY ?? '0')
+          .times(pool.approvedCreditUsd ?? '0')
+          .plus(acc);
       }, valueToBigNumber(0))
       .dividedBy(lended)
       .toString();
-  }, [lended, pools]);
+  }, [pools, lended]);
 
   return {
     loading: loading || pools === undefined,

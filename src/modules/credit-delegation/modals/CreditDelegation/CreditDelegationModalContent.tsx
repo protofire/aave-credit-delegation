@@ -123,7 +123,7 @@ export const CreditDelegationModalContent = React.memo(
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
           <Typography color="text.secondary">
             <Trans>
-              This transaction will use aave&apos;s credit delegation (variable rate) to deposit
+              This transaction will use AAVE&apos;s credit delegation (variable rate) to deposit
               into the pool <b>({pool?.metadata?.Label ?? pool?.name})</b> and in exchange you will
               receive pool tokens.
             </Trans>

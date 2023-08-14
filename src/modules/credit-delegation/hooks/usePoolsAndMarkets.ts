@@ -4,7 +4,14 @@ import {
   InterestRate,
   TokenMetadataType,
 } from '@aave/contract-helpers';
-import { normalize, normalizeBN, USD_DECIMALS, valueToBigNumber } from '@aave/math-utils';
+import {
+  normalize,
+  normalizeBN,
+  SECONDS_PER_YEAR,
+  USD_DECIMALS,
+  valueToBigNumber,
+  WEI_DECIMALS,
+} from '@aave/math-utils';
 import { BigNumber } from 'bignumber.js';
 import { loader } from 'graphql.macro';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -22,12 +29,7 @@ import {
 } from 'src/utils/getMaxAmountAvailableToBorrow';
 import { amountToUsd } from 'src/utils/utils';
 
-import {
-  LOAN_CHUNK_RATE_DECIMALS,
-  POOL_MANAGER_IDS,
-  PRODUCT_IDS,
-  SECONDS_IN_A_YEAR,
-} from '../consts';
+import { POOL_MANAGER_IDS, PRODUCT_IDS } from '../consts';
 import {
   AtomicaBorrowMarket,
   AtomicaDelegationPool,
@@ -62,10 +64,7 @@ export const usePoolsAndMarkets = () => {
   } = useAppDataContext();
   const { currentNetworkConfig, jsonRpcProvider } = useProtocolDataContext();
   const { walletBalances } = useWalletBalances();
-  const [account, getCreditDelegationApprovedAmount] = useRootStore((state) => [
-    state.account,
-    state.getCreditDelegationApprovedAmount,
-  ]);
+  const account = useRootStore((state) => state.account);
   const metadata = usePoolsMetadata();
   const [marketsApr] = useMarketsApr();
   const poolsApy = usePoolsApy();
@@ -220,15 +219,7 @@ export const usePoolsAndMarkets = () => {
         }
       }
     },
-    [
-      approvedCredit,
-      data?.pools,
-      vaults,
-      reserves,
-      getCreditDelegationApprovedAmount,
-      setApprovedCredit,
-      marketReferencePriceInUsd,
-    ]
+    [approvedCredit, data?.pools, vaults, reserves, setApprovedCredit, marketReferencePriceInUsd]
   );
 
   const fetchAllBorrowAllowances = useCallback(
@@ -434,6 +425,7 @@ export const usePoolsAndMarkets = () => {
     loadingMarketTokens,
     mainLoading,
     appDataLoading,
+    tokensToBorrow,
   ]);
 
   const {
@@ -457,13 +449,13 @@ export const usePoolsAndMarkets = () => {
     return (
       poolLoanChunks?.map((chunk) => {
         const pool = pools.find((pool) => pool.id.toLowerCase() === chunk.poolId.toLowerCase());
-        // const loan = loans.find((loan) => loan.id === chunk.loanId);
-        // const policy = data?.myPolicies?.find((policy) => policy.policyId === loan?.policyId);
-        // const asset = tokensToBorrow?.find((token) => token.address === policy?.market.capitalToken);
 
-        const borrowedAmount = normalize(chunk.borrowedAmount, pool?.asset?.decimals ?? 18);
-        const rate = normalize(chunk.rate, LOAN_CHUNK_RATE_DECIMALS);
-        const apr = valueToBigNumber(rate).times(SECONDS_IN_A_YEAR).toNumber();
+        const borrowedAmount = normalize(
+          chunk.borrowedAmount,
+          pool?.asset?.decimals ?? WEI_DECIMALS
+        );
+        const rate = normalize(chunk.rate, WEI_DECIMALS);
+        const apr = valueToBigNumber(rate).times(SECONDS_PER_YEAR).toNumber();
         const remainingPrincipal = normalize(
           BigNumber.max(new BigNumber(chunk.borrowedAmount).minus(chunk.repaidAmount)),
           pool?.asset?.decimals ?? 18

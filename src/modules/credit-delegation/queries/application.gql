@@ -1,0 +1,19 @@
+query application($productIds: [String]!) {
+  products(where: { productId_in: $productIds }) {
+    id
+    productId
+    title
+    defaultPremiumToken
+    defaultCapitalToken
+    payoutApprover
+    payoutRequester
+  }
+
+  _meta {
+    block {
+      number
+      timestamp
+      hash
+    }
+  }
+}

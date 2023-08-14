@@ -1,4 +1,5 @@
 import { ApproveType, ERC20Service, TokenMetadataType } from '@aave/contract-helpers';
+import { WEI_DECIMALS } from '@aave/math-utils';
 import { Trans } from '@lingui/macro';
 import { BoxProps } from '@mui/material';
 import { parseUnits } from 'ethers/lib/utils';
@@ -106,7 +107,7 @@ export const RepayLoanActions = memo(
 
         const response = await repayFunction(
           loanId,
-          parseUnits(amount, asset?.decimals || 18).toString()
+          parseUnits(amount, asset?.decimals ?? WEI_DECIMALS).toString()
         );
 
         await response.wait(4);

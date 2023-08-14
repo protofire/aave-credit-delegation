@@ -1,5 +1,5 @@
 import { TokenMetadataType } from '@aave/contract-helpers/dist/esm/erc20-contract';
-import { normalize, normalizeBN } from '@aave/math-utils';
+import { normalize, normalizeBN, SECONDS_PER_YEAR, WEI_DECIMALS } from '@aave/math-utils';
 import BigNumber from 'bignumber.js';
 import { Contract, PopulatedTransaction } from 'ethers';
 import { Interface } from 'ethers/lib/utils';
@@ -8,7 +8,7 @@ import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
 import { useRootStore } from 'src/store/root';
 
 import RISK_POOL_ABI from '../abi/RiskPool.json';
-import { DEFAULT_LOGO, SECONDS_IN_A_YEAR } from '../consts';
+import { DEFAULT_LOGO } from '../consts';
 import {
   AccountPoolReward,
   AtomicaSubgraphPool,
@@ -241,7 +241,7 @@ export const useRiskPool = () => {
           rewardRate: token.rewardRate,
           earned: token.earned,
           earnedRewardIds: token.earnedRewardIds,
-          decimals: Number(token.decimals) || 18,
+          decimals: Number(token.decimals) ?? WEI_DECIMALS,
           symbol: token.symbol || '?',
           price: token.tokenUsdPrice || 0,
           endedAt: token.endedAt,
@@ -264,7 +264,7 @@ export const useRiskPool = () => {
             normalizeBN(token.amount, Number(token.decimals))
               .times(token.tokenUsdPrice)
               .div(token.duration)
-              .times(SECONDS_IN_A_YEAR)) ||
+              .times(SECONDS_PER_YEAR)) ||
             0
         );
       }
@@ -293,7 +293,9 @@ export const useRiskPool = () => {
     const { annualRewardSummary, earnings, lastReward } = await calculateRewards(rewards);
     const poolRate = await getPrice([getCoinId(name)]);
 
-    const poolBalanceUsd = normalizeBN(totalLiquidity, asset?.decimals || 18).times(poolRate);
+    const poolBalanceUsd = normalizeBN(totalLiquidity, asset?.decimals || WEI_DECIMALS).times(
+      poolRate
+    );
 
     return {
       earnings,

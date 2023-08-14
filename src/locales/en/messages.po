@@ -138,6 +138,7 @@ msgid "All Assets"
 msgstr "All Assets"
 
 #: src/components/transactions/FlowCommons/Success.tsx
+#: src/modules/credit-delegation/modals/LoanApplication/Success.tsx
 msgid "All done!"
 msgstr "All done!"
 
@@ -171,6 +172,10 @@ msgstr "Amount"
 #: src/ui-config/errorMapping.tsx
 msgid "Amount must be greater than 0"
 msgstr "Amount must be greater than 0"
+
+#: src/modules/credit-delegation/modals/LoanApplication/LoanApplicationActions.tsx
+msgid "Apply"
+msgstr "Apply"
 
 #: src/modules/credit-delegation/lists/MarketsList/MarketListItem.tsx
 msgid "Apply for loan"
@@ -589,10 +594,6 @@ msgstr "Copy error message"
 msgid "Copy error text"
 msgstr "Copy error text"
 
-#: src/modules/credit-delegation/lists/MarketsList/CreateMarketButton.tsx
-msgid "Create Market"
-msgstr "Create Market"
-
 #: src/ui-config/menu-items/index.tsx
 msgid "Credit Delegation"
 msgstr "Credit Delegation"
@@ -613,6 +614,10 @@ msgstr "Dashboard"
 #: src/modules/reserve-overview/graphs/ApyGraphContainer.tsx
 msgid "Data couldn't be fetched, please reload graph."
 msgstr "Data couldn't be fetched, please reload graph."
+
+#: src/modules/credit-delegation/modals/LoanApplication/LoanApplicationActions.tsx
+msgid "Data source config error"
+msgstr "Data source config error"
 
 #: src/modules/credit-delegation/lists/LoanPositionsList/DetailsLoanPositionsList.tsx
 #: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
@@ -745,6 +750,10 @@ msgstr "Enabling this asset as collateral increases your borrowing power and Hea
 #: src/layouts/components/LanguageSwitcher.tsx
 msgid "English"
 msgstr "English"
+
+#: src/modules/credit-delegation/lists/MarketsList/CreateMarketButton.tsx
+msgid "Enroll as a borrower"
+msgstr "Enroll as a borrower"
 
 #: src/components/transactions/TxActionsWrapper.tsx
 msgid "Enter an amount"
@@ -1240,6 +1249,7 @@ msgid "Notify"
 msgstr "Notify"
 
 #: src/components/transactions/FlowCommons/Success.tsx
+#: src/modules/credit-delegation/modals/LoanApplication/Success.tsx
 msgid "Ok, Close"
 msgstr "Ok, Close"
 
@@ -1250,6 +1260,10 @@ msgstr "Ok, I got it"
 #: src/ui-config/errorMapping.tsx
 msgid "Operation not supported"
 msgstr "Operation not supported"
+
+#: src/modules/credit-delegation/modals/LoanApplication/LoanApplicationModalContent.tsx
+msgid "Our team will review your application and get back to you within 24 hours."
+msgstr "Our team will review your application and get back to you within 24 hours."
 
 #: pages/404.page.tsx
 msgid "Page not found"
@@ -1696,6 +1710,10 @@ msgstr "Staking balance"
 msgid "Status"
 msgstr "Status"
 
+#: src/modules/credit-delegation/modals/LoanApplication/LoanApplicationActions.tsx
+msgid "Submitting application"
+msgstr "Submitting application"
+
 #: src/components/transactions/Supply/SupplyModalContent.tsx
 msgid "Supplied"
 msgstr "Supplied"
@@ -1974,8 +1992,8 @@ msgid "This transaction will modify the credit line."
 msgstr "This transaction will modify the credit line."
 
 #: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationModalContent.tsx
-msgid "This transaction will use aave's credit delegation (variable rate) to deposit into the pool <0>({0})</0> and in exchange you will receive pool tokens."
-msgstr "This transaction will use aave's credit delegation (variable rate) to deposit into the pool <0>({0})</0> and in exchange you will receive pool tokens."
+msgid "This transaction will use AAVE's credit delegation (variable rate) to deposit into the pool <0>({0})</0> and in exchange you will receive pool tokens."
+msgstr "This transaction will use AAVE's credit delegation (variable rate) to deposit into the pool <0>({0})</0> and in exchange you will receive pool tokens."
 
 #: src/modules/staking/StakingPanel.tsx
 msgid "Time left to be able to withdraw your staked asset."
@@ -2262,6 +2280,10 @@ msgstr "Wording"
 msgid "Wrong Network"
 msgstr "Wrong Network"
 
+#: src/modules/credit-delegation/modals/LoanApplication/LoanApplicationModalContent.tsx
+msgid "You application has been submitted subccessfully."
+msgstr "You application has been submitted subccessfully."
+
 #: src/components/transactions/Warnings/IsolationModeWarning.tsx
 msgid "You are entering Isolation mode"
 msgstr "You are entering Isolation mode"
@@ -2343,10 +2365,6 @@ msgstr "Your average APY"
 msgid "Your borrows"
 msgstr "Your borrows"
 
-#: src/modules/credit-delegation/lists/YourCreditLinesList/YourCreditLinesList.tsx
-msgid "Your credit lines"
-msgstr "Your credit lines"
-
 #: src/modules/dashboard/LiquidationRiskParametresModal/LiquidationRiskParametresModal.tsx
 msgid "Your current loan to value based on your collateral supplied."
 msgstr "Your current loan to value based on your collateral supplied."
@@ -2376,9 +2394,12 @@ msgid "Your loan requests"
 msgstr "Your loan requests"
 
 #: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
-#: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
 msgid "Your loans"
 msgstr "Your loans"
+
+#: src/modules/credit-delegation/lists/YourCreditLinesList/YourCreditLinesList.tsx
+msgid "Your loans and credit lines"
+msgstr "Your loans and credit lines"
 
 #: src/modules/credit-delegation/lists/LendingPositionsList/ListItemActiveBadge.tsx
 msgid "Your position is inactive, you are not currently earning yield because you don't liquidity in this pool"
@@ -2392,6 +2413,10 @@ msgstr "Your reward balance is 0"
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsList.tsx
 msgid "Your supplies"
 msgstr "Your supplies"
+
+#: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
+msgid "Your withdrawal requests"
+msgstr "Your withdrawal requests"
 
 #: src/modules/credit-delegation/lists/PoolsList/WalletEmptyInfo.tsx
 #: src/modules/dashboard/lists/SupplyAssetsList/WalletEmptyInfo.tsx

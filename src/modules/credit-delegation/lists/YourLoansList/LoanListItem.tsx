@@ -1,13 +1,15 @@
+import { WEI_DECIMALS } from '@aave/math-utils';
 import { ExternalLinkIcon } from '@heroicons/react/outline';
 import { Trans } from '@lingui/macro';
 import { Button, SvgIcon, Typography } from '@mui/material';
 import { BigNumber } from 'bignumber.js';
+import { useMemo } from 'react';
 import { ListColumn } from 'src/components/lists/ListColumn';
 import { Link } from 'src/components/primitives/Link';
 import { useModalContext } from 'src/hooks/useModal';
 
 import { AtomicaLoan, LoanStatus } from '../../types';
-import { getStatusColor } from '../../utils';
+import { calcAccruedInterest, getStatusColor } from '../../utils';
 import { ListAPRColumn } from '../ListAPRColumn';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListItemWrapper } from '../ListItemWrapper';
@@ -29,17 +31,22 @@ export const LoanListItem = (loan: AtomicaLoan) => {
     repaidAmount,
     repaidAmountUsd,
     status,
-    ratePerSec,
     usdRate,
+    chunks,
   } = loan;
 
-  const interestAccrued = new BigNumber(ratePerSec)
-    .times(new BigNumber(Date.now()).div(1000).minus(loan?.lastUpdateTs ?? 0))
-    .times(borrowedAmount);
+  const nowTimestamp = Math.floor(Date.now() / 1000);
+
+  const interestAccrued = useMemo(
+    () => calcAccruedInterest(chunks, nowTimestamp),
+    [chunks, nowTimestamp]
+  ).decimalPlaces(asset?.decimals ?? WEI_DECIMALS);
 
   const interestAccruedUsd = interestAccrued.times(usdRate);
 
-  const interestRemaining = BigNumber.max(interestAccrued.minus(interestRepaid), 0);
+  const interestRemaining = BigNumber.max(interestAccrued.minus(interestRepaid), 0).decimalPlaces(
+    asset?.decimals ?? WEI_DECIMALS
+  );
 
   const interestRemainingUsd = BigNumber.max(
     Number(interestAccruedUsd) - Number(interestRepaidUsd),
