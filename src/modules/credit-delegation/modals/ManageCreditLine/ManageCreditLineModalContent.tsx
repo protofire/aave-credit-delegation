@@ -1,3 +1,4 @@
+import { WEI_DECIMALS } from '@aave/math-utils';
 import { Trans } from '@lingui/macro';
 import { Box, Typography } from '@mui/material';
 import { memo, useMemo, useState } from 'react';
@@ -33,7 +34,10 @@ export const ManageCreditLineModalContent = memo(
     );
 
     const handleChange = (value: string) => {
-      const decimalTruncatedValue = roundToTokenDecimals(value, creditLine.asset?.decimals || 18);
+      const decimalTruncatedValue = roundToTokenDecimals(
+        value,
+        creditLine.asset?.decimals ?? WEI_DECIMALS
+      );
       setNewAmount(decimalTruncatedValue);
     };
 

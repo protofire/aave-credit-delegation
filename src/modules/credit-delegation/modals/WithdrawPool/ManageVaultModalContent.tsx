@@ -1,4 +1,4 @@
-import { normalize, USD_DECIMALS, valueToBigNumber } from '@aave/math-utils';
+import { normalize, USD_DECIMALS, valueToBigNumber, WEI_DECIMALS } from '@aave/math-utils';
 import { Trans } from '@lingui/macro';
 import { Box, Typography } from '@mui/material';
 import BigNumber from 'bignumber.js';
@@ -114,7 +114,10 @@ export const ManageVaultModalContent = memo(
       const currentValue = maxSelected ? normalizedBalance : value;
       amountRef.current = currentValue;
       setReceiveAmount(
-        normalize(parseUnits(currentValue || '0', 18).toString(), asset?.decimals || 18)
+        normalize(
+          parseUnits(currentValue || '0', WEI_DECIMALS).toString(),
+          asset?.decimals ?? WEI_DECIMALS
+        )
       );
 
       setAmount(value);
@@ -181,17 +184,17 @@ export const ManageVaultModalContent = memo(
           <>
             <Box sx={{ pt: 5 }}>
               <AssetInput
-                value={normalize(balances?.currentlyEarned ?? 0, balances?.earningDecimals ?? 18)}
+                value={normalize(balances?.currentlyEarned ?? 0, balances?.earningDecimals ?? WEI_DECIMALS)}
                 usdValue={normalize(
                   balances?.currentylEarnedUsd ?? 0,
-                  balances?.earningDecimals ?? 18
+                  balances?.earningDecimals ?? WEI_DECIMALS
                 )}
                 symbol={earnings?.lastReward?.symbol || ''}
                 assets={[
                   {
                     balance: normalize(
                       balances?.currentlyEarned || new BigNumber(0),
-                      earnings?.earnings[0]?.decimals || 18
+                      earnings?.earnings[0]?.decimals || WEI_DECIMALS
                     ),
                     symbol: earnings?.lastReward?.symbol || '',
                     iconSymbol: earnings?.lastReward?.symbol || 'default',
@@ -200,7 +203,7 @@ export const ManageVaultModalContent = memo(
                 disabled={true}
                 maxValue={normalize(
                   balances?.currentlyEarned || new BigNumber(0),
-                  earnings?.earnings[0]?.decimals || 18
+                  earnings?.earnings[0]?.decimals || WEI_DECIMALS
                 )}
                 balanceText={<Trans>Rewards balance</Trans>}
               />
@@ -245,10 +248,10 @@ export const ManageVaultModalContent = memo(
               description={<Trans>My Rewards Balance</Trans>}
               futureValue={'0'}
               futureValueUSD={'0.00'}
-              value={normalize(balances?.currentylEarnedUsd ?? 0, balances?.earningDecimals ?? 18)}
+              value={normalize(balances?.currentylEarnedUsd ?? 0, balances?.earningDecimals ?? WEI_DECIMALS)}
               valueUSD={normalize(
                 balances?.currentylEarnedUsd ?? 0,
-                balances?.earningDecimals ?? 18
+                balances?.earningDecimals ?? WEI_DECIMALS
               )}
               symbol={asset?.symbol || ''}
             />

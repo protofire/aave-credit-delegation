@@ -1,3 +1,4 @@
+import { SECONDS_PER_YEAR, WEI_DECIMALS } from '@aave/math-utils';
 import { TransactionReceipt } from '@ethersproject/providers';
 import { Trans } from '@lingui/macro';
 import { Box, Button, CircularProgress } from '@mui/material';
@@ -9,7 +10,6 @@ import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
 import { getErrorTextFromError, TxAction } from 'src/ui-config/errorMapping';
 import { CREDIT_DELEGATION_LIST_COLUMN_WIDTHS } from 'src/utils/creditDelegationSortUtils';
 
-import { SECONDS_IN_A_YEAR } from '../../consts';
 import { useCreditDelegationContext } from '../../CreditDelegationContext';
 import { useControllerAddress } from '../../hooks/useControllerAddress';
 import { CreditLine } from '../../types';
@@ -42,7 +42,7 @@ export const CreditLineListItem = (creditLine: CreditLine) => {
         policyId,
         parseUnits(amount, asset?.decimals),
         parseUnits(amount, asset?.decimals),
-        parseUnits('200', 18 - 2).div(SECONDS_IN_A_YEAR),
+        parseUnits('200', WEI_DECIMALS - 2).div(SECONDS_PER_YEAR.toString()),
         1,
         ''
       );
@@ -66,7 +66,6 @@ export const CreditLineListItem = (creditLine: CreditLine) => {
     setMainTxState,
     setTxError,
     setLoadingTxns,
-    market,
     amount,
     policyId,
     asset?.decimals,

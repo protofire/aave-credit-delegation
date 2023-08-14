@@ -1,4 +1,5 @@
 import { TokenMetadataType } from '@aave/contract-helpers';
+import { WEI_DECIMALS } from '@aave/math-utils';
 import { Trans } from '@lingui/macro';
 import { BoxProps } from '@mui/material';
 import { PopulatedTransaction } from 'ethers';
@@ -65,7 +66,7 @@ export const ManageVaultModalActions = memo(
       if (poolId) {
         try {
           const withdrawTxData = await generateWithdrawTx(
-            parseUnits(amount, 18).toString(),
+            parseUnits(amount, WEI_DECIMALS).toString()
             poolId
           );
 
