@@ -40,6 +40,7 @@ import {
   PoolBalances,
 } from '../types';
 import { convertTimestampToDate } from '../utils';
+import { useAllowLists } from './useAllowLists';
 import useAsyncMemo from './useAsyncMemo';
 import { useLendingPositions as usePoolLoanChunks } from './useLendingPositions';
 import { useMarketsApr } from './useMarketsApr';
@@ -75,6 +76,12 @@ export const usePoolsAndMarkets = () => {
   const [approvedCreditLoaded, setApprovedCreditLoaded] = useState<boolean>(false);
 
   const { loading: loadingVaults, vaults, refetch: refetchVaults } = useUserVaults();
+
+  const { loading: loadingAllowLists, allowLists } = useAllowLists(
+    account ? [account.toLowerCase()] : undefined
+  );
+
+  const allowListIds = useMemo(() => allowLists?.map((item) => item.id) || [], [allowLists]);
 
   const { baseAssetSymbol } = currentNetworkConfig;
 
@@ -371,10 +378,11 @@ export const usePoolsAndMarkets = () => {
     marketReferencePriceInUsd,
     walletBalances,
     approvedCredit,
+    rewardEarningsStates,
   ]);
 
   const markets: AtomicaBorrowMarket[] = useMemo(() => {
-    if (mainLoading || appDataLoading || loadingMarketTokens) {
+    if (mainLoading || appDataLoading || loadingMarketTokens || loadingAllowLists) {
       return [];
     }
 
@@ -414,6 +422,10 @@ export const usePoolsAndMarkets = () => {
         apr,
         product: market.product,
         asset: token,
+        allowed:
+          market.policyBuyerAllowListId === '0' ||
+          allowListIds.includes(market.policyBuyerAllowListId),
+        allowListId: market.policyBuyerAllowListId,
       };
     });
   }, [
@@ -426,6 +438,8 @@ export const usePoolsAndMarkets = () => {
     mainLoading,
     appDataLoading,
     tokensToBorrow,
+    allowListIds,
+    loadingAllowLists,
   ]);
 
   const {

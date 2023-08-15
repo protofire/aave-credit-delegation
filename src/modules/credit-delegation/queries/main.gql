@@ -17,6 +17,7 @@ query main($productIds: [String]!, $managerIds: [String]!, $owner: String!) {
     desiredCover
     capitalToken
     premiumToken
+    policyBuyerAllowListId
   }
 
   pools(where: { manager_in: $managerIds }) {

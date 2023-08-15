@@ -1,5 +1,6 @@
+import { InformationCircleIcon } from '@heroicons/react/outline';
 import { Trans } from '@lingui/macro';
-import { Button } from '@mui/material';
+import { Button, SvgIcon, Tooltip } from '@mui/material';
 import { ListColumn } from 'src/components/lists/ListColumn';
 import { useModalContext } from 'src/hooks/useModal';
 import { AtomicaBorrowMarket } from 'src/modules/credit-delegation/types';
@@ -23,6 +24,7 @@ export const MarketListItem = ({
   id,
   underlyingAsset,
   apr,
+  allowed,
 }: AtomicaBorrowMarket) => {
   const { openRequestLoan } = useModalContext();
 
@@ -50,7 +52,30 @@ export const MarketListItem = ({
       <ListAPRColumn value={Number(apr) / 100} symbol={symbol} />
 
       <ListButtonsColumn>
-        <Button variant="contained" onClick={() => openRequestLoan(id, underlyingAsset)}>
+        {!allowed && (
+          <Tooltip
+            title={
+              allowed ? undefined : (
+                <Trans>Your address isn&apos;t on the allowed list of this market</Trans>
+              )
+            }
+          >
+            <SvgIcon
+              sx={{
+                fontSize: 14,
+                color: 'text.muted',
+                borderRadius: '50%',
+              }}
+            >
+              <InformationCircleIcon />
+            </SvgIcon>
+          </Tooltip>
+        )}
+        <Button
+          variant="contained"
+          onClick={() => openRequestLoan(id, underlyingAsset)}
+          disabled={!allowed}
+        >
           <Trans>Apply for loan</Trans>
         </Button>
       </ListButtonsColumn>

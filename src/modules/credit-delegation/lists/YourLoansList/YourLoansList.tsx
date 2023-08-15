@@ -111,7 +111,9 @@ export const YourLoansList = () => {
   }, [pools, loans, markets]);
 
   if (loading)
-    return <ListLoader title={<Trans>Your loans</Trans>} head={head.map((c) => c.title)} />;
+    return (
+      <ListLoader title={<Trans>Your loans</Trans>} head={head.map((c) => c.title)} withTopMargin />
+    );
 
   return (
     <ListWrapper
