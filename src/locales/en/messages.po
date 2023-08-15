@@ -294,10 +294,6 @@ msgstr "Available credit"
 msgid "Available credit line"
 msgstr "Available credit line"
 
-#: src/modules/reserve-overview/ReserveTopDetails.tsx
-msgid "Available liquidity"
-msgstr "Available liquidity"
-
 #: src/components/ChainAvailabilityText.tsx
 msgid "Available on"
 msgstr "Available on"

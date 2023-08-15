@@ -26,7 +26,7 @@ export const LoanPositionsListItem = ({
   apr,
   loanId,
   rate,
-  loan: { createdAt },
+  loan,
   repaidAmount,
   remainingPrincipalUsd,
   repaidUsd,
@@ -35,20 +35,20 @@ export const LoanPositionsListItem = ({
   const { openCreditDelegation } = useModalContext();
   const { loans } = useCreditDelegationContext();
 
-  // const { managerDetails } = useManagerDetails(pool?.manager);
+  const { createdAt } = loan || {};
 
-  const loan = useMemo(() => loans.find((l) => l.loanId === loanId), [loans, loanId]);
+  const myLoan = useMemo(() => loans.find((l) => l.loanId === loanId), [loans, loanId]);
 
   const interestAccrued = new BigNumber(rate || '0')
-    .times(new BigNumber(Date.now()).div(1000).minus(loan?.lastUpdateTs ?? 0))
+    .times(new BigNumber(Date.now()).div(1000).minus(myLoan?.lastUpdateTs ?? 0))
     .times(borrowedAmount);
 
-  const interestAccruedUsd = interestAccrued.times(loan?.usdRate ?? 0);
+  const interestAccruedUsd = interestAccrued.times(myLoan?.usdRate ?? 0);
 
-  const interestRemaining = BigNumber.max(interestAccrued.minus(loan?.interestRepaid || '0'), 0);
+  const interestRemaining = BigNumber.max(interestAccrued.minus(myLoan?.interestRepaid || '0'), 0);
 
   const interestRemainingUsd = BigNumber.max(
-    Number(interestAccruedUsd) - Number(loan?.interestRepaidUsd || '0'),
+    Number(interestAccruedUsd) - Number(myLoan?.interestRepaidUsd || '0'),
     0
   );
 
@@ -58,7 +58,7 @@ export const LoanPositionsListItem = ({
 
       <ListColumn sx={{ fontSize: 10 }}>{pool?.metadata?.Label ?? '--'}</ListColumn>
 
-      <ListColumn>{convertTimestampToDate(createdAt)}</ListColumn>
+      <ListColumn>{convertTimestampToDate(createdAt || '')}</ListColumn>
 
       <ListAPRColumn symbol={symbol} value={apr} />
 
@@ -83,8 +83,8 @@ export const LoanPositionsListItem = ({
         originalUsd={interestAccruedUsd.toString()}
         remaining={interestRemaining.toString()}
         remainingUsd={interestRemainingUsd.toString()}
-        repaid={Number(loan?.interestRepaid)}
-        repaidUsd={loan?.interestRepaidUsd}
+        repaid={Number(myLoan?.interestRepaid)}
+        repaidUsd={myLoan?.interestRepaidUsd}
         status={LoanStatus.Active}
       />
 
@@ -96,10 +96,10 @@ export const LoanPositionsListItem = ({
             </SvgIcon>
           }
           component={Link}
-          href={`https://ipfs.io/ipfs/${loan?.data}`}
+          href={`https://ipfs.io/ipfs/${myLoan?.data}`}
           variant="outlined"
           size="small"
-          disabled={!loan?.data}
+          disabled={!myLoan?.data}
         >
           <Typography variant="buttonS">
             <Trans>open agreement</Trans>
