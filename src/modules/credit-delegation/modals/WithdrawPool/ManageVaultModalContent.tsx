@@ -3,7 +3,7 @@ import { Trans } from '@lingui/macro';
 import { Box, Typography } from '@mui/material';
 import BigNumber from 'bignumber.js';
 import { parseUnits } from 'ethers/lib/utils';
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useRef, useState } from 'react';
 import { Row } from 'src/components/primitives/Row';
 import { StyledTxModalToggleButton } from 'src/components/StyledToggleButton';
 import { StyledTxModalToggleGroup } from 'src/components/StyledToggleButtonGroup';
@@ -18,12 +18,13 @@ import { useAppDataContext } from 'src/hooks/app-data-provider/useAppDataProvide
 import { useModalContext } from 'src/hooks/useModal';
 
 import { useRiskPool } from '../../hooks/useRiskPool';
-import { AtomicaDelegationPool, PoolRewards } from '../../types';
+import { AtomicaDelegationPool } from '../../types';
 import { ManageVaultModalActions } from './ManageVaultModalActions';
 
 export enum ManageType {
   REWARDS = 'Rewards',
   LIQUIDITY = 'Liquidity',
+  INTEREST = 'Interest',
 }
 
 interface ManageVaultModalContentProps extends ModalWrapperProps, AtomicaDelegationPool {}
@@ -65,6 +66,14 @@ const ManageTypeSwitch = ({ setManageType, manageType }: ManageTypeSwitchProps) 
             <Trans>Rewards</Trans>
           </Typography>
         </StyledTxModalToggleButton>
+        <StyledTxModalToggleButton
+          value={ManageType.INTEREST}
+          disabled={manageType === ManageType.INTEREST}
+        >
+          <Typography variant="buttonM" sx={{ mr: 1 }}>
+            <Trans>Interest</Trans>
+          </Typography>
+        </StyledTxModalToggleButton>
       </StyledTxModalToggleGroup>
     </Row>
   );
@@ -77,20 +86,14 @@ export const ManageVaultModalContent = memo(
     id,
     poolReserve,
     isWrongNetwork,
+    balances,
     rewards,
-    totalLiquidity,
   }: ManageVaultModalContentProps) => {
     const { mainTxState: supplyTxState, gasLimit, txError } = useModalContext();
     const { marketReferencePriceInUsd } = useAppDataContext();
-    const {
-      generateWithdrawTx,
-      calculatePoolRewards,
-      generateClaimRewardsTx,
-      totalAmount,
-      normalizedBalance,
-      poolBalanceState,
-      getUserPoolBalance,
-    } = useRiskPool(id, asset);
+    const { generateWithdrawTx, generateClaimRewardsTx, generateClaimInterestTxs } = useRiskPool();
+
+    const { earnings } = rewards || {};
 
     const { reserve } = userReserve;
 
@@ -99,47 +102,9 @@ export const ManageVaultModalContent = memo(
     const [_amount, setAmount] = useState('');
     const [manageType, setManageType] = useState<ManageType>(ManageType.LIQUIDITY);
     const [receiveAmount, setReceiveAmount] = useState<string>('0');
-    const [currentlyEarned, setCurrentlyEarned] = useState<BigNumber>(new BigNumber(0));
-    const [currentlyEarnedInUSD, setCurrentlyEarnedInUSD] = useState<number>(0);
-    const [rewardEarningsState, setRewardEarningsState] = useState<PoolRewards>();
 
-    const getCurrentlyEarned = useCallback(
-      (rewardRate: BigNumber, earned: BigNumber, updatedAt: number, endedAt: number) =>
-        rewardRate
-          .times(Math.min(new Date().getTime(), endedAt) - updatedAt)
-          .times(poolBalanceState ?? 0)
-          .div(100)
-          .plus(earned),
-      [poolBalanceState]
-    );
-
-    const fetchCalculatePoolRewards = useCallback(async () => {
-      const rewardEarnings = await calculatePoolRewards(
-        rewards || [],
-        asset?.name || '',
-        totalLiquidity,
-        asset
-      );
-      const currentlyEarnedData = getCurrentlyEarned(
-        rewardEarnings?.earnings[0]?.rewardRate || new BigNumber(0),
-        rewardEarnings?.earnings[0]?.earned || new BigNumber(0),
-        new BigNumber(Math.floor(rewardEarnings?.earnings[0]?.updatedAt || 0 / 1000)).toNumber(),
-        rewardEarnings.earnings[0]?.endedAt?.toNumber() || 0
-      );
-      setCurrentlyEarned(currentlyEarnedData);
-      setCurrentlyEarnedInUSD(
-        Number(currentlyEarnedData) * (rewardEarnings?.lastReward?.tokenUsdPrice || 0)
-      );
-      setRewardEarningsState(rewardEarnings);
-    }, [asset, calculatePoolRewards, getCurrentlyEarned, rewards, totalLiquidity]);
-
-    useEffect(() => {
-      getUserPoolBalance();
-    }, [getUserPoolBalance]);
-
-    useEffect(() => {
-      fetchCalculatePoolRewards();
-    }, [fetchCalculatePoolRewards]);
+    const totalAmount = normalize(balances?.lpBalance || '0', asset?.decimals || 18);
+    const normalizedBalance = normalize(balances?.lpBalance || '0', 18);
 
     const isMaxSelected = _amount === '-1';
     const amount = isMaxSelected ? normalizedBalance : _amount;
@@ -163,7 +128,12 @@ export const ManageVaultModalContent = memo(
       .toString();
 
     const usdValue = valueToBigNumber(receiveAmount).multipliedBy(reserve.priceInUSD);
+
     const normalizedBalanceUSD = valueToBigNumber(totalAmount).multipliedBy(reserve.priceInUSD);
+
+    const interestBalanceUSD = valueToBigNumber(balances?.totalInterest ?? '0').multipliedBy(
+      reserve.priceInUSD
+    );
 
     const amountAfterRemovedInUsd = new BigNumber(amountAfterRemoved)
       .multipliedBy(poolReserve.formattedPriceInMarketReferenceCurrency)
@@ -178,8 +148,11 @@ export const ManageVaultModalContent = memo(
       manageType,
       generateWithdrawTx,
       generateClaimRewardsTx,
-      earnedRewardIds: rewardEarningsState?.earnings[0]?.earnedRewardIds || [],
-      lastReward: rewardEarningsState?.lastReward,
+      earnedRewardIds: rewards?.earnings?.earnings[0]?.earnedRewardIds || [],
+      lastReward: earnings?.lastReward,
+      settlementAmount: normalize(balances?.settlement || 0, asset?.decimals || 18),
+      premiumAmount: normalize(balances?.premium || 0, asset?.decimals || 18),
+      generateClaimInterestTxs,
     };
 
     return (
@@ -207,35 +180,55 @@ export const ManageVaultModalContent = memo(
               />
             </Box>
           </>
-        ) : (
+        ) : manageType === ManageType.REWARDS ? (
           <>
             <Box sx={{ pt: 5 }}>
               <AssetInput
                 value={normalize(
-                  currentlyEarned,
-                  rewardEarningsState?.earnings[0]?.decimals ?? WEI_DECIMALS
+                  balances?.currentlyEarned ?? 0,
+                  balances?.earningDecimals ?? WEI_DECIMALS
                 )}
                 usdValue={normalize(
-                  currentlyEarnedInUSD,
-                  rewardEarningsState?.earnings[0]?.decimals ?? WEI_DECIMALS
+                  balances?.currentylEarnedUsd ?? 0,
+                  balances?.earningDecimals ?? WEI_DECIMALS
                 )}
-                symbol={rewardEarningsState?.lastReward?.symbol || ''}
+                symbol={earnings?.lastReward?.symbol || ''}
                 assets={[
                   {
                     balance: normalize(
-                      currentlyEarned,
-                      rewardEarningsState?.earnings[0]?.decimals ?? WEI_DECIMALS
+                      balances?.currentlyEarned || new BigNumber(0),
+                      earnings?.earnings[0]?.decimals || WEI_DECIMALS
                     ),
-                    symbol: rewardEarningsState?.lastReward?.symbol || '',
-                    iconSymbol: rewardEarningsState?.lastReward?.symbol || 'default',
+                    symbol: earnings?.lastReward?.symbol || '',
+                    iconSymbol: earnings?.lastReward?.symbol || 'default',
                   },
                 ]}
                 disabled={true}
                 maxValue={normalize(
-                  currentlyEarned,
-                  rewardEarningsState?.earnings[0]?.decimals ?? WEI_DECIMALS
+                  balances?.currentlyEarned || new BigNumber(0),
+                  earnings?.earnings[0]?.decimals || WEI_DECIMALS
                 )}
                 balanceText={<Trans>Rewards balance</Trans>}
+              />
+            </Box>
+          </>
+        ) : (
+          <>
+            <Box sx={{ pt: 5 }}>
+              <AssetInput
+                value={balances?.totalInterest.toString() || '0'}
+                usdValue={interestBalanceUSD.toString(10)}
+                symbol={asset?.symbol || ''}
+                assets={[
+                  {
+                    balance: balances?.totalInterest.toString(),
+                    symbol: asset?.symbol || '',
+                    iconSymbol: asset?.symbol || 'default',
+                  },
+                ]}
+                disabled={true}
+                maxValue={balances?.totalInterest.toString()}
+                balanceText={<Trans>Interest balance</Trans>}
               />
             </Box>
           </>
@@ -252,20 +245,31 @@ export const ManageVaultModalContent = memo(
               symbol={asset?.symbol || ''}
             />
           </TxModalDetails>
-        ) : (
+        ) : manageType === ManageType.REWARDS ? (
           <TxModalDetails gasLimit={gasLimit} skipLoad={true} disabled={Number(0) === 0}>
             <DetailsNumberLineWithSub
               description={<Trans>My Rewards Balance</Trans>}
               futureValue={'0'}
               futureValueUSD={'0.00'}
               value={normalize(
-                currentlyEarned,
-                rewardEarningsState?.earnings[0]?.decimals ?? WEI_DECIMALS
+                balances?.currentylEarnedUsd ?? 0,
+                balances?.earningDecimals ?? WEI_DECIMALS
               )}
               valueUSD={normalize(
-                currentlyEarnedInUSD,
-                rewardEarningsState?.earnings[0]?.decimals ?? WEI_DECIMALS
+                balances?.currentylEarnedUsd ?? 0,
+                balances?.earningDecimals ?? WEI_DECIMALS
               )}
+              symbol={asset?.symbol || ''}
+            />
+          </TxModalDetails>
+        ) : (
+          <TxModalDetails gasLimit={gasLimit} skipLoad={true} disabled={Number(0) === 0}>
+            <DetailsNumberLineWithSub
+              description={<Trans>My Interest Balance</Trans>}
+              futureValue={'0'}
+              futureValueUSD={'0.00'}
+              value={balances?.totalInterest.toString()}
+              valueUSD={interestBalanceUSD.toString(10)}
               symbol={asset?.symbol || ''}
             />
           </TxModalDetails>

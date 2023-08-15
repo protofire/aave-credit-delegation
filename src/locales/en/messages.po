@@ -37,7 +37,6 @@ msgstr "ACTIVATE COOLDOWN"
 
 #: src/components/incentives/IncentivesTooltipContent.tsx
 #: src/components/incentives/IncentivesTooltipContent.tsx
-#: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
 #: src/modules/credit-delegation/lists/MarketsList/MarketsList.tsx
 #: src/modules/credit-delegation/lists/YourCreditLinesList/YourCreditLinesList.tsx
 #: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
@@ -45,6 +44,8 @@ msgid "APR"
 msgstr "APR"
 
 #: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
+#: src/modules/credit-delegation/lists/LoanPositionsList/DetailsLoanPositionsList.tsx
+#: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
 #: src/modules/credit-delegation/lists/PoolsList/PoolsList.tsx
 #: src/modules/dashboard/lists/BorrowedPositionsList/BorrowedPositionsList.tsx
 #: src/modules/dashboard/lists/BorrowedPositionsList/BorrowedPositionsList.tsx
@@ -110,10 +111,6 @@ msgstr "Action cannot be performed because the reserve is paused"
 msgid "Action requires an active reserve"
 msgstr "Action requires an active reserve"
 
-#: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
-msgid "Active"
-msgstr "Active"
-
 #: src/components/transactions/FlowCommons/Success.tsx
 msgid "Add to wallet"
 msgstr "Add to wallet"
@@ -130,6 +127,7 @@ msgstr "Address"
 msgid "Address is not a contract"
 msgstr "Address is not a contract"
 
+#: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
 #: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
 msgid "Agreement"
 msgstr "Agreement"
@@ -191,6 +189,7 @@ msgstr "Approve with"
 msgid "Array parameters that should be equal length are not"
 msgstr "Array parameters that should be equal length are not"
 
+#: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
 #: src/modules/credit-delegation/lists/MarketsList/MarketsList.tsx
 #: src/modules/credit-delegation/lists/YourCreditLinesList/YourCreditLinesList.tsx
 #: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
@@ -205,10 +204,6 @@ msgstr "Asset"
 #: src/components/isolationMode/IsolatedBadge.tsx
 msgid "Asset can be only used as collateral in isolation mode with limited borrowing power. To enter isolation mode, disable all other collateral."
 msgstr "Asset can be only used as collateral in isolation mode with limited borrowing power. To enter isolation mode, disable all other collateral."
-
-#: src/modules/reserve-overview/SupplyInfo.tsx
-msgid "Asset can only be used as collateral in isolation mode only."
-msgstr "Asset can only be used as collateral in isolation mode only."
 
 #: src/components/infoTooltips/MigrationDisabledTooltip.tsx
 msgid "Asset cannot be migrated because you have isolated collateral in {marketName} v3 Market which limits borrowable assets. You can manage your collateral in <0>{marketName} V3 Dashboard</0>"
@@ -229,10 +224,6 @@ msgstr "Asset cannot be migrated to {marketName} V3 Market due to E-mode restric
 #: src/components/infoTooltips/MigrationDisabledTooltip.tsx
 msgid "Asset cannot be migrated to {marketName} v3 Market since collateral asset will enable isolation mode."
 msgstr "Asset cannot be migrated to {marketName} v3 Market since collateral asset will enable isolation mode."
-
-#: src/modules/reserve-overview/SupplyInfo.tsx
-msgid "Asset cannot be used as collateral."
-msgstr "Asset cannot be used as collateral."
 
 #: src/components/transactions/Emode/EmodeSelect.tsx
 #: src/modules/dashboard/DashboardEModeButton.tsx
@@ -256,7 +247,6 @@ msgid "Asset supply is limited to a certain amount to reduce protocol exposure t
 msgstr "Asset supply is limited to a certain amount to reduce protocol exposure to the asset and to help manage risks involved."
 
 #: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
-#: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
 #: src/modules/credit-delegation/lists/PoolsList/PoolsList.tsx
 #: src/modules/dashboard/lists/ListHeader.tsx
 #: src/modules/dashboard/lists/SupplyAssetsList/SupplyAssetsList.tsx
@@ -318,14 +308,20 @@ msgstr "Available rewards"
 
 #: src/components/caps/CapsHint.tsx
 #: src/modules/dashboard/lists/BorrowAssetsList/BorrowAssetsListMobileItem.tsx
-#: src/modules/reserve-overview/ReserveActions.tsx
 msgid "Available to borrow"
 msgstr "Available to borrow"
 
-#: src/components/caps/CapsHint.tsx
 #: src/modules/reserve-overview/ReserveActions.tsx
+msgid "Available to lend"
+msgstr "Available to lend"
+
+#: src/components/caps/CapsHint.tsx
 msgid "Available to supply"
 msgstr "Available to supply"
+
+#: src/modules/reserve-overview/ReserveActions.tsx
+msgid "Available to withdraw"
+msgstr "Available to withdraw"
 
 #: pages/404.page.tsx
 msgid "Back to Dashboard"
@@ -358,7 +354,6 @@ msgstr "Blocked Address"
 #: src/modules/dashboard/lists/BorrowAssetsList/BorrowAssetsListMobileItem.tsx
 #: src/modules/dashboard/lists/BorrowedPositionsList/BorrowedPositionsListItem.tsx
 #: src/modules/dashboard/lists/BorrowedPositionsList/BorrowedPositionsListMobileItem.tsx
-#: src/modules/reserve-overview/ReserveActions.tsx
 msgid "Borrow"
 msgstr "Borrow"
 
@@ -409,10 +404,13 @@ msgstr "Borrow {symbol}"
 msgid "Borrowed"
 msgstr "Borrowed"
 
+#: src/modules/credit-delegation/lists/LoanPositionsList/DetailsLoanPositionsList.tsx
 #: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
 msgid "Borrower"
 msgstr "Borrower"
 
+#: src/modules/credit-delegation/lists/BorrowerList/BorrowerList.tsx
+#: src/modules/credit-delegation/lists/BorrowerList/BorrowerList.tsx
 #: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
 #: src/modules/credit-delegation/lists/PoolsList/PoolsList.tsx
 msgid "Borrowers"
@@ -465,7 +463,6 @@ msgstr "CLAIMING {symbol}"
 
 #: src/modules/dashboard/lists/SupplyAssetsList/SupplyAssetsList.tsx
 #: src/modules/dashboard/lists/SupplyAssetsList/SupplyAssetsListMobileItem.tsx
-#: src/modules/reserve-overview/SupplyInfo.tsx
 msgid "Can be collateral"
 msgstr "Can be collateral"
 
@@ -476,6 +473,10 @@ msgstr "Cancel"
 #: src/components/transactions/Emode/EmodeModalContent.tsx
 msgid "Cannot disable E-Mode"
 msgstr "Cannot disable E-Mode"
+
+#: src/modules/reserve-overview/ReserveActions.tsx
+msgid "Capital"
+msgstr "Capital"
 
 #: src/modules/staking/BuyWithFiatModal.tsx
 msgid "Choose one of the on-ramp services"
@@ -537,12 +538,6 @@ msgstr "Collateral is (mostly) the same currency that is being borrowed"
 #: src/components/transactions/Repay/CollateralRepayModalContent.tsx
 msgid "Collateral to repay with"
 msgstr "Collateral to repay with"
-
-#: src/modules/reserve-overview/SupplyInfo.tsx
-#: src/modules/reserve-overview/SupplyInfo.tsx
-#: src/modules/reserve-overview/SupplyInfo.tsx
-msgid "Collateral usage"
-msgstr "Collateral usage"
 
 #: src/hooks/useReserveActionState.tsx
 msgid "Collateral usage is limited because of Isolation mode."
@@ -633,6 +628,11 @@ msgstr "Data couldn't be fetched, please reload graph."
 msgid "Data source config error"
 msgstr "Data source config error"
 
+#: src/modules/credit-delegation/lists/LoanPositionsList/DetailsLoanPositionsList.tsx
+#: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
+msgid "Date"
+msgstr "Date"
+
 #: src/modules/dashboard/lists/BorrowedPositionsList/BorrowedPositionsList.tsx
 #: src/modules/dashboard/lists/BorrowedPositionsList/BorrowedPositionsListMobileItem.tsx
 msgid "Debt"
@@ -653,6 +653,16 @@ msgstr "Debt ceiling limits the amount possible to borrow against this asset by 
 #: src/modules/credit-delegation/modals/RepayLoan/RepayLoanModalContent.tsx
 msgid "Debt to pay"
 msgstr "Debt to pay"
+
+#: src/modules/reserve-overview/ReserveActions.tsx
+msgid "Deposited amount"
+msgstr "Deposited amount"
+
+#: src/modules/credit-delegation/lists/BorrowerList/BorrowerList.tsx
+#: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsListItem.tsx
+#: src/modules/credit-delegation/lists/PoolsList/PoolListItem.tsx
+msgid "Details"
+msgstr "Details"
 
 #: src/components/transactions/Emode/EmodeActions.tsx
 #: src/modules/dashboard/DashboardEModeButton.tsx
@@ -890,10 +900,18 @@ msgstr "Inactive"
 msgid "Inconsistent flashloan parameters"
 msgstr "Inconsistent flashloan parameters"
 
+#: src/modules/credit-delegation/lists/LoanPositionsList/DetailsLoanPositionsList.tsx
+#: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
 #: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
 #: src/modules/credit-delegation/modals/RepayLoan/RepayLoanModalContent.tsx
+#: src/modules/credit-delegation/modals/WithdrawPool/ManageVaultModalContent.tsx
+#: src/modules/reserve-overview/ReserveActions.tsx
 msgid "Interest"
 msgstr "Interest"
+
+#: src/modules/credit-delegation/modals/WithdrawPool/ManageVaultModalContent.tsx
+msgid "Interest balance"
+msgstr "Interest balance"
 
 #: src/ui-config/errorMapping.tsx
 msgid "Interest rate rebalance conditions were not met"
@@ -963,7 +981,6 @@ msgstr "Language"
 #: src/modules/dashboard/LiquidationRiskParametresModal/LiquidationRiskParametresModal.tsx
 #: src/modules/reserve-overview/BorrowInfo.tsx
 #: src/modules/reserve-overview/SupplyInfo.tsx
-#: src/modules/reserve-overview/SupplyInfo.tsx
 msgid "Learn more"
 msgstr "Learn more"
 
@@ -977,8 +994,8 @@ msgstr "Learn more in our <0>FAQ guide</0>"
 
 #: pages/credit-delegation.page.tsx
 #: pages/index.page.tsx
-#: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsListItem.tsx
 #: src/modules/credit-delegation/lists/PoolsList/PoolListItem.tsx
+#: src/modules/reserve-overview/ReserveActions.tsx
 msgid "Lend"
 msgstr "Lend"
 
@@ -1002,10 +1019,6 @@ msgstr "Liquidation <0/> threshold"
 msgid "Liquidation at"
 msgstr "Liquidation at"
 
-#: src/modules/reserve-overview/SupplyInfo.tsx
-msgid "Liquidation penalty"
-msgstr "Liquidation penalty"
-
 #: src/components/transactions/Emode/EmodeModalContent.tsx
 msgid "Liquidation risk"
 msgstr "Liquidation risk"
@@ -1015,7 +1028,6 @@ msgid "Liquidation risk parameters"
 msgstr "Liquidation risk parameters"
 
 #: src/components/transactions/Swap/SwapModalDetails.tsx
-#: src/modules/reserve-overview/SupplyInfo.tsx
 msgid "Liquidation threshold"
 msgstr "Liquidation threshold"
 
@@ -1031,13 +1043,14 @@ msgstr "Liquidity"
 msgid "Loading data..."
 msgstr "Loading data..."
 
+#: src/modules/credit-delegation/lists/LoanPositionsList/DetailsLoanPositionsList.tsx
+#: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
+msgid "Loan ID"
+msgstr "Loan ID"
+
 #: src/modules/credit-delegation/lists/YourCreditLinesList/YourCreditLinesList.tsx
 msgid "Loan Requested"
 msgstr "Loan Requested"
-
-#: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
-msgid "Loan amount"
-msgstr "Loan amount"
 
 #: src/ui-config/errorMapping.tsx
 msgid "Ltv validation failed"
@@ -1047,7 +1060,6 @@ msgstr "Ltv validation failed"
 msgid "MAX"
 msgstr "MAX"
 
-#: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsListItem.tsx
 #: src/modules/credit-delegation/lists/YourCreditLinesList/LoanApplicationListItem.tsx
 msgid "Manage"
 msgstr "Manage"
@@ -1056,6 +1068,7 @@ msgstr "Manage"
 msgid "Manage credit line"
 msgstr "Manage credit line"
 
+#: src/modules/credit-delegation/lists/BorrowerList/BorrowerList.tsx
 #: src/modules/reserve-overview/ReserveTopDetails.tsx
 msgid "Market"
 msgstr "Market"
@@ -1069,10 +1082,6 @@ msgstr "Markets"
 #: src/components/transactions/AssetInput.tsx
 msgid "Max"
 msgstr "Max"
-
-#: src/modules/reserve-overview/SupplyInfo.tsx
-msgid "Max LTV"
-msgstr "Max LTV"
 
 #: src/modules/staking/StakingPanel.tsx
 msgid "Max slashing"
@@ -1124,8 +1133,16 @@ msgid "My Balance"
 msgstr "My Balance"
 
 #: src/modules/credit-delegation/modals/WithdrawPool/ManageVaultModalContent.tsx
+msgid "My Interest Balance"
+msgstr "My Interest Balance"
+
+#: src/modules/credit-delegation/modals/WithdrawPool/ManageVaultModalContent.tsx
 msgid "My Pool Balance"
 msgstr "My Pool Balance"
+
+#: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
+msgid "My Rewards"
+msgstr "My Rewards"
 
 #: src/modules/credit-delegation/modals/WithdrawPool/ManageVaultModalContent.tsx
 msgid "My Rewards Balance"
@@ -1138,6 +1155,7 @@ msgstr "My lending Capacity"
 #: src/modules/credit-delegation/lists/MarketsList/MarketsList.tsx
 #: src/modules/credit-delegation/lists/YourCreditLinesList/YourCreditLinesList.tsx
 #: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
+#: src/modules/reserve-overview/SupplyInfo.tsx
 msgid "Name"
 msgstr "Name"
 
@@ -1177,6 +1195,10 @@ msgstr "New APY"
 msgid "New amount"
 msgstr "New amount"
 
+#: src/modules/credit-delegation/lists/BorrowerList/BorrowerList.tsx
+msgid "No borrowers yet"
+msgstr "No borrowers yet"
+
 #: src/components/transactions/StakeRewardClaim/StakeRewardClaimModalContent.tsx
 msgid "No rewards to claim"
 msgstr "No rewards to claim"
@@ -1214,6 +1236,7 @@ msgid "Nothing borrowed yet"
 msgstr "Nothing borrowed yet"
 
 #: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
+#: src/modules/credit-delegation/lists/LoanPositionsList/DetailsLoanPositionsList.tsx
 #: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
 msgid "Nothing lent yet"
 msgstr "Nothing lent yet"
@@ -1246,10 +1269,6 @@ msgstr "Ok, I got it"
 #: src/ui-config/errorMapping.tsx
 msgid "Operation not supported"
 msgstr "Operation not supported"
-
-#: src/modules/reserve-overview/ReserveTopDetails.tsx
-msgid "Oracle price"
-msgstr "Oracle price"
 
 #: src/modules/credit-delegation/modals/LoanApplication/LoanApplicationModalContent.tsx
 msgid "Our team will review your application and get back to you within 24 hours."
@@ -1298,21 +1317,44 @@ msgstr "Please switch to {networkName}."
 msgid "Please, connect your wallet"
 msgstr "Please, connect your wallet"
 
+#: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
+msgid "Pool"
+msgstr "Pool"
+
 #: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationModalContent.tsx
 msgid "Pool APY"
 msgstr "Pool APY"
 
+#: src/modules/reserve-overview/SupplyInfo.tsx
+msgid "Pool Capacity"
+msgstr "Pool Capacity"
+
 #: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
-#: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
 #: src/modules/credit-delegation/lists/PoolsList/PoolsList.tsx
 msgid "Pool Description"
 msgstr "Pool Description"
 
 #: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
-#: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
 #: src/modules/credit-delegation/lists/PoolsList/PoolsList.tsx
+#: src/modules/reserve-overview/SupplyInfo.tsx
 msgid "Pool Manager"
 msgstr "Pool Manager"
+
+#: src/modules/reserve-overview/SupplyInfo.tsx
+msgid "Pool Manager Fee"
+msgstr "Pool Manager Fee"
+
+#: src/modules/reserve-overview/SupplyInfo.tsx
+msgid "Pool Manager Website"
+msgstr "Pool Manager Website"
+
+#: src/modules/reserve-overview/ReserveTopDetails.tsx
+msgid "Pool Name"
+msgstr "Pool Name"
+
+#: src/modules/reserve-overview/ReserveConfiguration.tsx
+msgid "Pool Overview"
+msgstr "Pool Overview"
 
 #: src/ui-config/errorMapping.tsx
 msgid "Pool addresses provider is not registered"
@@ -1335,10 +1377,16 @@ msgstr "Price impact is the spread between the total value of the entry tokens s
 msgid "Price impact {0}%"
 msgstr "Price impact {0}%"
 
+#: src/modules/credit-delegation/lists/LoanPositionsList/DetailsLoanPositionsList.tsx
+#: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
 #: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
 #: src/modules/credit-delegation/modals/RepayLoan/RepayLoanModalContent.tsx
 msgid "Principal"
 msgstr "Principal"
+
+#: src/modules/credit-delegation/lists/BorrowerList/BorrowerList.tsx
+msgid "Product"
+msgstr "Product"
 
 #: src/components/infoTooltips/BorrowCapMaxedTooltip.tsx
 msgid "Protocol borrow cap at 100% for this asset. Further borrowing unavailable."
@@ -1363,6 +1411,10 @@ msgstr "Protocol supply cap at 100% for this asset. Further supply unavailable."
 #: src/components/transactions/Warnings/SupplyCapWarning.tsx
 msgid "Protocol supply cap is at 100% for this asset. Further supply unavailable."
 msgstr "Protocol supply cap is at 100% for this asset. Further supply unavailable."
+
+#: src/modules/reserve-overview/SupplyInfo.tsx
+msgid "Protofire.io"
+msgstr "Protofire.io"
 
 #: src/components/infoTooltips/ReadOnlyModeTooltip.tsx
 msgid "Read-only mode allows to see address positions in Aave, but you won't be able to perform transactions."
@@ -1470,10 +1522,6 @@ msgstr "Requesting"
 msgid "Requesting loan from <0>{0}</0>"
 msgstr "Requesting loan from <0>{0}</0>"
 
-#: src/modules/reserve-overview/ReserveTopDetails.tsx
-msgid "Reserve Size"
-msgstr "Reserve Size"
-
 #: src/modules/reserve-overview/ReserveFactorOverview.tsx
 msgid "Reserve factor"
 msgstr "Reserve factor"
@@ -1499,6 +1547,7 @@ msgid "Reward(s) to claim"
 msgstr "Reward(s) to claim"
 
 #: src/modules/credit-delegation/modals/WithdrawPool/ManageVaultModalContent.tsx
+#: src/modules/reserve-overview/ReserveActions.tsx
 msgid "Rewards"
 msgstr "Rewards"
 
@@ -1675,10 +1724,6 @@ msgstr "Staking"
 msgid "Staking APR"
 msgstr "Staking APR"
 
-#: src/modules/reserve-overview/SupplyInfo.tsx
-msgid "Staking Rewards"
-msgstr "Staking Rewards"
-
 #: src/components/transactions/UnStake/UnStakeModalContent.tsx
 msgid "Staking balance"
 msgstr "Staking balance"
@@ -1704,7 +1749,6 @@ msgstr "Supplied asset amount"
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsListMobileItem.tsx
 #: src/modules/dashboard/lists/SupplyAssetsList/SupplyAssetsListItem.tsx
 #: src/modules/dashboard/lists/SupplyAssetsList/SupplyAssetsListMobileItem.tsx
-#: src/modules/reserve-overview/ReserveActions.tsx
 msgid "Supply"
 msgstr "Supply"
 
@@ -2036,7 +2080,6 @@ msgstr "Total market size"
 #: src/modules/markets/MarketAssetsList.tsx
 #: src/modules/markets/MarketAssetsListMobileItem.tsx
 #: src/modules/reserve-overview/SupplyInfo.tsx
-#: src/modules/reserve-overview/SupplyInfo.tsx
 msgid "Total supplied"
 msgstr "Total supplied"
 
@@ -2131,7 +2174,7 @@ msgstr "User is in isolation mode"
 msgid "User is trying to borrow multiple assets including a siloed one"
 msgstr "User is trying to borrow multiple assets including a siloed one"
 
-#: src/modules/reserve-overview/ReserveTopDetails.tsx
+#: src/modules/reserve-overview/graphs/InterestRateModelGraph.tsx
 msgid "Utilization Rate"
 msgstr "Utilization Rate"
 
@@ -2218,13 +2261,16 @@ msgstr "With testnet Faucet you can get free assets to test the Aave Protocol. M
 
 #: src/components/transactions/Withdraw/WithdrawModal.tsx
 #: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsListItem.tsx
+#: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsListItem.tsx
 #: src/modules/credit-delegation/lists/YourCreditLinesList/LoanApplicationListItem.tsx
 #: src/modules/credit-delegation/modals/WithdrawPool/ManageVaultModal.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsListItem.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsListMobileItem.tsx
+#: src/modules/reserve-overview/ReserveActions.tsx
 msgid "Withdraw"
 msgstr "Withdraw"
 
+#: src/modules/credit-delegation/modals/WithdrawPool/ManageVaultModalActions.tsx
 #: src/modules/credit-delegation/modals/WithdrawPool/ManageVaultModalActions.tsx
 #: src/modules/credit-delegation/modals/WithdrawPool/ManageVaultModalActions.tsx
 msgid "Withdraw {manageType}"
@@ -2240,12 +2286,17 @@ msgstr "Withdrawing this amount will reduce your health factor and increase risk
 
 #: src/modules/credit-delegation/modals/WithdrawPool/ManageVaultModalActions.tsx
 #: src/modules/credit-delegation/modals/WithdrawPool/ManageVaultModalActions.tsx
+#: src/modules/credit-delegation/modals/WithdrawPool/ManageVaultModalActions.tsx
 msgid "Withdrawing {manageType}..."
 msgstr "Withdrawing {manageType}..."
 
 #: src/components/transactions/Withdraw/WithdrawActions.tsx
 msgid "Withdrawing {symbol}"
 msgstr "Withdrawing {symbol}"
+
+#: src/modules/credit-delegation/lists/BorrowerList/BorrowerListItem.tsx
+msgid "Wording"
+msgstr "Wording"
 
 #: src/components/transactions/DelegationTxsWrapper.tsx
 #: src/components/transactions/TxActionsWrapper.tsx
@@ -2341,11 +2392,6 @@ msgstr "Your borrows"
 msgid "Your current loan to value based on your collateral supplied."
 msgstr "Your current loan to value based on your collateral supplied."
 
-#: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
-#: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
-msgid "Your deficit positions"
-msgstr "Your deficit positions"
-
 #: src/modules/dashboard/LiquidationRiskParametresModal/LiquidationRiskParametresModal.tsx
 msgid "Your health factor and loan to value determine the assurance of your collateral. To avoid liquidations you can supply more collateral or repay borrow positions."
 msgstr "Your health factor and loan to value determine the assurance of your collateral. To avoid liquidations you can supply more collateral or repay borrow positions."
@@ -2358,6 +2404,13 @@ msgstr "Your info"
 #: src/modules/credit-delegation/CreditDelegationTopPanel.tsx
 msgid "Your lending capacity"
 msgstr "Your lending capacity"
+
+#: src/modules/credit-delegation/lists/LoanPositionsList/DetailsLoanPositionsList.tsx
+#: src/modules/credit-delegation/lists/LoanPositionsList/DetailsLoanPositionsList.tsx
+#: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
+#: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
+msgid "Your loan positions"
+msgstr "Your loan positions"
 
 #: src/modules/credit-delegation/lists/YourCreditLinesList/YourCreditLinesList.tsx
 msgid "Your loan requests"
@@ -2436,6 +2489,8 @@ msgstr "copy the error"
 msgid "of"
 msgstr "of"
 
+#: src/modules/credit-delegation/lists/LoanPositionsList/DetailsLoanPositionsListItem.tsx
+#: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsListItem.tsx
 #: src/modules/credit-delegation/lists/YourLoansList/LoanListItem.tsx
 msgid "open agreement"
 msgstr "open agreement"
@@ -2447,10 +2502,6 @@ msgstr "please check that the amount you want to supply is not currently being u
 #: src/components/transactions/Repay/RepayModalContent.tsx
 msgid "repaid"
 msgstr "repaid"
-
-#: src/modules/reserve-overview/SupplyInfo.tsx
-msgid "stETH supplied as collateral will continue to accrue staking rewards provided by daily rebases."
-msgstr "stETH supplied as collateral will continue to accrue staking rewards provided by daily rebases."
 
 #: src/components/transactions/Faucet/CaptchaFaucetModalContent.tsx
 msgid "will receive"
@@ -2474,6 +2525,7 @@ msgstr "withdrew"
 #: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationActions.tsx
 #: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationActions.tsx
 #: src/modules/dashboard/DashboardEModeButton.tsx
+#: src/modules/reserve-overview/ReserveTopDetails.tsx
 #: src/modules/reserve-overview/ReserveTopDetails.tsx
 msgid "{0}"
 msgstr "{0}"
@@ -2518,6 +2570,10 @@ msgstr "{endDate}"
 #: src/modules/staking/StakingPanel.tsx
 msgid "{h}h"
 msgstr "{h}h"
+
+#: src/modules/credit-delegation/lists/LoanPositionsList/DetailsLoanPositionsListItem.tsx
+msgid "{loanId}"
+msgstr "{loanId}"
 
 #: src/modules/staking/StakingPanel.tsx
 msgid "{m}m"

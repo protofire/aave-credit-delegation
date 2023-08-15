@@ -79,6 +79,7 @@ export const CreditDelegationContext = createContext({
   },
   refetchLoans: () => Promise.reject(),
   refetchAll: () => Promise.reject(),
+  filteredPools: [],
 } as CreditDelgationData);
 
 const CreditDelegationDataProvider = ({

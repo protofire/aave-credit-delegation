@@ -23,6 +23,7 @@ query loans($policyIds: [String]!) {
     productOperatorIncentiveFee
     interestCharged
     interestRepaid
+    createdAt
   }
 
   _meta {

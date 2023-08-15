@@ -39,9 +39,14 @@ export interface AtomicaSubgraphPool {
   capitalTokenAddress: string;
   capitalTokenDecimals: number;
   manager: string;
+  managerFee: string;
+  capitalRequirement: string;
+  capitalTokenBalance: string;
   markets: {
     id: string;
     title: string;
+    wording: string;
+    details: string;
     product: {
       id: string;
       title: string;
@@ -116,6 +121,7 @@ export interface AtomicaSubgraphLoan {
   productOperatorIncentiveFee: string;
   interestCharged: string;
   interestRepaid: string;
+  createdAt: string;
 }
 
 export interface AtomicaSubgraphLoanChunk {
@@ -182,6 +188,8 @@ export interface AtomicaDelegationPool {
   markets: {
     id: string;
     title: string;
+    wording: string;
+    details: string;
     product: {
       id: string;
       title: string;
@@ -190,7 +198,14 @@ export interface AtomicaDelegationPool {
   }[];
   stableDebtTokenAddress: string;
   variableDebtTokenAddress: string;
-  rewards?: AtomicaSubgraphRewards[];
+  rewards?: PoolRewardEarnings;
+  userAvailableWithdraw: number;
+  managerFee: string;
+  poolCap: string;
+  poolBalance: string;
+  poolCapUsd: string;
+  poolBalanceUsd: string;
+  balances?: PoolBalances;
 }
 
 export interface AtomicaBorrowMarket {
@@ -245,6 +260,7 @@ export interface AtomicaLoan {
   lastUpdateTs?: string;
   ratePerSec: string;
   usdRate: string;
+  createdAt?: string;
 }
 
 export interface AtomicaLendingPosition {
@@ -261,6 +277,9 @@ export interface AtomicaLendingPosition {
   policy?: AtomicaSubgraphPolicy;
   market?: AtomicaBorrowMarket;
   symbol: string;
+  remainingPrincipalUsd: string;
+  repaidUsd: string;
+  remainingPrincipal: string;
 }
 
 export interface LoanRequest {
@@ -348,8 +367,27 @@ export interface EarnedToken {
   updatedAt?: number;
 }
 
-export interface PoolRewards {
+export interface PoolEarnings {
+  poolId: string;
   apy: BigNumber;
   lastReward?: Reward;
   earnings: EarnedToken[];
+}
+
+export interface PoolBalances {
+  id: string;
+  availableWithdraw: number;
+  lpBalance: string;
+  capital: string;
+  settlement: number;
+  premium: number;
+  currentlyEarned: BigNumber;
+  currentylEarnedUsd: number;
+  totalInterest: number;
+  earningDecimals: number;
+}
+
+export interface PoolRewardEarnings {
+  earnings?: PoolEarnings;
+  rewards?: AtomicaSubgraphRewards[];
 }

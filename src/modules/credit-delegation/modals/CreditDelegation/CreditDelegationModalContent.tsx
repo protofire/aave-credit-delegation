@@ -46,7 +46,7 @@ export const CreditDelegationModalContent = React.memo(
     const pool = pools.find((p) => p.id === poolId);
 
     // states
-    const [amount, setAmount] = useState(pool?.approvedCredit ?? '0');
+    const [amount, setAmount] = useState('0');
     const [riskCheckboxAccepted, setRiskCheckboxAccepted] = useState(false);
 
     const supplyUnWrapped = underlyingAsset.toLowerCase() === API_ETH_MOCK_ADDRESS.toLowerCase();

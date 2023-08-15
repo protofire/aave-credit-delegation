@@ -52,9 +52,8 @@ export const IncentivesTooltipContent = ({
         flexDirection: 'column',
       }}
     >
-      <Typography variant="caption" color="text.secondary" mb={3}>
+      <Typography variant="caption" color="text.secxondary" mb={3}>
         <Trans>Participating in this pool gives annualized {symbol} rewards.</Trans>
-        {/* <Trans>Participating in this {symbol} reserve gives annualized rewards.</Trans> */}
       </Typography>
 
       <Box sx={{ width: '100%' }}>

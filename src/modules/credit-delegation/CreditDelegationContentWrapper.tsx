@@ -1,7 +1,6 @@
 import { Box } from '@mui/material';
 
 import { LendingPositionsList } from './lists/LendingPositionsList/LendingPositionsList';
-// import { LoanPositionsList } from './lists/LoanPositionsList/LoanPositionsList';
 import { MarketsList } from './lists/MarketsList/MarketsList';
 import { PoolsList } from './lists/PoolsList/PoolsList';
 import { YourCreditLinesList } from './lists/YourCreditLinesList/YourCreditLinesList';
@@ -33,7 +32,6 @@ export const CreditDelegationContentWrapper = ({
         }}
       >
         <Box style={{ display: isBorrow ? 'none' : 'block' }}>
-          {/* <LoanPositionsList /> */}
           <LendingPositionsList type="non-earning" />
           <LendingPositionsList type="earning" />
           <PoolsList />

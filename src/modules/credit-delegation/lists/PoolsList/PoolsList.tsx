@@ -16,7 +16,7 @@ import { PoolListItem } from './PoolListItem';
 
 const head = [
   { title: <Trans key="assets">Assets</Trans>, sortKey: 'symbol' },
-  { title: <Trans key="title">Pool Description</Trans>, sortKey: 'metadata.Label' },
+  { title: <Trans key="title">Pool Description</Trans>, sortKey: 'title' },
   { title: <Trans key="manager">Pool Manager</Trans>, sortKey: 'manager' },
   { title: <Trans key="borrowers">Borrowers</Trans>, sortKey: 'borrowers' },
   { title: <Trans key="capacity">My lending Capacity</Trans>, sortKey: 'capacity' },
@@ -40,7 +40,20 @@ const Header: React.FC<HeaderProps> = ({
     {head.map((col) => (
       <ListColumn
         isRow={col.sortKey === 'symbol'}
-        maxWidth={col.sortKey === 'symbol' ? CREDIT_DELEGATION_LIST_COLUMN_WIDTHS.ASSET : undefined}
+        maxWidth={
+          col.sortKey === 'symbol'
+            ? CREDIT_DELEGATION_LIST_COLUMN_WIDTHS.ASSET
+            : col.sortKey === 'title'
+            ? 360
+            : undefined
+        }
+        minWidth={
+          col.sortKey === 'symbol'
+            ? CREDIT_DELEGATION_LIST_COLUMN_WIDTHS.ASSET
+            : col.sortKey === 'title'
+            ? 360
+            : undefined
+        }
         key={col.sortKey}
         overFlow={'visible'}
       >

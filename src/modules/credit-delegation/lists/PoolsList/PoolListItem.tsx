@@ -1,8 +1,10 @@
 import { Trans } from '@lingui/macro';
 import { Button } from '@mui/material';
+import { useRouter } from 'next/router';
 import { ListColumn } from 'src/components/lists/ListColumn';
-import { Link } from 'src/components/primitives/Link';
+import { Link, ROUTES } from 'src/components/primitives/Link';
 import { Row } from 'src/components/primitives/Row';
+import { TextWithTooltip } from 'src/components/TextWithTooltip';
 import { useModalContext } from 'src/hooks/useModal';
 
 import { useManagerDetails } from '../../hooks/useManagerDetails';
@@ -29,12 +31,16 @@ export const PoolListItem = ({
   rewards,
 }: AtomicaDelegationPool) => {
   const { openCreditDelegation } = useModalContext();
+  const router = useRouter();
 
   const { managerDetails } = useManagerDetails(manager);
 
   return (
     <ListItemWrapper symbol={symbol} iconSymbol={iconSymbol} name={name}>
-      <ListColumn>{metadata?.Label}</ListColumn>
+      <ListColumn maxWidth={360} minWidth={360}>
+        {metadata?.Label}
+      </ListColumn>
+
       <ListColumn>
         <Link
           href={managerDetails?.website ?? ''}
@@ -55,12 +61,17 @@ export const PoolListItem = ({
           {managerDetails?.title}
         </Link>
       </ListColumn>
-      <ListColumn sx={{ fontSize: 10 }}>
-        {markets?.map((market) => (
-          <Row key={market.id}>
-            {market.product.title}: {market.title}
-          </Row>
-        ))}
+
+      <ListColumn>
+        <TextWithTooltip>
+          <>
+            {markets?.map((market) => (
+              <Row key={market.id} sx={{ padding: 1 }}>
+                {market.product.title}: {market.title}
+              </Row>
+            ))}
+          </>
+        </TextWithTooltip>
       </ListColumn>
 
       <ListValueColumn
@@ -72,16 +83,18 @@ export const PoolListItem = ({
       />
 
       <ListAPRColumn
-        value={Number(supplyAPY)}
-        incentives={[
-          {
-            incentiveAPR: rewardAPY,
-            rewardTokenAddress: rewards?.length ? rewards[0].rewardToken : '',
-            rewardTokenSymbol: rewards?.length ? rewards[0].rewardTokenSymbol : '',
-          },
-        ]}
+        value={Number(supplyAPY) + Number(rewardAPY)}
+        // incentives={[
+        //   {
+        //     incentiveAPR: rewardAPY,
+        //     rewardTokenAddress: rewards?.rewards?.length ? rewards?.rewards[0].rewardToken : '',
+        //     rewardTokenSymbol: rewards?.rewards?.length
+        //       ? rewards?.rewards[0].rewardTokenSymbol
+        //       : '',
+        //   },
+        // ]}
         symbol={symbol}
-        endDate={rewards?.length ? rewards[0].endedAtConverted : ''}
+        endDate={rewards?.rewards?.length ? rewards?.rewards[0].endedAtConverted : ''}
       />
 
       <ListButtonsColumn>
@@ -91,6 +104,13 @@ export const PoolListItem = ({
           onClick={() => openCreditDelegation(id, underlyingAsset)}
         >
           <Trans>Lend</Trans>
+        </Button>
+        <Button
+          disabled={!isActive || Number(availableBalance) <= 0}
+          variant="outlined"
+          onClick={() => router.push(ROUTES.poolDetails(id, underlyingAsset))}
+        >
+          <Trans>Details</Trans>
         </Button>
       </ListButtonsColumn>
     </ListItemWrapper>

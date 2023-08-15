@@ -50,6 +50,7 @@ export default function CreditDelegation() {
         {currentAccount ? (
           <CreditDelegationContentWrapper isBorrow={mode === 'borrow'} />
         ) : (
+          // <CreditDelegationContentWrapper mode={mode} />
           <ConnectWalletPaper loading={web3Loading} />
         )}
       </ContentContainer>

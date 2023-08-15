@@ -37,6 +37,7 @@ import {
   AtomicaSubgraphMarket,
   AtomicaSubgraphPolicy,
   AtomicaSubgraphPool,
+  PoolBalances,
 } from '../types';
 import { convertTimestampToDate } from '../utils';
 import useAsyncMemo from './useAsyncMemo';
@@ -45,6 +46,7 @@ import { useMarketsApr } from './useMarketsApr';
 import { usePoolRewards } from './usePoolRewards';
 import { usePoolsApy } from './usePoolsApy';
 import { usePoolsMetadata } from './usePoolsMetadata';
+import { useRiskPool } from './useRiskPool';
 import { useSubgraph } from './useSubgraph';
 import { useUserLoans } from './useUserLoans';
 import { useUserVaults } from './useUserVaults';
@@ -66,6 +68,7 @@ export const usePoolsAndMarkets = () => {
   const metadata = usePoolsMetadata();
   const [marketsApr] = useMarketsApr();
   const poolsApy = usePoolsApy();
+  const { getUserAvailablePoolBalance, rewardEarningsStates } = useRiskPool();
 
   const [approvedCredit, setApprovedCredit] = useState<ApproveCredit>({});
   const [approvedCreditLoading, setApprovedCreditLoading] = useState<boolean>(false);
@@ -155,6 +158,29 @@ export const usePoolsAndMarkets = () => {
     [],
     [data?.markets]
   );
+  const [poolsAvailableBalances, { loading: loadingPoolsAvailableBalance }] = useAsyncMemo<
+    PoolBalances[]
+  >(
+    async () => {
+      const poolsData = Array.from(data?.pools ?? []);
+      const myPools = await Promise.all(
+        poolsData.map(async (pool) =>
+          getUserAvailablePoolBalance(
+            pool,
+            tokensToBorrow.find(
+              (token) => token.symbol === pool.capitalTokenSymbol
+            ) as TokenMetadataType,
+            poolRewards.filter((reward) => reward.poolId === pool.id),
+            reserves.find((reserve) => reserve.symbol === pool.capitalTokenSymbol)
+              ?.totalLiquidity || ''
+          )
+        )
+      );
+      return myPools;
+    },
+    [],
+    [data?.pools, poolRewards]
+  );
 
   const fetchBorrowAllowance = useCallback(
     async (poolId: string, forceApprovalCheck?: boolean) => {
@@ -231,7 +257,8 @@ export const usePoolsAndMarkets = () => {
       appDataLoading ||
       approvedCreditLoading ||
       loadingVaults ||
-      loadingPoolRewards
+      loadingPoolRewards ||
+      loadingPoolsAvailableBalance
     ) {
       return [];
     }
@@ -242,11 +269,6 @@ export const usePoolsAndMarkets = () => {
       const tokenToBorrow = tokensToBorrow.find(
         (token) => token.symbol === pool.capitalTokenSymbol
       );
-
-      // const { getUserPoolBalance, totalAmount, normalizedBalance, poolBalanceState } = useRiskPool(
-      //   pool.id,
-      //   tokenToBorrow
-      // );
 
       const poolMetadata = metadata?.find(
         (data) => data.EntityId.toLowerCase() === pool.id.toLowerCase()
@@ -265,6 +287,22 @@ export const usePoolsAndMarkets = () => {
       const rewardAPY =
         poolsApy?.find((poolApy) => poolApy.id?.toLowerCase() === pool.id?.toLowerCase())
           ?.rewardApy ?? '0.0';
+
+      const balances = poolsAvailableBalances.find((balance) => pool.id === balance.id);
+
+      const rewardEarnings = rewardEarningsStates.find((reward) => reward.poolId === pool.id);
+
+      const poolCapUsd = amountToUsd(
+        normalize(pool.capitalRequirement, pool.capitalTokenDecimals),
+        userReserve?.formattedPriceInMarketReferenceCurrency ?? '1',
+        marketReferencePriceInUsd
+      ).toString();
+
+      const poolBalanceUsd = amountToUsd(
+        normalize(pool.capitalTokenBalance, pool.capitalTokenDecimals),
+        userReserve?.formattedPriceInMarketReferenceCurrency ?? '1',
+        marketReferencePriceInUsd
+      ).toString();
 
       return {
         asset: tokenToBorrow,
@@ -297,29 +335,42 @@ export const usePoolsAndMarkets = () => {
         stableDebtTokenAddress: userReserve?.stableDebtTokenAddress ?? '',
         variableDebtTokenAddress: userReserve?.variableDebtTokenAddress ?? '',
         rewardAPY,
-        rewards: rewards.map((reward) => {
-          return {
-            ...reward,
-            endedAtConverted: convertTimestampToDate(reward.endedAt),
-          };
-        }),
+        rewards: {
+          rewards: rewards.map((reward) => {
+            return {
+              ...reward,
+              endedAtConverted: convertTimestampToDate(reward.endedAt),
+            };
+          }),
+          earnings: rewardEarnings,
+        },
+        userAvailableWithdraw: balances?.availableWithdraw ?? 0,
+        managerFee: normalize(pool.managerFee, 18),
+        poolCap: normalize(pool.capitalRequirement, pool.capitalTokenDecimals),
+        poolBalance: normalize(pool.capitalTokenBalance, pool.capitalTokenDecimals),
+        poolCapUsd,
+        poolBalanceUsd,
+        balances,
       };
     });
   }, [
+    mainLoading,
+    appDataLoading,
+    approvedCreditLoading,
+    loadingVaults,
+    loadingPoolRewards,
+    loadingPoolsAvailableBalance,
     data?.pools,
     reserves,
     tokensToBorrow,
     metadata,
-    approvedCredit,
     vaults,
-    poolsApy,
-    walletBalances,
-    approvedCreditLoading,
-    loadingVaults,
-    mainLoading,
-    appDataLoading,
-    loadingPoolRewards,
     poolRewards,
+    poolsApy,
+    poolsAvailableBalances,
+    marketReferencePriceInUsd,
+    walletBalances,
+    approvedCredit,
   ]);
 
   const markets: AtomicaBorrowMarket[] = useMemo(() => {
@@ -377,6 +428,13 @@ export const usePoolsAndMarkets = () => {
     tokensToBorrow,
   ]);
 
+  const {
+    loading: loansLoading,
+    loans,
+    creditLines,
+    refetchLoans,
+  } = useUserLoans(data?.myPolicies, markets);
+
   const effectiveLendingPositions: AtomicaLendingPosition[] = useMemo(() => {
     if (
       mainLoading ||
@@ -391,12 +449,19 @@ export const usePoolsAndMarkets = () => {
     return (
       poolLoanChunks?.map((chunk) => {
         const pool = pools.find((pool) => pool.id.toLowerCase() === chunk.poolId.toLowerCase());
+
         const borrowedAmount = normalize(
           chunk.borrowedAmount,
           pool?.asset?.decimals ?? WEI_DECIMALS
         );
         const rate = normalize(chunk.rate, WEI_DECIMALS);
         const apr = valueToBigNumber(rate).times(SECONDS_PER_YEAR).toNumber();
+        const remainingPrincipal = normalize(
+          BigNumber.max(new BigNumber(chunk.borrowedAmount).minus(chunk.repaidAmount)),
+          pool?.asset?.decimals ?? 18
+        );
+        const repaidAmount = normalize(chunk.repaidAmount, pool?.asset?.decimals ?? 18);
+
         const market = markets.find(
           (market) => market.marketId.toLowerCase() === chunk.policy?.marketId.toLowerCase()
         );
@@ -411,14 +476,27 @@ export const usePoolsAndMarkets = () => {
           return reserve.symbol.toLowerCase() === token?.symbol.toLowerCase();
         });
 
+        const remainingPrincipalUsd = amountToUsd(
+          remainingPrincipal,
+          reserve?.formattedPriceInMarketReferenceCurrency ?? '1',
+          marketReferencePriceInUsd
+        ).toString();
+
         const borrowedAmountUsd = amountToUsd(
           borrowedAmount,
           reserve?.formattedPriceInMarketReferenceCurrency ?? '1',
           marketReferencePriceInUsd
         ).toString();
 
+        const repaidUsd = amountToUsd(
+          repaidAmount,
+          reserve?.formattedPriceInMarketReferenceCurrency ?? '1',
+          marketReferencePriceInUsd
+        ).toString();
+
         return {
           ...chunk,
+          repaidAmount,
           borrowedAmount,
           borrowedAmountUsd,
           rate,
@@ -426,6 +504,9 @@ export const usePoolsAndMarkets = () => {
           pool,
           market,
           symbol: pool?.symbol ?? market?.symbol ?? '',
+          remainingPrincipalUsd,
+          repaidUsd,
+          remainingPrincipal,
         };
       }) ?? []
     );
@@ -442,13 +523,6 @@ export const usePoolsAndMarkets = () => {
     marketTokens,
     marketReferencePriceInUsd,
   ]);
-
-  const {
-    loading: loansLoading,
-    loans,
-    creditLines,
-    refetchLoans,
-  } = useUserLoans(data?.myPolicies, markets);
 
   const refetchAll = useCallback(
     async (blockNumber?: number) => {
