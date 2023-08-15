@@ -92,7 +92,13 @@ export const YourCreditLinesList = () => {
   );
 
   if (loading)
-    return <ListLoader title={<Trans>Your loan requests</Trans>} head={head.map((c) => c.title)} />;
+    return (
+      <ListLoader
+        title={<Trans>Your loan requests</Trans>}
+        head={head.map((c) => c.title)}
+        withTopMargin
+      />
+    );
 
   return (
     <>

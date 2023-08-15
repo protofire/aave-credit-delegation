@@ -34,11 +34,16 @@ export const handleSortMarkets = (
   sortName: string,
   markets: AtomicaBorrowMarket[]
 ): AtomicaBorrowMarket[] => {
+  let sorted;
   if (sortName === 'symbol') {
-    return handleSymbolSort(true, markets);
+    sorted = handleSymbolSort(true, markets);
   } else {
-    return orderBy(markets, sortName, sortDesc ? 'desc' : 'asc');
+    sorted = orderBy(markets, sortName, sortDesc ? 'desc' : 'asc');
   }
+
+  return sorted.sort((a) => {
+    return a.allowed ? -1 : 1;
+  });
 };
 
 export const handleSortLoans = (

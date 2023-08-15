@@ -3,6 +3,19 @@ import { BigNumber } from 'bignumber.js';
 
 import { PoolMetadata } from './hooks/usePoolsMetadata';
 
+export interface AtomicaSubgraphAllowList {
+  id: string;
+  owner: string;
+  type: number;
+  accounts: {
+    id: string;
+    account: string;
+    value: string;
+  };
+  createdAt: string;
+  createdBy: string;
+}
+
 export interface AtomicaSubgraphProduct {
   id: string;
   productId: string;
@@ -72,6 +85,7 @@ export interface AtomicaSubgraphMarket {
     title: string;
     wording: string;
   };
+  policyBuyerAllowListId: string;
 }
 
 export interface AtomicaSubgraphPolicy {
@@ -233,6 +247,8 @@ export interface AtomicaBorrowMarket {
     wording: string;
   };
   asset?: TokenMetadataType;
+  allowed: boolean;
+  allowListId: string;
 }
 
 export interface AtomicaLoan {

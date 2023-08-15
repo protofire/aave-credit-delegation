@@ -93,13 +93,7 @@ export const MarketsList = () => {
   );
 
   if (loading)
-    return (
-      <ListLoader
-        title={<Trans>Markets</Trans>}
-        head={head.map((col) => col.title)}
-        withTopMargin
-      />
-    );
+    return <ListLoader title={<Trans>Markets</Trans>} head={head.map((col) => col.title)} />;
 
   return (
     <ListWrapper

@@ -2375,6 +2375,10 @@ msgstr "You will exit isolation mode and other tokens can now be used as collate
 msgid "You {action} <0/> {symbol}"
 msgstr "You {action} <0/> {symbol}"
 
+#: src/modules/credit-delegation/lists/MarketsList/MarketListItem.tsx
+msgid "Your address isn't on the allowed list of this market"
+msgstr "Your address isn't on the allowed list of this market"
+
 #: src/modules/credit-delegation/CreditDelegationTopPanel.tsx
 msgid "Your average APY"
 msgstr "Your average APY"
