@@ -42,7 +42,7 @@ export const CreditDelegationModalContent = React.memo(
     const { currentNetworkConfig } = useProtocolDataContext();
     const { mainTxState: supplyTxState, gasLimit, txError } = useModalContext();
 
-    const { pools, lended, lendingCapacity } = useCreditDelegationContext();
+    const { pools, lent: lent, lendingCapacity } = useCreditDelegationContext();
     const pool = pools.find((p) => p.id === poolId);
 
     // states
@@ -53,7 +53,7 @@ export const CreditDelegationModalContent = React.memo(
 
     const maxAmountToDelegate = valueToBigNumber(lendingCapacity)
       .minus(
-        valueToBigNumber(lended)
+        valueToBigNumber(lent)
           .shiftedBy(USD_DECIMALS)
           .dividedBy(marketReferencePriceInUsd)
           .dividedBy(poolReserve.formattedPriceInMarketReferenceCurrency)

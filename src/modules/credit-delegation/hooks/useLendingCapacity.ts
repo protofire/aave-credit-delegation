@@ -33,7 +33,7 @@ export const useLendingCapacity = (pools?: AtomicaDelegationPool[]) => {
     return vailableBorrowsUSD.toFixed(2);
   }, [reserves, marketReferencePriceInUsd, user, loading, pools]);
 
-  const lended = useMemo(() => {
+  const lent = useMemo(() => {
     if (pools === undefined) return '0';
     return pools
       .reduce((acc, pool) => acc.plus(pool.approvedCreditUsdBig), valueToBigNumber(0))
@@ -42,7 +42,7 @@ export const useLendingCapacity = (pools?: AtomicaDelegationPool[]) => {
   }, [pools]);
 
   const averageApy = useMemo(() => {
-    if (pools === undefined || Number(lended) === 0) return '0';
+    if (pools === undefined || Number(lent) === 0) return '0';
 
     return pools
       .reduce((acc, pool) => {
@@ -50,14 +50,14 @@ export const useLendingCapacity = (pools?: AtomicaDelegationPool[]) => {
           .times(pool.approvedCreditUsd ?? '0')
           .plus(acc);
       }, valueToBigNumber(0))
-      .dividedBy(lended)
+      .dividedBy(lent)
       .toString();
-  }, [pools, lended]);
+  }, [pools, lent]);
 
   return {
     loading: loading || pools === undefined,
     lendingCapacity,
-    lended,
+    lent: lent,
     averageApy,
   };
 };

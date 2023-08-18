@@ -25,7 +25,7 @@ export interface CreditDelgationData {
   loading: boolean;
   loansLoading: boolean;
   pools: AtomicaDelegationPool[];
-  lended: string;
+  lent: string;
   loadingLendingCapacity: boolean;
   lendingCapacity: string;
   averageApy: string;
@@ -56,7 +56,7 @@ export interface CreditDelgationData {
 
 export const CreditDelegationContext = createContext({
   pools: [],
-  lended: '0',
+  lent: '0',
   loadingLendingCapacity: true,
   lendingCapacity: '0',
   averageApy: '0',
@@ -105,7 +105,7 @@ const CreditDelegationDataProvider = ({
   } = usePoolsAndMarkets();
 
   const {
-    lended,
+    lent,
     loading: loadingLendingCapacity,
     lendingCapacity,
     averageApy,
@@ -277,7 +277,7 @@ const CreditDelegationDataProvider = ({
         loading,
         loansLoading,
         pools,
-        lended,
+        lent: lent,
         loadingLendingCapacity,
         lendingCapacity,
         averageApy,

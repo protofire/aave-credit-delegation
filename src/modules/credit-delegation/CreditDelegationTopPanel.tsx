@@ -23,7 +23,7 @@ export const CreditDelegationTopPanel = () => {
   const theme = useTheme();
   const downToSM = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const { lendingCapacity, lended, loadingLendingCapacity, averageApy } =
+  const { lendingCapacity, lent, loadingLendingCapacity, averageApy } =
     useCreditDelegationContext();
 
   const valueTypographyVariant = downToSM ? 'main16' : 'main21';
@@ -71,14 +71,14 @@ export const CreditDelegationTopPanel = () => {
           icon={<WalletIcon />}
           title={
             <div style={{ display: 'flex' }}>
-              <Trans>Lended</Trans>
+              <Trans>Lent</Trans>
             </div>
           }
           loading={loadingLendingCapacity}
         >
           {currentAccount ? (
             <FormattedNumber
-              value={Number(lended || 0)}
+              value={Number(lent || 0)}
               symbol="USD"
               variant={valueTypographyVariant}
               visibleDecimals={2}
