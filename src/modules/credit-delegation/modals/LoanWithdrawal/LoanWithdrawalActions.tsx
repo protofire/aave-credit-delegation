@@ -14,7 +14,7 @@ import { NEXT_PUBLIC_BORROWERS_META_SHEET_ID } from '../../consts';
 import { useCreditDelegationContext } from '../../CreditDelegationContext';
 import { GoogleSheetsApiService } from '../../google-sheet-service';
 import { useControllerAddress } from '../../hooks/useControllerAddress';
-import { CreditLine } from '../../types';
+import { ApplicationOrCreditLine } from '../../types';
 import { validate } from './validation';
 
 export interface LoanWithdrawalActionProps extends BoxProps {
@@ -24,7 +24,7 @@ export interface LoanWithdrawalActionProps extends BoxProps {
   company: string;
   title: string;
   name: string;
-  creditLine: CreditLine;
+  creditLine: ApplicationOrCreditLine;
   isWrongNetwork: boolean;
   symbol: string;
   blocked: boolean;
@@ -52,7 +52,8 @@ export const LoanWithdrawalActions = React.memo(
     const { mainTxState, loadingTxns, setGasLimit, setMainTxState, setTxError } = useModalContext();
 
     const { provider } = useWeb3Context();
-    const { refetchAll, loansLoading, loading } = useCreditDelegationContext();
+    const { refetchAll, loansLoading, loading, setActiveTab, refetchLoans } =
+      useCreditDelegationContext();
 
     const { contract: riskPoolController } = useControllerAddress();
 
@@ -86,6 +87,8 @@ export const LoanWithdrawalActions = React.memo(
           success: true,
         });
         clearForm();
+        refetchLoans();
+        setActiveTab('portfolio');
       } catch (error) {
         const parsedError = getErrorTextFromError(error, TxAction.GAS_ESTIMATION, false);
         setTxError(parsedError);
@@ -97,13 +100,16 @@ export const LoanWithdrawalActions = React.memo(
       }
     }, [
       provider,
-      setMainTxState,
-      setTxError,
+      riskPoolController,
+      creditLine.policyId,
+      creditLine.asset?.decimals,
       amount,
       refetchAll,
-      riskPoolController,
-      creditLine,
+      setMainTxState,
       clearForm,
+      refetchLoans,
+      setActiveTab,
+      setTxError,
     ]);
 
     const action = async () => {

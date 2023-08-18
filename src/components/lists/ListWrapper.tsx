@@ -1,5 +1,6 @@
 import { Trans } from '@lingui/macro';
 import { Box, Paper, Typography } from '@mui/material';
+import { SxProps, Theme } from '@mui/system';
 import { ReactNode, useState } from 'react';
 
 import { toggleLocalStorageClick } from '../../helpers/toggle-local-storage-click';
@@ -13,6 +14,7 @@ interface ListWrapperProps {
   children: ReactNode;
   withTopMargin?: boolean;
   noData?: boolean;
+  sx?: SxProps<Theme>;
 }
 
 export const ListWrapper = ({
@@ -24,6 +26,7 @@ export const ListWrapper = ({
   topInfo,
   withTopMargin,
   noData,
+  sx,
 }: ListWrapperProps) => {
   const [isCollapse, setIsCollapse] = useState(
     localStorageName ? localStorage.getItem(localStorageName) === 'true' : false
@@ -33,10 +36,11 @@ export const ListWrapper = ({
 
   return (
     <Paper
-      sx={(theme) => ({
+      sx={{
+        ...sx,
         mt: withTopMargin ? 4 : 0,
-        border: `1px solid ${theme.palette.divider}`,
-      })}
+        border: `1px solid ${({ theme }: { theme: Theme }) => theme.palette.divider}`,
+      }}
     >
       <Box
         sx={{

@@ -4,9 +4,9 @@ import { createContext, useContext, useState } from 'react';
 import { EmodeModalType } from 'src/components/transactions/Emode/EmodeModalContent';
 import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
 import {
+  ApplicationOrCreditLine,
   AtomicaDelegationPool,
   AtomicaLoan,
-  CreditLine,
 } from 'src/modules/credit-delegation/types';
 import { TxErrorType } from 'src/ui-config/errorMapping';
 
@@ -62,7 +62,7 @@ export interface ModalArgsType {
   loanRequest?: ModalManageLoanArgs;
   loan?: AtomicaLoan;
   poolVault?: AtomicaDelegationPool;
-  creditLine?: CreditLine;
+  creditLine?: ApplicationOrCreditLine;
 }
 
 export type TxStateType = {
@@ -94,8 +94,8 @@ export interface ModalContextType<T extends ModalArgsType> {
   openLoanApplication: () => void;
   openCreditDelegation: (poolId: string, underlyingAsset: string) => void;
   openRequestLoan: (marketId: string, underlyingAsset: string) => void;
-  openLoanWithdrawal: (creditLine: CreditLine) => void;
-  openManageCreditLine: (creditLine: CreditLine) => void;
+  openLoanWithdrawal: (creditLine: ApplicationOrCreditLine) => void;
+  openManageCreditLine: (creditLine: ApplicationOrCreditLine) => void;
   openRepayLoan: (loan: AtomicaLoan) => void;
   openManageVault: (poolVault: AtomicaDelegationPool) => void;
   close: () => void;

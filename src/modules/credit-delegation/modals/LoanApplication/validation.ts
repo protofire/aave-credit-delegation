@@ -1,6 +1,7 @@
 import Ajv, { ErrorObject, JSONSchemaType } from 'ajv';
 import ajvErrors from 'ajv-errors';
 import addFormats from 'ajv-formats';
+import { uniq } from 'lodash';
 
 const ajv = new Ajv({ coerceTypes: true, allErrors: true, $data: true });
 
@@ -90,7 +91,7 @@ export const getValidationFunction = (
         properties:
           config?.reduce((acc, entity) => {
             acc[entity.listId] = {
-              enum: entity.options,
+              enum: uniq(entity.options),
               title: entity.title,
             };
             return acc;

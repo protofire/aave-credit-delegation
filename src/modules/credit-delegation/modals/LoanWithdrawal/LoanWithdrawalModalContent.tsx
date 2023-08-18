@@ -4,7 +4,7 @@ import { Trans } from '@lingui/macro';
 import { Box, Typography } from '@mui/material';
 import { ErrorObject } from 'ajv';
 import BigNumber from 'bignumber.js';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { AssetInput } from 'src/components/transactions/AssetInput';
 import { ModalWrapperProps } from 'src/components/transactions/FlowCommons/ModalWrapper';
 import { TxSuccessView } from 'src/components/transactions/FlowCommons/Success';
@@ -13,7 +13,8 @@ import { useModalContext } from 'src/hooks/useModal';
 import { useProtocolDataContext } from 'src/hooks/useProtocolDataContext';
 import { roundToTokenDecimals } from 'src/utils/utils';
 
-import { CreditLine } from '../../types';
+import { useTokensData } from '../../hooks/useTokensData';
+import { ApplicationOrCreditLine } from '../../types';
 import { Input } from '../LoanApplication/Input';
 import { LoanWithdrawalActions } from './LoanWithdrawalActions';
 import { SignatureInput } from './SignatureInput';
@@ -24,7 +25,7 @@ export enum ErrorType {
 }
 
 interface LoanWithdrawalModalContentProps extends ModalWrapperProps {
-  creditLine: CreditLine;
+  creditLine: ApplicationOrCreditLine;
 }
 
 export const LoanWithdrawalModalContent = React.memo(
@@ -37,7 +38,7 @@ export const LoanWithdrawalModalContent = React.memo(
     const { marketReferencePriceInUsd } = useAppDataContext();
     const { currentNetworkConfig } = useProtocolDataContext();
     const { mainTxState } = useModalContext();
-    const maxAmountToRequest = creditLine.amount;
+    const maxAmountToRequest = creditLine.requestedAmount;
 
     const [name, setName] = useState('');
     const [company, setCompany] = useState('');
@@ -53,7 +54,9 @@ export const LoanWithdrawalModalContent = React.memo(
 
     const tokenUnWrapped = underlyingAsset.toLowerCase() === API_ETH_MOCK_ADDRESS.toLowerCase();
 
-    const symbol = tokenUnWrapped ? currentNetworkConfig.baseAssetSymbol : poolReserve.symbol;
+    const { data: assets } = useTokensData(
+      useMemo(() => [poolReserve.underlyingAsset], [poolReserve.underlyingAsset])
+    );
 
     const amountIntEth = new BigNumber(amount).multipliedBy(
       poolReserve.formattedPriceInMarketReferenceCurrency
@@ -89,7 +92,7 @@ export const LoanWithdrawalModalContent = React.memo(
       creditLine,
       isWrongNetwork,
       date: new Date().toLocaleDateString(),
-      symbol,
+      symbol: assets[0]?.symbol ?? 'default',
       clearForm,
       setValidationErrors,
     };
@@ -111,16 +114,14 @@ export const LoanWithdrawalModalContent = React.memo(
               value={amount}
               onChange={handleChange}
               usdValue={amountInUsd.toString(10)}
-              symbol={tokenUnWrapped ? currentNetworkConfig.baseAssetSymbol : poolReserve.symbol}
+              symbol={tokenUnWrapped ? currentNetworkConfig.baseAssetSymbol : assets[0]?.symbol}
               assets={[
                 {
                   balance: maxAmountToRequest,
-                  symbol: tokenUnWrapped
-                    ? currentNetworkConfig.baseAssetSymbol
-                    : poolReserve.symbol,
+                  symbol: tokenUnWrapped ? currentNetworkConfig.baseAssetSymbol : assets[0]?.symbol,
                   iconSymbol: tokenUnWrapped
                     ? currentNetworkConfig.baseAssetSymbol
-                    : poolReserve.iconSymbol,
+                    : assets[0]?.iconSymbol,
                 },
               ]}
               isMaxSelected={isMaxSelected}
@@ -188,7 +189,7 @@ export const LoanWithdrawalModalContent = React.memo(
               {<strong>{new Date().toLocaleDateString()}</strong>}, agree to borrow{' '}
               {
                 <strong>
-                  {amount} {symbol}
+                  {amount} {assets[0]?.symbol}
                 </strong>
               }{' '}
               under the loan agreement terms provided in this document:{' '}

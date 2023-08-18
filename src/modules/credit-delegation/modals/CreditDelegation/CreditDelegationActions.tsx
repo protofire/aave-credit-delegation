@@ -38,8 +38,7 @@ export const CreditDelegationActions = React.memo(
   }: CreditDelegationActionProps) => {
     // const generateApproveDelegation = useRootStore((state) => state.generateApproveDelegation);
 
-    const { mainTxState, loadingTxns, setMainTxState, setGasLimit, setTxError, close } =
-      useModalContext();
+    const { mainTxState, loadingTxns, setMainTxState, setGasLimit, setTxError } = useModalContext();
 
     const { sendTx } = useWeb3Context();
 
@@ -139,7 +138,6 @@ export const CreditDelegationActions = React.memo(
       decimals,
       generateBorrowWithSig,
       mainTxState,
-      close,
     ]);
 
     const action = useCallback(async () => {

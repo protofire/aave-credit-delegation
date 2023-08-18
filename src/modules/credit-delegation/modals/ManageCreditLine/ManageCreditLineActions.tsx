@@ -11,16 +11,26 @@ import { getErrorTextFromError, TxAction } from 'src/ui-config/errorMapping';
 
 import { useCreditDelegationContext } from '../../CreditDelegationContext';
 import { useControllerAddress } from '../../hooks/useControllerAddress';
+import { ApplicationOrCreditLine } from '../../types';
 
 export interface ManageCreditLineActionProps extends BoxProps {
   policyId: string;
   amount: string;
   isWrongNetwork: boolean;
   asset?: TokenMetadataType;
+  creditLine?: ApplicationOrCreditLine;
 }
 
 export const ManageCreditLineActions = React.memo(
-  ({ policyId, amount, isWrongNetwork, asset, sx, ...props }: ManageCreditLineActionProps) => {
+  ({
+    creditLine,
+    policyId,
+    amount,
+    isWrongNetwork,
+    asset,
+    sx,
+    ...props
+  }: ManageCreditLineActionProps) => {
     const { mainTxState, loadingTxns, setMainTxState, setGasLimit, setTxError, close } =
       useModalContext();
 
@@ -86,11 +96,12 @@ export const ManageCreditLineActions = React.memo(
         amount={amount}
         symbol={asset?.symbol || ''}
         preparingTransactions={loadingTxns}
-        actionText={<Trans>Modify loan request</Trans>}
-        actionInProgressText={<Trans>Modifying loan request...</Trans>}
+        actionText={<Trans>Modify Desired Credit Line Size</Trans>}
+        actionInProgressText={<Trans>Modifying desired credit line size...</Trans>}
         handleAction={modifyCreditLine}
         requiresApproval={false}
         sx={sx}
+        blocked={creditLine?.requestedAmount === amount}
         {...props}
       />
     );

@@ -22,6 +22,7 @@ export const SignatureInput = ({ onChange, value, disabled }: SignatureInputProp
     } else if (value !== '' && isEmpty) {
       setIsEmpty(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, isEmpty, sigCanvas.current]);
 
   useEffect(() => {
@@ -30,6 +31,7 @@ export const SignatureInput = ({ onChange, value, disabled }: SignatureInputProp
     } else {
       sigCanvas.current?.on();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [disabled, sigCanvas.current]);
 
   const handleEnd = () => {

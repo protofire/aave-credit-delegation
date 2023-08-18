@@ -13,6 +13,7 @@ import { useModalContext } from 'src/hooks/useModal';
 import { usePermissions } from 'src/hooks/usePermissions';
 import { useProtocolDataContext } from 'src/hooks/useProtocolDataContext';
 import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
+import { ATOMICA_GHO_TOKEN_ADDRESS, GHO_TOKEN } from 'src/modules/credit-delegation/consts';
 import { getNetworkConfig, isFeatureEnabled } from 'src/utils/marketsAndNetworksConfig';
 
 import { TxModalTitle } from '../FlowCommons/TxModalTitle';
@@ -72,8 +73,19 @@ export const ModalWrapper: React.FC<{
   const poolReserve = reserves.find((reserve) => {
     if (underlyingAsset.toLowerCase() === API_ETH_MOCK_ADDRESS.toLowerCase())
       return reserve.isWrappedBaseAsset;
-    return underlyingAsset === reserve.underlyingAsset;
+
+    if (underlyingAsset.toLowerCase() === GHO_TOKEN.address.toLowerCase()) {
+      return reserve.underlyingAsset.toLowerCase() === ATOMICA_GHO_TOKEN_ADDRESS.toLowerCase();
+    }
+
+    return underlyingAsset.toLowerCase() === reserve.underlyingAsset.toLowerCase();
   }) as ComputedReserveData;
+
+  console.log({
+    poolReserve,
+    underlyingAsset,
+    reserves,
+  });
 
   const userReserve = user?.userReservesData.find((userReserve) => {
     if (underlyingAsset.toLowerCase() === API_ETH_MOCK_ADDRESS.toLowerCase())
@@ -82,9 +94,9 @@ export const ModalWrapper: React.FC<{
   }) as ComputedUserReserveData;
 
   const symbol =
-    poolReserve.isWrappedBaseAsset && !keepWrappedSymbol
+    poolReserve?.isWrappedBaseAsset && !keepWrappedSymbol
       ? currentNetworkConfig.baseAssetSymbol
-      : poolReserve.symbol;
+      : poolReserve?.symbol;
 
   return (
     <AssetCapsProvider asset={poolReserve}>

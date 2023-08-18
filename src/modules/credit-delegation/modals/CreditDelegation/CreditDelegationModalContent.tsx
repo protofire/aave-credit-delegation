@@ -8,7 +8,7 @@ import { Trans } from '@lingui/macro';
 // import { AddressInput } from '../AddressInput';
 import { Box, Checkbox, Typography } from '@mui/material';
 import BigNumber from 'bignumber.js';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Warning } from 'src/components/primitives/Warning';
 import { AssetInput } from 'src/components/transactions/AssetInput';
 import { GasEstimationError } from 'src/components/transactions/FlowCommons/GasEstimationError';
@@ -26,6 +26,7 @@ import { useProtocolDataContext } from 'src/hooks/useProtocolDataContext';
 import { roundToTokenDecimals } from 'src/utils/utils';
 
 import { useCreditDelegationContext } from '../../CreditDelegationContext';
+import { useTokensData } from '../../hooks/useTokensData';
 import { CreditDelegationActions } from './CreditDelegationActions';
 
 export enum ErrorType {
@@ -50,6 +51,10 @@ export const CreditDelegationModalContent = React.memo(
     const [riskCheckboxAccepted, setRiskCheckboxAccepted] = useState(false);
 
     const supplyUnWrapped = underlyingAsset.toLowerCase() === API_ETH_MOCK_ADDRESS.toLowerCase();
+
+    const { data: assets } = useTokensData(
+      useMemo(() => [poolReserve.underlyingAsset], [poolReserve.underlyingAsset])
+    );
 
     const maxAmountToDelegate = valueToBigNumber(lendingCapacity)
       .minus(
@@ -135,14 +140,14 @@ export const CreditDelegationModalContent = React.memo(
             value={amount}
             onChange={handleChange}
             usdValue={amountInUsd.toString(10)}
-            symbol={supplyUnWrapped ? currentNetworkConfig.baseAssetSymbol : poolReserve.symbol}
+            symbol={supplyUnWrapped ? currentNetworkConfig.baseAssetSymbol : assets[0]?.symbol}
             assets={[
               {
                 balance: maxAmountToDelegate,
-                symbol: supplyUnWrapped ? currentNetworkConfig.baseAssetSymbol : poolReserve.symbol,
+                symbol: supplyUnWrapped ? currentNetworkConfig.baseAssetSymbol : assets[0]?.symbol,
                 iconSymbol: supplyUnWrapped
                   ? currentNetworkConfig.baseAssetSymbol
-                  : poolReserve.iconSymbol,
+                  : assets[0]?.iconSymbol,
               },
             ]}
             isMaxSelected={isMaxSelected}

@@ -1,0 +1,34 @@
+query main($managerIds: [String]!) {
+  pools(where: { manager_in: $managerIds }) {
+    id
+    name
+    capitalTokenSymbol
+    capitalTokenAddress
+    capitalTokenDecimals
+    manager
+    managerFee
+    capitalRequirement
+    capitalTokenBalance
+    data
+    details
+    markets {
+      id
+      title
+      details
+      wording
+      product {
+        id
+        title
+        wording
+      }
+    }
+  }
+
+  _meta {
+    block {
+      number
+      timestamp
+      hash
+    }
+  }
+}
