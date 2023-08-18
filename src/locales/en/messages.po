@@ -1000,9 +1000,6 @@ msgid "Lend to pool"
 msgstr "Lend to pool"
 
 #: src/modules/credit-delegation/CreditDelegationTopPanel.tsx
-msgid "Lended"
-msgstr "Lended"
-
 #: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationModalContent.tsx
 msgid "Lent"
 msgstr "Lent"
