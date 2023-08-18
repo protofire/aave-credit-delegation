@@ -7,7 +7,7 @@ export const CREDIT_DELEGATION_ATOMICA_GOOGLE_SHEET_ID = `${process.env.NEXT_PUB
 
 export const NEXT_PUBLIC_BORROWERS_META_SHEET_ID = `${process.env.NEXT_PUBLIC_BORROWERS_META_SHEET_ID}`;
 
-export const PRODUCT_IDS = ['1', '2', '3', '7'];
+export const PRODUCT_IDS = ['1', '2', '3'];
 
 export const POOL_MANAGER_IDS = ['0x31C2cb2cd72a0a35Bf1839a2e0d383566bf904b0'];
 
