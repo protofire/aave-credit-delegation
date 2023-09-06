@@ -6,16 +6,13 @@ import { useState } from 'react';
 import { RewardIncentive } from 'src/modules/credit-delegation/types';
 
 import { ContentWithTooltip } from '../ContentWithTooltip';
-import { FormattedNumber } from '../primitives/FormattedNumber';
 import { TokenIcon } from '../primitives/TokenIcon';
-import { IncentivesTooltipContent } from './IncentivesTooltipContent';
+import { IncentivesRewardTooltipContent } from './IncentivesRewardTooltipContent';
 
 interface IncentivesButtonProps {
   // symbol: string;
   incentives?: RewardIncentive[];
   displayBlank?: boolean;
-  value?: string | number;
-  supplyAPY: string;
 }
 
 const BlankIncentives = () => {
@@ -35,12 +32,7 @@ const BlankIncentives = () => {
   );
 };
 
-export const IncentivesButton = ({
-  incentives,
-  displayBlank,
-  value,
-  supplyAPY,
-}: IncentivesButtonProps) => {
+export const IncentivesRewardButton = ({ incentives, displayBlank }: IncentivesButtonProps) => {
   const [open, setOpen] = useState(false);
 
   if (!(incentives && incentives.length > 0)) {
@@ -72,48 +64,11 @@ export const IncentivesButton = ({
     }
   }
 
-  const incentivesButtonValue = () => {
-    if (incentivesNetAPR !== 'Infinity' && Number(value) < 10000) {
-      return (
-        <FormattedNumber
-          value={Number(value)}
-          percent
-          variant="secondary12"
-          color="text.secondary"
-        />
-      );
-    } else if (incentivesNetAPR !== 'Infinity' && Number(value) > 9999) {
-      return (
-        <FormattedNumber
-          value={Number(value)}
-          percent
-          compact
-          variant="secondary12"
-          color="text.secondary"
-        />
-      );
-    } else if (incentivesNetAPR === 'Infinity') {
-      return (
-        <Typography variant="main12" color="text.secondary">
-          ∞
-        </Typography>
-      );
-    }
-  };
-
   const iconSize = 12;
 
   return (
     <ContentWithTooltip
-      tooltipContent={
-        <IncentivesTooltipContent
-          incentives={incentives}
-          incentivesNetAPR={incentivesNetAPR}
-          value={value || 0}
-          supplyAPY={supplyAPY}
-        />
-      }
-      withoutHover
+      tooltipContent={<IncentivesRewardTooltipContent incentives={incentives} />}
       setOpen={setOpen}
       open={open}
     >
@@ -135,7 +90,7 @@ export const IncentivesButton = ({
         })}
         onClick={() => setOpen(!open)}
       >
-        <Box sx={{ mr: 2 }}>{incentivesButtonValue()}</Box>
+        <Box sx={{ mr: 2 }} />
 
         <Box sx={{ display: 'inline-flex' }}>
           <>

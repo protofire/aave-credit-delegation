@@ -1,4 +1,5 @@
 import { TokenMetadataType } from '@aave/contract-helpers';
+import { ReserveIncentiveResponse } from '@aave/math-utils/dist/esm/formatters/incentive/calculate-reserve-incentives';
 import { BigNumber } from 'bignumber.js';
 
 import { PoolMetadata } from './hooks/usePoolsMetadata';
@@ -364,7 +365,7 @@ export interface EarnedToken {
 
 export interface PoolEarnings {
   poolId: string;
-  apy: BigNumber;
+  apys: { apy?: BigNumber; rewardId?: string }[];
   lastReward?: Reward;
   earnings: EarnedToken[];
 }
@@ -376,13 +377,32 @@ export interface PoolBalances {
   capital: string;
   settlement: number;
   premium: number;
-  currentlyEarned: BigNumber;
-  currentylEarnedUsd: number;
+  rewardCurrentEarnings: RewardCurrentEarnings[];
   totalInterest: number;
-  earningDecimals: number;
 }
 
 export interface PoolRewardEarnings {
   earnings?: PoolEarnings;
   rewards?: AtomicaSubgraphRewards[];
+}
+
+export interface RewardCurrentEarnings {
+  value: BigNumber;
+  rewardId: string;
+  usdValue: number;
+  decimals: number;
+  symbol: string;
+  endedAt: string;
+  apy?: BigNumber;
+}
+
+export interface RewardIncentive extends ReserveIncentiveResponse {
+  endedAt: string;
+  usdValue: number;
+}
+
+export interface AtomicaLoanPool {
+  loan: AtomicaLoan;
+  market?: AtomicaBorrowMarket;
+  pools?: (AtomicaDelegationPool | undefined)[];
 }

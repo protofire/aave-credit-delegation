@@ -36,7 +36,6 @@ msgid "ACTIVATE COOLDOWN"
 msgstr "ACTIVATE COOLDOWN"
 
 #: src/components/incentives/IncentivesTooltipContent.tsx
-#: src/components/incentives/IncentivesTooltipContent.tsx
 #: src/modules/credit-delegation/lists/MarketsList/MarketsList.tsx
 #: src/modules/credit-delegation/lists/YourCreditLinesList/YourCreditLinesList.tsx
 #: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
@@ -172,6 +171,10 @@ msgstr "Amount"
 #: src/ui-config/errorMapping.tsx
 msgid "Amount must be greater than 0"
 msgstr "Amount must be greater than 0"
+
+#: src/components/incentives/IncentivesRewardTooltipContent.tsx
+msgid "Amount of claimable rewards."
+msgstr "Amount of claimable rewards."
 
 #: src/modules/credit-delegation/modals/LoanApplication/LoanApplicationActions.tsx
 msgid "Apply"
@@ -466,10 +469,6 @@ msgstr "Cancel"
 msgid "Cannot disable E-Mode"
 msgstr "Cannot disable E-Mode"
 
-#: src/modules/reserve-overview/ReserveActions.tsx
-msgid "Capital"
-msgstr "Capital"
-
 #: src/modules/staking/BuyWithFiatModal.tsx
 msgid "Choose one of the on-ramp services"
 msgstr "Choose one of the on-ramp services"
@@ -645,9 +644,9 @@ msgstr "Debt ceiling limits the amount possible to borrow against this asset by 
 msgid "Debt to pay"
 msgstr "Debt to pay"
 
-#: src/modules/reserve-overview/ReserveActions.tsx
-msgid "Deposited amount"
-msgstr "Deposited amount"
+#: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
+msgid "Description"
+msgstr "Description"
 
 #: src/modules/credit-delegation/lists/BorrowerList/BorrowerList.tsx
 #: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsListItem.tsx
@@ -1059,6 +1058,10 @@ msgstr "Manage"
 msgid "Manage credit line"
 msgstr "Manage credit line"
 
+#: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
+msgid "Manager"
+msgstr "Manager"
+
 #: src/modules/credit-delegation/lists/BorrowerList/BorrowerList.tsx
 #: src/modules/reserve-overview/ReserveTopDetails.tsx
 msgid "Market"
@@ -1120,8 +1123,8 @@ msgid "Modifying loan request..."
 msgstr "Modifying loan request..."
 
 #: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
-msgid "My Balance"
-msgstr "My Balance"
+msgid "My Asset Balance"
+msgstr "My Asset Balance"
 
 #: src/modules/credit-delegation/modals/WithdrawPool/ManageVaultModalContent.tsx
 msgid "My Interest Balance"
@@ -1130,14 +1133,6 @@ msgstr "My Interest Balance"
 #: src/modules/credit-delegation/modals/WithdrawPool/ManageVaultModalContent.tsx
 msgid "My Pool Balance"
 msgstr "My Pool Balance"
-
-#: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
-msgid "My Rewards"
-msgstr "My Rewards"
-
-#: src/modules/credit-delegation/modals/WithdrawPool/ManageVaultModalContent.tsx
-msgid "My Rewards Balance"
-msgstr "My Rewards Balance"
 
 #: src/modules/credit-delegation/lists/PoolsList/PoolsList.tsx
 msgid "My lending Capacity"
@@ -1155,9 +1150,6 @@ msgid "Need help connecting a wallet? <0>Read our FAQ</0>"
 msgstr "Need help connecting a wallet? <0>Read our FAQ</0>"
 
 #: src/components/incentives/IncentivesTooltipContent.tsx
-msgid "Net APR"
-msgstr "Net APR"
-
 #: src/modules/dashboard/DashboardTopPanel.tsx
 msgid "Net APY"
 msgstr "Net APY"
@@ -1269,10 +1261,6 @@ msgstr "Our team will review your application and get back to you within 24 hour
 msgid "Page not found"
 msgstr "Page not found"
 
-#: src/components/incentives/IncentivesTooltipContent.tsx
-msgid "Participating in this pool gives annualized {symbol} rewards."
-msgstr "Participating in this pool gives annualized {symbol} rewards."
-
 #: src/components/transactions/CollateralChange/CollateralChangeActions.tsx
 #: src/components/transactions/Faucet/FaucetActions.tsx
 msgid "Pending..."
@@ -1320,12 +1308,10 @@ msgstr "Pool APY"
 msgid "Pool Capacity"
 msgstr "Pool Capacity"
 
-#: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
 #: src/modules/credit-delegation/lists/PoolsList/PoolsList.tsx
 msgid "Pool Description"
 msgstr "Pool Description"
 
-#: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
 #: src/modules/credit-delegation/lists/PoolsList/PoolsList.tsx
 #: src/modules/reserve-overview/SupplyInfo.tsx
 msgid "Pool Manager"
@@ -1334,10 +1320,6 @@ msgstr "Pool Manager"
 #: src/modules/reserve-overview/SupplyInfo.tsx
 msgid "Pool Manager Fee"
 msgstr "Pool Manager Fee"
-
-#: src/modules/reserve-overview/SupplyInfo.tsx
-msgid "Pool Manager Website"
-msgstr "Pool Manager Website"
 
 #: src/modules/reserve-overview/ReserveTopDetails.tsx
 msgid "Pool Name"
@@ -1372,6 +1354,7 @@ msgstr "Price impact {0}%"
 #: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
 #: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
 #: src/modules/credit-delegation/modals/RepayLoan/RepayLoanModalContent.tsx
+#: src/modules/reserve-overview/ReserveActions.tsx
 msgid "Principal"
 msgstr "Principal"
 
@@ -1402,10 +1385,6 @@ msgstr "Protocol supply cap at 100% for this asset. Further supply unavailable."
 #: src/components/transactions/Warnings/SupplyCapWarning.tsx
 msgid "Protocol supply cap is at 100% for this asset. Further supply unavailable."
 msgstr "Protocol supply cap is at 100% for this asset. Further supply unavailable."
-
-#: src/modules/reserve-overview/SupplyInfo.tsx
-msgid "Protofire.io"
-msgstr "Protofire.io"
 
 #: src/components/infoTooltips/ReadOnlyModeTooltip.tsx
 msgid "Read-only mode allows to see address positions in Aave, but you won't be able to perform transactions."
@@ -1540,10 +1519,6 @@ msgstr "Rewards"
 #: src/components/transactions/FlowCommons/TxModalDetails.tsx
 msgid "Rewards APR"
 msgstr "Rewards APR"
-
-#: src/modules/credit-delegation/modals/WithdrawPool/ManageVaultModalContent.tsx
-msgid "Rewards balance"
-msgstr "Rewards balance"
 
 #: src/components/HealthFactorNumber.tsx
 msgid "Risk details"
@@ -1976,12 +1951,12 @@ msgid "This integration was<0>proposed and approved</0>by the community."
 msgstr "This integration was<0>proposed and approved</0>by the community."
 
 #: src/components/infoTooltips/AvailableTooltip.tsx
-msgid "This is the total amount available for you to borrow. You can borrow based on your collateral and until the borrow cap is reached."
-msgstr "This is the total amount available for you to borrow. You can borrow based on your collateral and until the borrow cap is reached."
+msgid "This is the total amount available for you to withdraw."
+msgstr "This is the total amount available for you to withdraw."
 
 #: src/components/infoTooltips/AvailableTooltip.tsx
-msgid "This is the total amount that you are able to supply to in this reserve. You are able to supply your wallet balance up until the supply cap is reached."
-msgstr "This is the total amount that you are able to supply to in this reserve. You are able to supply your wallet balance up until the supply cap is reached."
+msgid "This is the total amount that you are able to supply to in this pool. You are able to supply your wallet balance up until the supply cap is reached."
+msgstr "This is the total amount that you are able to supply to in this pool. You are able to supply your wallet balance up until the supply cap is reached."
 
 #: src/components/infoTooltips/LiquidationThresholdTooltip.tsx
 msgid "This represents the threshold at which a borrow position will be considered undercollateralized and subject to liquidation for each collateral. For example, if a collateral has a liquidation threshold of 80%, it means that the position will be liquidated when the debt value is worth 80% of the collateral value."
@@ -2089,6 +2064,11 @@ msgstr "UNSTAKE {symbol}"
 msgid "UNSTAKING {symbol}"
 msgstr "UNSTAKING {symbol}"
 
+#: src/components/incentives/IncentivesRewardTooltipContent.tsx
+#: src/modules/credit-delegation/modals/WithdrawPool/ManageVaultModalContent.tsx
+msgid "USD"
+msgstr "USD"
+
 #: src/components/isolationMode/IsolatedBadge.tsx
 #: src/components/isolationMode/IsolatedBadge.tsx
 #: src/components/transactions/FlowCommons/TxModalDetails.tsx
@@ -2102,6 +2082,10 @@ msgstr "Unbacked"
 #: src/ui-config/errorMapping.tsx
 msgid "Unbacked mint cap is exceeded"
 msgstr "Unbacked mint cap is exceeded"
+
+#: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
+msgid "Unclaimed Earnings"
+msgstr "Unclaimed Earnings"
 
 #: src/components/infoTooltips/MigrationDisabledTooltip.tsx
 msgid "Underlying asset does not exist in {marketName} v3 Market, hence this position cannot be migrated."
@@ -2489,6 +2473,7 @@ msgid "withdrew"
 msgstr "withdrew"
 
 #: src/components/MarketSwitcher.tsx
+#: src/components/incentives/IncentivesTooltipContent.tsx
 #: src/components/transactions/DelegationTxsWrapper.tsx
 #: src/components/transactions/DelegationTxsWrapper.tsx
 #: src/components/transactions/DelegationTxsWrapper.tsx
@@ -2539,10 +2524,6 @@ msgstr "{currentMethod}"
 #: src/modules/staking/StakingPanel.tsx
 msgid "{d}d"
 msgstr "{d}d"
-
-#: src/components/incentives/IncentivesTooltipContent.tsx
-msgid "{endDate}"
-msgstr "{endDate}"
 
 #: src/modules/staking/StakingPanel.tsx
 msgid "{h}h"

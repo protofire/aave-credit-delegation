@@ -1,16 +1,17 @@
-import { ReserveIncentiveResponse } from '@aave/math-utils/dist/esm/formatters/incentive/calculate-reserve-incentives';
+// import { ReserveIncentiveResponse } from '@aave/math-utils/dist/esm/formatters/incentive/calculate-reserve-incentives';
 
 import { IncentivesCard } from '../../../components/incentives/IncentivesCard';
 import { ListColumn } from '../../../components/lists/ListColumn';
+import { RewardIncentive } from '../types';
 
 interface ListAPRColumnProps {
   value: number;
-  incentives?: ReserveIncentiveResponse[];
+  incentives?: RewardIncentive[];
   symbol: string;
-  endDate?: string;
+  supplyAPY: string;
 }
 
-export const ListAPRColumn = ({ value, incentives, symbol, endDate }: ListAPRColumnProps) => {
+export const ListAPRColumn = ({ value, incentives, symbol, supplyAPY }: ListAPRColumnProps) => {
   return (
     <ListColumn>
       <IncentivesCard
@@ -18,7 +19,7 @@ export const ListAPRColumn = ({ value, incentives, symbol, endDate }: ListAPRCol
         incentives={incentives}
         symbol={symbol}
         data-cy={`apyType`}
-        endDate={endDate}
+        supplyAPY={supplyAPY}
       />
     </ListColumn>
   );

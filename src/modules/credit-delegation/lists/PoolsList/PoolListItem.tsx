@@ -28,12 +28,22 @@ export const PoolListItem = ({
   manager,
   markets,
   rewardAPY,
-  rewards,
+  balances,
 }: AtomicaDelegationPool) => {
   const { openCreditDelegation } = useModalContext();
   const router = useRouter();
 
   const { managerDetails } = useManagerDetails(manager);
+
+  const incentives = balances?.rewardCurrentEarnings?.map((earning) => {
+    return {
+      incentiveAPR: earning.apy?.div(10000).toString(10) || '0',
+      rewardTokenSymbol: earning.symbol,
+      rewardTokenAddress: earning.rewardId,
+      endedAt: earning.endedAt,
+      usdValue: earning.usdValue,
+    };
+  });
 
   return (
     <ListItemWrapper symbol={symbol} iconSymbol={iconSymbol} name={name}>
@@ -84,17 +94,8 @@ export const PoolListItem = ({
 
       <ListAPRColumn
         value={Number(supplyAPY) + Number(rewardAPY)}
-        // incentives={[
-        //   {
-        //     incentiveAPR: rewardAPY,
-        //     rewardTokenAddress: rewards?.rewards?.length ? rewards?.rewards[0].rewardToken : '',
-        //     rewardTokenSymbol: rewards?.rewards?.length
-        //       ? rewards?.rewards[0].rewardTokenSymbol
-        //       : '',
-        //   },
-        // ]}
+        incentives={incentives}
         symbol={symbol}
-        endDate={rewards?.rewards?.length ? rewards?.rewards[0].endedAtConverted : ''}
       />
 
       <ListButtonsColumn>

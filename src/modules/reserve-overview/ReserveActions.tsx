@@ -13,8 +13,7 @@ import {
   useTheme,
 } from '@mui/material';
 import React, { ReactNode, useState } from 'react';
-import { WalletIcon } from 'src/components/icons/WalletIcon';
-import { getMarketInfoById } from 'src/components/MarketSwitcher';
+import { ChartPieIcon } from 'src/components/icons/ChartPieIcon';
 import { FormattedNumber } from 'src/components/primitives/FormattedNumber';
 import { StyledTxModalToggleButton } from 'src/components/StyledToggleButton';
 import { StyledTxModalToggleGroup } from 'src/components/StyledToggleButtonGroup';
@@ -28,7 +27,6 @@ import { useModalContext } from 'src/hooks/useModal';
 import { usePermissions } from 'src/hooks/usePermissions';
 import { useProtocolDataContext } from 'src/hooks/useProtocolDataContext';
 import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
-import { BuyWithFiat } from 'src/modules/staking/BuyWithFiat';
 import { useRootStore } from 'src/store/root';
 import { getMaxAmountAvailableToBorrow } from 'src/utils/getMaxAmountAvailableToBorrow';
 import { getMaxAmountAvailableToSupply } from 'src/utils/getMaxAmountAvailableToSupply';
@@ -54,13 +52,13 @@ export const ReserveActions = ({ reserve, poolId }: ReserveActionsProps) => {
   const { currentAccount, loading: loadingWeb3Context } = useWeb3Context();
   const { isPermissionsLoading } = usePermissions();
   const { openCreditDelegation, openManageVault } = useModalContext();
-  const { currentMarket, currentNetworkConfig } = useProtocolDataContext();
+  const { currentNetworkConfig } = useProtocolDataContext();
   const { user, loading: loadingReserves, marketReferencePriceInUsd } = useAppDataContext();
   const { walletBalances, loading: loadingWalletBalance } = useWalletBalances();
   const {
     poolComputed: { minRemainingBaseTokenBalance },
   } = useRootStore();
-  const { pools, loading: loadingPools } = useCreditDelegationContext();
+  const { pools, loading: loadingPools, loansLoading } = useCreditDelegationContext();
 
   const pool = pools.find((pool) => pool.id === poolId) as AtomicaDelegationPool;
 
@@ -85,12 +83,6 @@ export const ReserveActions = ({ reserve, poolId }: ReserveActionsProps) => {
     minRemainingBaseTokenBalance
   );
 
-  const maxAmountToSupplyUsd = amountToUsd(
-    maxAmountToSupply,
-    reserve.formattedPriceInMarketReferenceCurrency,
-    marketReferencePriceInUsd
-  ).toString();
-
   const normalizedAvailableWithdrawUSD = valueToBigNumber(
     pool?.balances?.capital ?? 0
   ).multipliedBy(reserve.priceInUSD);
@@ -99,10 +91,10 @@ export const ReserveActions = ({ reserve, poolId }: ReserveActionsProps) => {
     reserve.priceInUSD
   );
 
-  const rewardsBalanceUsd = normalize(
-    pool?.balances?.currentylEarnedUsd ?? 0,
-    pool?.balances?.earningDecimals ?? 18
-  );
+  const rewardsSumUSD =
+    pool?.balances?.rewardCurrentEarnings.reduce((acc, earning) => {
+      return acc + earning.usdValue;
+    }, 0) || 0;
 
   const normalizedDepositedBalanceUSD = valueToBigNumber(
     normalize(pool?.vault?.loanAmount || '0', pool?.asset?.decimals || 18)
@@ -119,11 +111,9 @@ export const ReserveActions = ({ reserve, poolId }: ReserveActionsProps) => {
     return <ConnectWallet loading={loadingWeb3Context} />;
   }
 
-  if (loadingReserves || loadingWalletBalance || loadingPools) {
+  if (loadingReserves || loadingWalletBalance || loadingPools || loansLoading) {
     return <ActionsSkeleton />;
   }
-
-  const { market } = getMarketInfoById(currentMarket);
 
   return (
     <>
@@ -138,22 +128,27 @@ export const ReserveActions = ({ reserve, poolId }: ReserveActionsProps) => {
             />
           </Box>
         )}
-        <WalletBalance
-          balance={balance.amount}
-          symbol={selectedAsset}
-          marketTitle={market.marketTitle}
-        />
-        <DepositedAmount
-          value={normalize(pool?.vault?.loanAmount || '0', pool?.asset?.decimals || 18)}
-          usdValue={normalizedDepositedBalanceUSD.toString(10)}
-          symbol={pool?.asset?.symbol || ''}
-        />
+        <Stack gap={3} direction="row" justifyContent="space-between" alignItems="center">
+          <DepositedAmount
+            value={normalize(pool?.vault?.loanAmount || '0', pool?.asset?.decimals || 18)}
+            usdValue={normalizedDepositedBalanceUSD.toString(10)}
+            symbol={pool?.asset?.symbol || ''}
+            type="deposit"
+          />
+          <DepositedAmount
+            value={normalize(pool?.vault?.loanAmount || '0', pool?.asset?.decimals || 18)}
+            usdValue={normalizedDepositedBalanceUSD.toString(10)}
+            symbol={pool?.asset?.symbol || ''}
+            type="balance"
+          />
+        </Stack>
+
         <>
           <Divider sx={{ my: 6 }} />
           <Stack gap={3}>
             <SupplyAction
               value={pool?.availableBalance.toString()}
-              usdValue={maxAmountToSupplyUsd}
+              usdValue={pool?.availableBalanceUsd.toString()}
               symbol={selectedAsset}
               disable={disableSupplyButton}
               onActionClicked={() => openCreditDelegation(poolId, pool?.underlyingAsset)}
@@ -167,7 +162,7 @@ export const ReserveActions = ({ reserve, poolId }: ReserveActionsProps) => {
               onActionClicked={() => openManageVault(pool)}
               capitalUsd={normalizedAvailableWithdrawUSD.toString(10)}
               interestBalanceUSD={interestBalanceUSD.toString(10)}
-              rewardsUsd={rewardsBalanceUsd}
+              rewardsUsd={rewardsSumUSD}
             />
           </Stack>
         </>
@@ -257,7 +252,7 @@ interface ActionProps {
   onActionClicked: () => void;
   capitalUsd?: string;
   interestBalanceUSD?: string;
-  rewardsUsd?: string;
+  rewardsUsd?: number;
 }
 
 const SupplyAction = ({ value, usdValue, symbol, disable, onActionClicked }: ActionProps) => {
@@ -307,77 +302,83 @@ const BorrowAction = ({
   rewardsUsd,
 }: ActionProps) => {
   return (
-    <Stack alignItems="center">
+    <Stack>
       <AvailableTooltip
         variant="description"
         text={<Trans>Available to withdraw</Trans>}
         capType={CapType.borrowCap}
       />
       <Stack
-        marginTop={5}
         sx={{ height: '44px' }}
         direction="row"
-        justifyContent="space-evenly"
+        justifyContent="space-between"
         alignItems="center"
       >
-        <PanelItem
-          title={
-            <Box display="flex" alignItems="center">
-              <Trans>Capital</Trans>
-            </Box>
-          }
+        <Stack
+          sx={{ height: '44px' }}
+          direction="row"
+          justifyContent="space-evenly"
+          alignItems="center"
         >
-          <FormattedNumber
-            value={capitalUsd || '0'}
-            variant="subheader2"
-            color="text.muted"
-            symbolsColor="text.muted"
-            symbol="USD"
-          />
-        </PanelItem>
+          <PanelItem
+            title={
+              <Box display="flex" alignItems="center">
+                <Trans>Principal</Trans>
+              </Box>
+            }
+          >
+            <FormattedNumber
+              value={capitalUsd || '0'}
+              variant="subheader2"
+              color="text.muted"
+              symbolsColor="text.muted"
+              symbol="USD"
+            />
+          </PanelItem>
 
-        <PanelItem
-          title={
-            <Box display="flex" alignItems="center">
-              <Trans>Interest</Trans>
-            </Box>
-          }
-        >
-          <FormattedNumber
-            value={interestBalanceUSD || '0'}
-            variant="subheader2"
-            color="text.muted"
-            symbolsColor="text.muted"
-            symbol="USD"
-          />
-        </PanelItem>
+          <PanelItem
+            title={
+              <Box display="flex" alignItems="center">
+                <Trans>Interest</Trans>
+              </Box>
+            }
+          >
+            <FormattedNumber
+              value={interestBalanceUSD || '0'}
+              variant="subheader2"
+              color="text.muted"
+              symbolsColor="text.muted"
+              symbol="USD"
+            />
+          </PanelItem>
 
-        <PanelItem
-          title={
-            <Box display="flex" alignItems="center">
-              <Trans>Rewards</Trans>
-            </Box>
-          }
+          <PanelItem
+            title={
+              <Box display="flex" alignItems="center">
+                <Trans>Rewards</Trans>
+              </Box>
+            }
+          >
+            <FormattedNumber
+              value={rewardsUsd || '0'}
+              variant="subheader2"
+              color="text.muted"
+              symbolsColor="text.muted"
+              symbol="USD"
+            />
+          </PanelItem>
+        </Stack>
+        <Button
+          sx={{ height: '36px', width: '96px' }}
+          onClick={onActionClicked}
+          disabled={disable}
+          fullWidth={false}
+          variant="contained"
+          data-cy="borrowButton"
         >
-          <FormattedNumber
-            value={rewardsUsd || '0'}
-            variant="subheader2"
-            color="text.muted"
-            symbolsColor="text.muted"
-            symbol="USD"
-          />
-        </PanelItem>
+          <Trans>Withdraw</Trans>
+        </Button>
       </Stack>
-      <Button
-        sx={{ height: '36px', width: '96px', marginTop: 5 }}
-        onClick={onActionClicked}
-        disabled={disable}
-        fullWidth={false}
-        variant="contained"
-        data-cy="borrowButton"
-      >
-        <Trans>Withdraw</Trans>
-      </Button>
     </Stack>
   );
 };
@@ -430,12 +431,13 @@ const ValueWithSymbol = ({ value, symbol, children }: ValueWithSymbolProps) => {
   );
 };
 
-interface WalletBalanceProps {
-  balance: string;
+interface DepositedAmountProps {
+  value: string;
   symbol: string;
-  marketTitle: string;
+  usdValue: string;
+  type: string;
 }
-const WalletBalance = ({ balance, symbol, marketTitle }: WalletBalanceProps) => {
+const DepositedAmount = ({ value, symbol, usdValue, type }: DepositedAmountProps) => {
   const theme = useTheme();
 
   return (
@@ -452,49 +454,21 @@ const WalletBalance = ({ balance, symbol, marketTitle }: WalletBalanceProps) => 
           justifyContent: 'center',
         })}
       >
-        <WalletIcon sx={{ stroke: `${theme.palette.text.secondary}` }} />
+        <ChartPieIcon sx={{ stroke: `${theme.palette.text.secondary}` }} />
       </Box>
       <Box>
         <Typography variant="description" color="text.secondary">
-          Wallet balance
+          {type === 'balance' ? 'My asset balance' : 'Deposited amount'}
         </Typography>
-        <ValueWithSymbol value={balance} symbol={symbol}>
-          <Box sx={{ ml: 2 }}>
-            <BuyWithFiat cryptoSymbol={symbol} networkMarketName={marketTitle} />
-          </Box>
-        </ValueWithSymbol>
+        <ValueWithSymbol value={value} symbol={symbol} />
+        <FormattedNumber
+          value={usdValue}
+          variant="subheader2"
+          color="text.muted"
+          symbolsColor="text.muted"
+          symbol="USD"
+        />
       </Box>
-    </Stack>
-  );
-};
-
-interface DepositedAmountProps {
-  value: string;
-  symbol: string;
-  usdValue: string;
-}
-
-const DepositedAmount = ({ value, symbol, usdValue }: DepositedAmountProps) => {
-  return (
-    <Stack sx={{ paddingTop: 3 }}>
-      <Trans>Deposited amount</Trans>
-      <Stack
-        sx={{ height: '44px' }}
-        direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-      >
-        <Box>
-          <ValueWithSymbol value={value} symbol={symbol} />
-          <FormattedNumber
-            value={usdValue}
-            variant="subheader2"
-            color="text.muted"
-            symbolsColor="text.muted"
-            symbol="USD"
-          />
-        </Box>
-      </Stack>
     </Stack>
   );
 };

@@ -2,7 +2,6 @@ import { valueToBigNumber } from '@aave/math-utils';
 import { Trans } from '@lingui/macro';
 import { Box, Typography } from '@mui/material';
 import { CapsCircularStatus } from 'src/components/caps/CapsCircularStatus';
-import { DebtCeilingStatus } from 'src/components/caps/DebtCeilingStatus';
 import { IncentivesButton } from 'src/components/incentives/IncentivesButton';
 import { FormattedNumber } from 'src/components/primitives/FormattedNumber';
 import { Link } from 'src/components/primitives/Link';
@@ -13,6 +12,7 @@ import { ComputedReserveData } from 'src/hooks/app-data-provider/useAppDataProvi
 import { AssetCapHookData } from 'src/hooks/useAssetCaps';
 import { MarketDataType } from 'src/utils/marketsAndNetworksConfig';
 
+import { useManagerDetails } from '../credit-delegation/hooks/useManagerDetails';
 import { AtomicaDelegationPool } from '../credit-delegation/types';
 import { ApyGraphContainer } from './graphs/ApyGraphContainer';
 import { PanelItem } from './ReservePanels';
@@ -32,10 +32,21 @@ export const SupplyInfo = ({
   currentMarketData,
   renderCharts,
   showSupplyCapStatus,
-  debtCeiling,
   pool,
 }: SupplyInfoProps) => {
-  const { rewards } = pool || {};
+  const { balances, manager } = pool || {};
+  const { managerDetails } = useManagerDetails(manager);
+
+  const incentives = balances?.rewardCurrentEarnings?.map((earning) => {
+    return {
+      incentiveAPR: earning.apy?.div(10000).toString(10) || '0',
+      rewardTokenSymbol: earning.symbol,
+      rewardTokenAddress: earning.rewardId,
+      endedAt: earning.endedAt,
+      usdValue: earning.usdValue,
+    };
+  });
+
   return (
     <Box sx={{ flexGrow: 1, minWidth: 0, maxWidth: '100%', width: '100%' }}>
       <Box
@@ -136,20 +147,18 @@ export const SupplyInfo = ({
           </PanelItem>
         )}
         <PanelItem title={<Trans>APY</Trans>}>
-          <FormattedNumber value={pool?.supplyAPY} percent variant="main16" />
+          {!incentives?.length && (
+            <FormattedNumber
+              value={Number(pool?.supplyAPY) + Number(pool?.rewardAPY)}
+              percent
+              variant="main16"
+            />
+          )}
+
           <IncentivesButton
-            symbol={reserve.symbol}
-            incentives={[
-              {
-                incentiveAPR: pool?.rewardAPY,
-                rewardTokenAddress: rewards?.rewards?.length ? rewards?.rewards[0].rewardToken : '',
-                rewardTokenSymbol: rewards?.rewards?.length
-                  ? rewards?.rewards[0].rewardTokenSymbol
-                  : '',
-              },
-            ]}
+            incentives={incentives}
+            value={Number(pool?.supplyAPY) + Number(pool?.rewardAPY)}
             displayBlank={true}
-            endDate={rewards?.rewards?.length ? rewards?.rewards[0].endedAtConverted : ''}
           />
         </PanelItem>
         {reserve.unbacked && reserve.unbacked !== '0' && (
@@ -176,47 +185,42 @@ export const SupplyInfo = ({
           </Typography>
         </Box>
       </div>
-      {reserve.reserveLiquidationThreshold !== '0' && (
-        <Box
-          sx={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            justifyContent: 'space-between',
-          }}
-        >
-          <ReserveOverviewBox title={<Trans>Name</Trans>}>
-            <Trans>Protofire.io</Trans>
-          </ReserveOverviewBox>
-
-          <ReserveOverviewBox title={<Trans>Pool Manager Fee</Trans>}>
-            <FormattedNumber
-              value={pool?.managerFee}
-              percent
-              variant="secondary14"
-              visibleDecimals={2}
-            />
-          </ReserveOverviewBox>
-
-          <ReserveOverviewBox title={<Trans>Pool Manager Website</Trans>}>
-            {/* <FormattedNumber
-              value={reserve.formattedReserveLiquidationBonus}
-              percent
-              variant="secondary14"
-              visibleDecimals={2}
-            /> */}
-          </ReserveOverviewBox>
-
-          {reserve.isIsolated && (
-            <ReserveOverviewBox fullWidth>
-              <DebtCeilingStatus
-                debt={reserve.isolationModeTotalDebtUSD}
-                ceiling={reserve.debtCeilingUSD}
-                usageData={debtCeiling}
+      <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'flex-start',
+          gap: 4,
+        }}
+      >
+        <ReserveOverviewBox title={<Trans>Name</Trans>}>
+          <Link
+            href={managerDetails?.website ?? ''}
+            sx={{
+              display: 'inline-flex',
+              textDecoration: 'underline',
+            }}
+          >
+            {managerDetails?.logo && (
+              <img
+                src={managerDetails?.logo}
+                alt={managerDetails?.title}
+                style={{ width: 20, height: 20, marginRight: 2 }}
               />
-            </ReserveOverviewBox>
-          )}
-        </Box>
-      )}
+            )}
+            {managerDetails?.title}
+          </Link>
+        </ReserveOverviewBox>
+
+        <ReserveOverviewBox title={<Trans>Pool Manager Fee</Trans>}>
+          <FormattedNumber
+            value={pool?.managerFee}
+            percent
+            variant="secondary14"
+            visibleDecimals={2}
+          />
+        </ReserveOverviewBox>
+      </Box>
     </Box>
   );
 };

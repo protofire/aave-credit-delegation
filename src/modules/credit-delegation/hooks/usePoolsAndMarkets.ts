@@ -158,9 +158,8 @@ export const usePoolsAndMarkets = () => {
     [],
     [data?.markets]
   );
-  const [poolsAvailableBalances, { loading: loadingPoolsAvailableBalance }] = useAsyncMemo<
-    PoolBalances[]
-  >(
+
+  const [poolsAvailableBalances, { loading: loadingPoolsBalance }] = useAsyncMemo<PoolBalances[]>(
     async () => {
       const poolsData = Array.from(data?.pools ?? []);
       const myPools = await Promise.all(
@@ -170,12 +169,14 @@ export const usePoolsAndMarkets = () => {
             tokensToBorrow.find(
               (token) => token.symbol === pool.capitalTokenSymbol
             ) as TokenMetadataType,
-            poolRewards.filter((reward) => reward.poolId === pool.id),
-            reserves.find((reserve) => reserve.symbol === pool.capitalTokenSymbol)
-              ?.totalLiquidity || ''
+            poolRewards.filter((reward) => reward.poolId === pool.id)
           )
         )
-      );
+      ).catch((e) => {
+        console.error('Error get pools available balances', e);
+        return [];
+      });
+
       return myPools;
     },
     [],
@@ -258,7 +259,7 @@ export const usePoolsAndMarkets = () => {
       approvedCreditLoading ||
       loadingVaults ||
       loadingPoolRewards ||
-      loadingPoolsAvailableBalance
+      loadingPoolsBalance
     ) {
       return [];
     }
@@ -359,7 +360,7 @@ export const usePoolsAndMarkets = () => {
     approvedCreditLoading,
     loadingVaults,
     loadingPoolRewards,
-    loadingPoolsAvailableBalance,
+    loadingPoolsBalance,
     data?.pools,
     reserves,
     tokensToBorrow,

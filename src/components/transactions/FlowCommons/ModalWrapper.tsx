@@ -81,8 +81,6 @@ export const ModalWrapper: React.FC<{
     return underlyingAsset === userReserve.underlyingAsset;
   }) as ComputedUserReserveData;
 
-  console.log({ poolReserve });
-
   const symbol =
     poolReserve.isWrappedBaseAsset && !keepWrappedSymbol
       ? currentNetworkConfig.baseAssetSymbol
