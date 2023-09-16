@@ -66,6 +66,8 @@ export interface AtomicaSubgraphPool {
       wording: string;
     };
   }[];
+  data: string;
+  details: string;
 }
 
 export interface AtomicaSubgraphMarket {
@@ -84,6 +86,8 @@ export interface AtomicaSubgraphMarket {
     id: string;
     title: string;
     wording: string;
+    data: string;
+    details: string;
   };
   policyBuyerAllowListId: string;
 }
@@ -220,6 +224,8 @@ export interface AtomicaDelegationPool {
   poolCapUsd: string;
   poolBalanceUsd: string;
   balances?: PoolBalances;
+  data: string;
+  details: string;
 }
 
 export interface AtomicaBorrowMarket {
@@ -245,6 +251,8 @@ export interface AtomicaBorrowMarket {
     id: string;
     title: string;
     wording: string;
+    data: string;
+    details: string;
   };
   asset?: TokenMetadataType;
   allowed: boolean;
@@ -323,6 +331,29 @@ export interface CreditLine {
   title: string;
   usdRate: string;
   aggreement: string;
+  status: LoanStatus;
+  apr: string;
+  maxApr: string;
+}
+
+export interface ApplicationOrCreditLine {
+  id: string;
+  amount: string;
+  amountUsd?: number;
+  requestedAmount: string;
+  requestedAmountUsd?: number;
+  asset?: TokenMetadataType;
+  symbol: string;
+  title: string;
+  status: LoanStatus;
+  apr: number;
+  maxApr: number;
+  topUp: string;
+  topUpUsd?: number;
+  policyId: string;
+  aggreement: string;
+  marketId: string;
+  market?: AtomicaBorrowMarket;
 }
 
 export interface AtomicaSubgraphRewards {
@@ -406,4 +437,16 @@ export interface PoolBalances {
 export interface PoolRewardEarnings {
   earnings?: PoolEarnings;
   rewards?: AtomicaSubgraphRewards[];
+}
+
+export interface AssetToLend {
+  key: string;
+  symbol: string;
+  asset?: TokenMetadataType;
+  markets: AtomicaBorrowMarket[];
+  minApy: number;
+  maxApy: number;
+  securedBy: string;
+  lendingCapacity: number;
+  lendingCapacityUsd: number;
 }

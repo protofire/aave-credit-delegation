@@ -11,7 +11,7 @@ import { CREDIT_DELEGATION_LIST_COLUMN_WIDTHS } from 'src/utils/creditDelegation
 
 import { CreditDelegationContentNoData } from '../../CreditDelegationContentNoData';
 import { useCreditDelegationContext } from '../../CreditDelegationContext';
-import { handleSortPools } from '../../utils';
+import { handleStandardSort } from '../../utils';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListLoader } from '../ListLoader';
 import { LendingPositionsListItem } from './LendingPositionsListItem';
@@ -104,7 +104,7 @@ export const LendingPositionsList = ({ type }: LendingPositionsListProps) => {
 
   const sortedPools = useMemo(
     () =>
-      handleSortPools(
+      handleStandardSort(
         sortDesc,
         sortName,
         (type === 'earning' ? earningPools : deficitPools).filter(

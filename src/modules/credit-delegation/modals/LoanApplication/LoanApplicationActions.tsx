@@ -1,14 +1,19 @@
 import { Trans } from '@lingui/macro';
 import { BoxProps } from '@mui/material';
 import { ErrorObject } from 'ajv';
+import { Interface, parseUnits } from 'ethers/lib/utils';
 import React, { useEffect, useMemo } from 'react';
 import { TxActionsWrapper } from 'src/components/transactions/TxActionsWrapper';
 import { useModalContext } from 'src/hooks/useModal';
 import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
 import { getErrorTextFromError, TxAction } from 'src/ui-config/errorMapping';
 
-import { NEXT_PUBLIC_BORROWERS_META_SHEET_ID } from '../../consts';
+import erc20ABI from '../../abi/ERC20.json';
+import { HARDCODED_TOP_UP_RECEIVER, NEXT_PUBLIC_BORROWERS_META_SHEET_ID } from '../../consts';
+import { useCreditDelegationContext } from '../../CreditDelegationContext';
 import { GoogleSheetsApiService } from '../../google-sheet-service';
+import { useTokensData } from '../../hooks/useTokensData';
+import { AtomicaSubgraphProduct } from '../../types';
 import { getValidationFunction } from './validation';
 
 export interface LoanApplicationActionProps extends BoxProps {
@@ -24,7 +29,7 @@ export interface LoanApplicationActionProps extends BoxProps {
   };
   setValidationErrors: (errors: ErrorObject<string, Record<string, unknown>, unknown>[]) => void;
   clearForm: () => void;
-  selectedProduct?: {
+  selectedProduct?: AtomicaSubgraphProduct & {
     config?: {
       title: string;
       listId: string;
@@ -41,10 +46,20 @@ export const LoanApplicationActions = React.memo(({ ...props }: LoanApplicationA
     setValidationErrors,
     clearForm,
     selectedProduct,
+    ...rest
   } = props;
   const { currentAccount } = useWeb3Context();
 
   const { mainTxState, loadingTxns, setGasLimit, setMainTxState, setTxError } = useModalContext();
+
+  const { setActiveTab, refetchLoans } = useCreditDelegationContext();
+  const { data: premiumTokenData } = useTokensData(
+    useMemo(
+      () => (selectedProduct?.defaultPremiumToken ? [selectedProduct?.defaultPremiumToken] : []),
+      [selectedProduct]
+    )
+  );
+  const { sendTx } = useWeb3Context();
 
   const validate = useMemo(() => getValidationFunction(selectedProduct?.config), [selectedProduct]);
 
@@ -84,7 +99,47 @@ export const LoanApplicationActions = React.memo(({ ...props }: LoanApplicationA
         rawError: new Error('data source config error'),
         txAction: TxAction.MAIN_ACTION,
       });
-      throw new Error('data source config error');
+
+      return;
+    }
+
+    if (Number(topUp) > 0 && selectedProduct?.defaultPremiumToken && premiumTokenData?.length > 0) {
+      const erc20 = new Interface(erc20ABI);
+
+      const tokenData = premiumTokenData[0];
+
+      const txData = erc20.encodeFunctionData('transfer', [
+        HARDCODED_TOP_UP_RECEIVER,
+        parseUnits(topUp, tokenData.decimals),
+      ]);
+
+      const tx = {
+        data: txData,
+        to: tokenData.address,
+        from: currentAccount,
+      };
+
+      setMainTxState({
+        ...mainTxState,
+        loading: true,
+      });
+
+      try {
+        const response = await sendTx(tx);
+
+        await response.wait();
+      } catch (error) {
+        const parsedError = getErrorTextFromError(error, TxAction.GAS_ESTIMATION, false);
+
+        setTxError(parsedError);
+
+        setMainTxState({
+          ...mainTxState,
+          loading: false,
+        });
+
+        return;
+      }
     }
 
     try {
@@ -109,6 +164,9 @@ export const LoanApplicationActions = React.memo(({ ...props }: LoanApplicationA
         loading: false,
         success: true,
       });
+
+      refetchLoans();
+      setActiveTab('borrow');
     } catch (error) {
       const parsedError = getErrorTextFromError(error, TxAction.GAS_ESTIMATION, false);
 
@@ -130,7 +188,7 @@ export const LoanApplicationActions = React.memo(({ ...props }: LoanApplicationA
       handleAction={action}
       requiresApproval={false}
       delegate
-      {...props}
+      {...rest}
     />
   );
 });

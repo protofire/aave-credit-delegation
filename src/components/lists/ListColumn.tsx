@@ -7,6 +7,7 @@ interface ListColumnProps {
   minWidth?: number;
   isRow?: boolean;
   align?: 'left' | 'center' | 'right';
+  justify?: 'flex-start' | 'center' | 'flex-end';
   overFlow?: 'hidden' | 'visible';
   sx?: SxProps<Theme>;
 }
@@ -17,6 +18,7 @@ export const ListColumn = ({
   minWidth,
   maxWidth,
   align = 'center',
+  justify = isRow ? 'flex-start' : 'flex-end',
   overFlow = 'visible',
   sx,
 }: ListColumnProps) => {
@@ -33,7 +35,7 @@ export const ListColumn = ({
           : align === 'right'
           ? 'flex-end'
           : align,
-        justifyContent: isRow ? 'flex-start' : 'flex-end',
+        justifyContent: justify,
         flex: 1,
         minWidth: minWidth || '70px',
         maxWidth,

@@ -1,11 +1,14 @@
 // import { AddressInput } from '../AddressInput';
+import { valueToBigNumber } from '@aave/math-utils';
 import { Trans } from '@lingui/macro';
 import { Box, Typography } from '@mui/material';
 import { ErrorObject } from 'ajv';
 import React, { useMemo, useState } from 'react';
+import { AssetInput } from 'src/components/transactions/AssetInput';
 import { GasEstimationError } from 'src/components/transactions/FlowCommons/GasEstimationError';
 import { useModalContext } from 'src/hooks/useModal';
 
+import { useTokensData } from '../../hooks/useTokensData';
 import { Input } from './Input';
 import { LoanApplicationActions } from './LoanApplicationActions';
 import { Select } from './Select';
@@ -42,6 +45,33 @@ export const LoanApplicationModalContentContent = React.memo(
     const selectedProduct = useMemo(
       () => products?.find((product) => product.productId === productId),
       [productId, products]
+    );
+
+    const premiumTokenIds = useMemo(
+      () =>
+        products?.map((product) => product.defaultPremiumToken).filter((tokenId) => !!tokenId) ??
+        [],
+      [products]
+    );
+
+    const { data: premiumTokensData, loading: premiumTokensLoading } =
+      useTokensData(premiumTokenIds);
+
+    const selectedPremiumToken = useMemo(
+      () =>
+        premiumTokensData?.find(
+          (token) =>
+            token.address.toLowerCase() === selectedProduct?.defaultPremiumToken.toLowerCase()
+        ),
+      [premiumTokensData, selectedProduct]
+    );
+
+    const topUpUsd = useMemo(
+      () =>
+        valueToBigNumber(topUp)
+          .multipliedBy(selectedPremiumToken?.priceInUsd ?? 0)
+          .toString(),
+      [topUp, selectedPremiumToken]
     );
 
     const clearForm = () => {
@@ -170,14 +200,17 @@ export const LoanApplicationModalContentContent = React.memo(
             </Box>
 
             <Box sx={{ pt: 5 }}>
-              <Input
+              <AssetInput
                 value={topUp}
                 onChange={setTopUp}
-                label="Top-up for future interest payment (optional)"
-                fullWidth
-                error={hasError(validationErrors, 'topUp')}
-                disabled={mainTxState.loading}
+                usdValue={topUpUsd}
+                symbol={selectedPremiumToken?.symbol ?? ''}
+                assets={selectedPremiumToken ? [selectedPremiumToken] : []}
+                disabled={mainTxState.loading || premiumTokensLoading}
+                balanceText={<Trans>Balance</Trans>}
+                inputTitle="Balance of Pre-paid Promotional Budget (optional)"
               />
+
               <span className="error">{getErrorMessage(validationErrors, 'topUp')}</span>
             </Box>
 
