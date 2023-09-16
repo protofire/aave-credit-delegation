@@ -15,7 +15,7 @@ export const useAssetsToLend = () => {
     () =>
       markets.reduce((acc, market) => {
         const { asset, product } = market;
-        const { symbol = 'unknown' } = asset ?? {};
+        const { symbol = 'default' } = asset ?? {};
 
         const key = `${symbol}-${product.data}-${product.details}`;
 
@@ -50,7 +50,7 @@ export const useAssetsToLend = () => {
           ...acc,
           [key]: {
             key,
-            symbol: asset?.symbol ?? 'unknown',
+            symbol: asset?.symbol ?? 'default',
             asset,
             markets,
             minApy,

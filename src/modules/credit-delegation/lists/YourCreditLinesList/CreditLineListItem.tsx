@@ -30,9 +30,9 @@ export const CreditLineListItem = (creditLine: ApplicationOrCreditLine) => {
 
   return (
     <ListItemWrapper
-      symbol={asset?.symbol ?? 'unknown'}
-      iconSymbol={asset?.symbol ?? 'unknown'}
-      name={asset?.name ?? 'unknown'}
+      symbol={asset?.symbol ?? 'Any'}
+      iconSymbol={asset?.symbol ?? 'default'}
+      name={asset?.name ?? 'Any'}
     >
       <ListColumn>{title}</ListColumn>
 
@@ -57,9 +57,9 @@ export const CreditLineListItem = (creditLine: ApplicationOrCreditLine) => {
         disabled={Number(topUp) === 0}
       />
 
-      <ListAPRColumn symbol={asset?.symbol ?? 'unknown'} value={Number(maxApr || 0) / 100} />
+      <ListAPRColumn symbol={asset?.symbol ?? 'default'} value={Number(maxApr || 0) / 100} />
 
-      <ListAPRColumn symbol={asset?.symbol ?? 'unknown'} value={Number(apr || 0) / 100} />
+      <ListAPRColumn symbol={asset?.symbol ?? 'default'} value={Number(apr || 0) / 100} />
 
       <ListColumn maxWidth={CREDIT_DELEGATION_LIST_COLUMN_WIDTHS.BUTTONS}>
         {status === LoanStatus.Active ? (
