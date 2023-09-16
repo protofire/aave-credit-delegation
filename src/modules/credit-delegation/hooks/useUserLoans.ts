@@ -201,12 +201,6 @@ export const useUserLoans = (
     marketReferencePriceInUsd,
   ]);
 
-  console.log({
-    policies,
-    applications,
-    policyIds,
-  });
-
   const creditLines: ApplicationOrCreditLine[] = useMemo(() => {
     if (!policies) {
       return [];

@@ -483,12 +483,6 @@ export const usePoolsAndMarkets = () => {
     refetchLoans,
   } = useUserLoans(myPoliciesData?.myPolicies, markets);
 
-  console.log({
-    myPoliciesData,
-    myPoliciesError,
-    myPoliciesLoading,
-  });
-
   const effectiveLendingPositions: AtomicaLendingPosition[] = useMemo(() => {
     if (appDataLoading || approvedCreditLoading || loadingVaults || loadingPoolLoanChunks) {
       return [];
