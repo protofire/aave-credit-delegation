@@ -1,6 +1,7 @@
 import { ApolloProvider } from '@apollo/client';
 import { Contract, PopulatedTransaction, utils } from 'ethers';
 import { Interface } from 'ethers/lib/utils';
+import { useRouter } from 'next/router';
 import { createContext, ReactNode, useCallback, useContext, useMemo, useState } from 'react';
 import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
 import { useRootStore } from 'src/store/root';
@@ -97,8 +98,10 @@ const CreditDelegationDataProvider = ({
 }: {
   children: ReactNode;
 }): JSX.Element | null => {
+  const router = useRouter();
+
   const [activeTab, setActiveTab] = useState<'overview' | 'delegate' | 'borrow' | 'portfolio'>(
-    'overview'
+    router.asPath.split('#')[1] as 'overview' | 'delegate' | 'borrow' | 'portfolio'
   );
 
   const {

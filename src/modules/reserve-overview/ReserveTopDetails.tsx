@@ -11,6 +11,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { useRouter } from 'next/router';
+import { useMemo } from 'react';
 import { getMarketInfoById, MarketLogo } from 'src/components/MarketSwitcher';
 import { useProtocolDataContext } from 'src/hooks/useProtocolDataContext';
 import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
@@ -22,6 +23,7 @@ import {
   useAppDataContext,
 } from '../../hooks/app-data-provider/useAppDataProvider';
 import { useCreditDelegationContext } from '../credit-delegation/CreditDelegationContext';
+import { useTokensData } from '../credit-delegation/hooks/useTokensData';
 import { AtomicaDelegationPool } from '../credit-delegation/types';
 import { AddTokenDropdown } from './AddTokenDropdown';
 import { TokenLinkDropdown } from './TokenLinkDropdown';
@@ -47,6 +49,10 @@ export const ReserveTopDetails = ({ underlyingAsset, poolId }: ReserveTopDetails
     (reserve) => reserve.underlyingAsset === underlyingAsset
   ) as ComputedReserveData;
 
+  const { data: assets } = useTokensData(
+    useMemo(() => [poolReserve?.underlyingAsset], [poolReserve?.underlyingAsset])
+  );
+
   const pool = pools.find((pool) => pool.id === poolId) as AtomicaDelegationPool;
 
   const valueTypographyVariant = downToSM ? 'main16' : 'main21';
@@ -58,7 +64,7 @@ export const ReserveTopDetails = ({ underlyingAsset, poolId }: ReserveTopDetails
           <Skeleton variant="circular" width={40} height={40} sx={{ background: '#383D51' }} />
         ) : (
           <img
-            src={`/icons/tokens/${poolReserve.iconSymbol.toLowerCase()}.svg`}
+            src={`/icons/tokens/${assets[0]?.iconSymbol.toLowerCase()}.svg`}
             width="40px"
             height="40px"
             alt=""
@@ -100,9 +106,7 @@ export const ReserveTopDetails = ({ underlyingAsset, poolId }: ReserveTopDetails
                 </SvgIcon>
               }
               onClick={() => {
-                // https://github.com/vercel/next.js/discussions/34980
-                if (history.state.idx !== 0) router.back();
-                else router.push('/credit-delegation');
+                router.push('/#delegate');
               }}
               sx={{ mr: 3, mb: downToSM ? '24px' : '0' }}
             >
@@ -136,7 +140,7 @@ export const ReserveTopDetails = ({ underlyingAsset, poolId }: ReserveTopDetails
               <Box>
                 {!loading && (
                   <Typography sx={{ color: '#A5A8B6' }} variant="caption">
-                    {poolReserve.symbol}
+                    {assets[0]?.symbol}
                   </Typography>
                 )}
                 <Box sx={{ display: 'inline-flex', alignItems: 'center' }}>
@@ -168,7 +172,7 @@ export const ReserveTopDetails = ({ underlyingAsset, poolId }: ReserveTopDetails
       {!downToSM && (
         <>
           <TopInfoPanelItem
-            title={!loading && <Trans>{poolReserve.symbol}</Trans>}
+            title={!loading && <Trans>{assets[0]?.symbol}</Trans>}
             withoutIconWrapper
             icon={<ReserveIcon />}
             loading={loading}
