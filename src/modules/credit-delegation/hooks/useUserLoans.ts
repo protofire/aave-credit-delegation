@@ -62,7 +62,24 @@ export const useUserLoans = (
     },
   });
 
-  const tokenIds = useMemo(() => policies?.map((policy) => policy.market.capitalToken), [policies]);
+  const tokenIds = useMemo(
+    () =>
+      policies?.reduce<string[]>((tokenIds, policy) => {
+        if (
+          tokenIds.includes(policy.market.capitalToken) ||
+          tokenIds.includes(policy.market.premiumToken)
+        )
+          return tokenIds;
+
+        tokenIds.push(policy.market.capitalToken);
+
+        if (policy.market.premiumToken !== policy.market.capitalToken)
+          tokenIds.push(policy.market.premiumToken);
+
+        return tokenIds;
+      }, []),
+    [policies]
+  );
 
   const [tokenData, { loading: loadingTokenData }] = useAsyncMemo<TokenMetadataType[]>(
     async () => {
@@ -92,6 +109,10 @@ export const useUserLoans = (
       const loan = data.loans.find((loan) => loan.loanRequestId === request.id);
 
       const asset = tokenData?.find((token) => token.address === policy?.market.capitalToken);
+
+      const premiumAsset = tokenData?.find(
+        (token) => token.address === policy?.market.premiumToken
+      );
 
       const reserve = reserves.find((reserve) => {
         if (asset?.symbol.toLowerCase() === 'eth') return reserve.isWrappedBaseAsset;
@@ -199,6 +220,7 @@ export const useUserLoans = (
         lastUpdateTs: loan?.lastUpdateTs ?? undefined,
         loanId: loan?.id ?? undefined,
         createdAt: loan?.createdAt ?? '0',
+        premiumAsset,
       };
     });
 

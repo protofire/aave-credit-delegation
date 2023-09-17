@@ -83,7 +83,7 @@ export const DetailsLoanPositionsList = ({ poolId }: { poolId: string }) => {
   if (loading || loadingLendingPositions)
     return (
       <ListLoader
-        title={<Trans>Your loan positions</Trans>}
+        title={<Trans>Loans funded by this pool</Trans>}
         head={head.map((c) => c.title)}
         withTopMargin
       />
@@ -93,7 +93,7 @@ export const DetailsLoanPositionsList = ({ poolId }: { poolId: string }) => {
     <ListWrapper
       titleComponent={
         <Typography component="div" variant="h3" sx={{ mr: 4 }}>
-          <Trans>Your loan positions</Trans>
+          <Trans>Loans funded by this pool</Trans>
         </Typography>
       }
       localStorageName="loanPositionsCreditDelegationTableCollapse"

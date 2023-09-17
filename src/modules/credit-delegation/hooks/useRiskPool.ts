@@ -18,7 +18,7 @@ import {
   Reward,
 } from '../types';
 import { convertTimestampToDate } from '../utils';
-import { useCoinRate } from './useCoinRate';
+import { Rate, useCoinRate } from './useCoinRate';
 
 export type TokenMap = {
   [key: string]: Reward;
@@ -27,14 +27,11 @@ export type TokenMap = {
 export const useRiskPool = () => {
   const { provider } = useWeb3Context();
   const [account] = useRootStore((state) => [state.account]);
-  const { getPriceMap } = useCoinRate();
+  const { getPriceMap, getCoinId, getPrice } = useCoinRate();
 
   const [rewardEarningsStates, setRewardEarningsStates] = useState<PoolEarnings[]>([]);
 
   const jsonInterface = new Interface(RISK_POOL_ABI);
-
-  const getCoinId = (tokenName: string) =>
-    tokenName === 'USDC' ? 'usd-coin' : tokenName.replace(' ', '-').toLowerCase();
 
   const getCurrentlyEarned = (
     rewardRate: BigNumber,
@@ -51,12 +48,18 @@ export const useRiskPool = () => {
 
   const getUserAvailablePoolBalance = async (
     pool: AtomicaSubgraphPool,
-    token: TokenMetadataType,
+    marketTokens: TokenMetadataType[],
     rewards: AtomicaSubgraphRewards[]
   ) => {
     const contract = new Contract(pool.id, RISK_POOL_ABI, provider?.getSigner());
     const balance = await contract.balanceOf(account.toLowerCase());
     const { capitalTokenBalance, poolTokenTotalSupply } = await contract.stats();
+    const capitalTokenDecimals =
+      marketTokens.find((token) => token.address === pool.capitalTokenAddress)?.decimals || 18;
+
+    const marketsPremiumTokens = Array.from(
+      new Set(pool.markets.map((market) => market.premiumToken))
+    );
 
     const { apys, earnings, lastReward } = await calculatePoolRewards(
       rewards
@@ -80,22 +83,66 @@ export const useRiskPool = () => {
     const userTotalBalance = normalize(balance.toString(), 18);
     const myPercentage =
       (Number(userTotalBalance) / Number(normalize(poolTokenTotalSupply.toString(), 18))) * 100;
-    const myCapital = normalize((myPercentage / 100) * capitalTokenBalance, token.decimals || 18);
+    const myCapital = normalize((myPercentage / 100) * capitalTokenBalance, capitalTokenDecimals);
 
-    const { premium, settlement } = await getUserPoolSettlementPremiums(pool.id, token.address);
+    let totalSettlement = 0;
+    let totalPremium = 0;
+    const marketPremiumTokensPrice: { [key: string]: number } = {};
 
-    const normalizedPremium = Number(normalize(premium.toString(), token.decimals || 18));
-    const normalizedSettlement = Number(normalize(settlement.toString(), token.decimals || 18));
+    const premiumsAndSettlements = await Promise.all(
+      marketsPremiumTokens.map(async (token) => {
+        const { premium, settlement } = await getUserPoolSettlementPremiums(pool.id, token);
+        let tokenData = marketTokens.find((marketToken) => marketToken.address === token);
+
+        if (token === '0x9f86ba35a016ace27bd4c37e42a1940a5b2508ef') {
+          tokenData = {
+            name: 'Gho Token',
+            symbol: 'GHO',
+            decimals: 18,
+            address: '0x9f86ba35a016ace27bd4c37e42a1940a5b2508ef',
+          };
+        }
+
+        const normalizedPremium = Number(normalize(premium.toString(), tokenData?.decimals || 18));
+        const normalizedSettlement = Number(
+          normalize(settlement.toString(), tokenData?.decimals || 18)
+        );
+
+        totalPremium += normalizedPremium;
+        totalSettlement += normalizedSettlement;
+
+        const tokenId = tokenData?.symbol === 'GHO' ? 'gho' : getCoinId(tokenData?.name || '');
+        if (tokenId) marketPremiumTokensPrice[tokenId] = 0;
+
+        return {
+          premium,
+          settlement,
+          decimals: tokenData?.decimals || 18,
+          symbol: tokenData?.symbol || '',
+          address: tokenData?.address || '',
+          usdValue: 0,
+          totalInterest: normalizedPremium + normalizedSettlement,
+        };
+      })
+    );
+
+    const pricesUsd: Rate = await getPrice(Object.keys(marketPremiumTokensPrice));
+
+    premiumsAndSettlements.forEach((premiumAndSettlement) => {
+      const tokenId = getCoinId(premiumAndSettlement.symbol);
+      if (tokenId) {
+        premiumAndSettlement.usdValue = pricesUsd[tokenId]?.usd || 0;
+      }
+    });
 
     return {
       id: pool.id,
-      availableWithdraw: Number(myCapital) + normalizedPremium + normalizedSettlement,
+      availableWithdraw: Number(myCapital) + totalPremium + totalSettlement,
       lpBalance: balance.toString(),
       capital: myCapital,
-      settlement: normalizedSettlement,
-      premium: normalizedPremium,
+      premiumsAndSettlements,
       rewardCurrentEarnings,
-      totalInterest: normalizedSettlement + normalizedPremium,
+      totalInterest: totalSettlement + totalPremium,
     };
   };
 
@@ -201,6 +248,7 @@ export const useRiskPool = () => {
 
     return rewards.reduce((tokens, reward) => {
       const coinId = getCoinId(reward.rewardTokenName);
+      // const coinId = reward.rewardTokenSymbol;
       let token: Reward = tokens[coinId];
 
       const poolReward = (accountPoolRewards || []).find(

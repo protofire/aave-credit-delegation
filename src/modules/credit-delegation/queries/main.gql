@@ -37,6 +37,7 @@ query main($productIds: [String]!, $managerIds: [String]!, $owner: String!) {
         id
         title
       }
+      premiumToken
     }
   }
 

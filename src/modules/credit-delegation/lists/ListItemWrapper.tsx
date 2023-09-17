@@ -23,13 +23,17 @@ export const ListItemWrapper = ({
 
   ...rest
 }: ListItemWrapperProps) => {
+  const currentSymbol = symbol === 'GHST' ? 'GHO' : symbol;
+  const currentIconSymbol = symbol === 'GHST' ? 'GHO' : iconSymbol;
+  const currentName = symbol === 'GHST' ? 'Gho token' : name;
+
   return (
     <ListItem {...rest}>
       <ListColumn maxWidth={DASHBOARD_LIST_COLUMN_WIDTHS.CELL} isRow>
-        <TokenIcon symbol={iconSymbol} fontSize="large" />
-        <Tooltip title={`${name} (${symbol})`} arrow placement="top">
+        <TokenIcon symbol={currentIconSymbol} fontSize="large" />
+        <Tooltip title={`${currentName} (${currentSymbol})`} arrow placement="top">
           <Typography variant="subheader1" sx={{ ml: 3 }} noWrap data-cy={`assetName`}>
-            {symbol}
+            {currentSymbol}
           </Typography>
         </Tooltip>
       </ListColumn>

@@ -43,7 +43,7 @@ export const ReserveConfiguration: React.FC<ReserveConfigurationProps> = ({ rese
           }}
         >
           <Typography variant="h3">
-            <Trans>Pool Overview</Trans>
+            <Trans>Pool Overview: {pool?.metadata?.Label}</Trans>
           </Typography>
         </Box>
 

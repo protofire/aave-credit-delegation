@@ -1,4 +1,5 @@
-export const CREDIT_DELEGATION_VAULT_FACTORY_ADDRESS = '0xF205D0eA27CdE4816983Cd338e7f0077cF5f6472';
+// export const CREDIT_DELEGATION_VAULT_FACTORY_ADDRESS = '0xF205D0eA27CdE4816983Cd338e7f0077cF5f6472';
+export const CREDIT_DELEGATION_VAULT_FACTORY_ADDRESS = '0xcDc67384ccae7eA21356F67B8dC3f7F6336aEf31';
 export const ATOMICA_USDC = '0xB368AA8348e280B5144c39c64588c86E3836f77b';
 export const AAVE_USDC = '0xe9dce89b076ba6107bb64ef30678efec11939234';
 export const DEFAULT_LOGO = 'https://etherscan.io/images/main/empty-token.png';
@@ -6,6 +7,8 @@ export const DEFAULT_LOGO = 'https://etherscan.io/images/main/empty-token.png';
 export const CREDIT_DELEGATION_ATOMICA_GOOGLE_SHEET_ID = `${process.env.NEXT_PUBLIC_ATOMICA_META_SHEET_ID}`;
 
 export const NEXT_PUBLIC_BORROWERS_META_SHEET_ID = `${process.env.NEXT_PUBLIC_BORROWERS_META_SHEET_ID}`;
+
+export const NEXT_PUBLIC_ATOMICA_MARKET_SHEET_ID = `${process.env.NEXT_PUBLIC_ATOMICA_MARKET_SHEET_ID}`;
 
 export const PRODUCT_IDS = ['1', '2', '3', '7'];
 

@@ -164,14 +164,19 @@ const CreditDelegationDataProvider = ({
       const pool = pools.find((pool) => pool.id.toLowerCase() === atomicaPool.toLowerCase());
 
       if (pool && account) {
-        const nonce = await getUserDebtTokenNonce(pool.variableDebtTokenAddress);
+        const variableDebtTokenAddress =
+          pool.symbol === 'GHO'
+            ? '0xd8Aab78Fe045D67b463f0361578e01c40CbFb4B7'
+            : pool.variableDebtTokenAddress;
+
+        const nonce = await getUserDebtTokenNonce(variableDebtTokenAddress);
 
         const deadline = Date.now() + 1000 * 60 * 50;
 
         const vaultAddress = await getVaultAddress();
 
         const dataToSign = await generateDelegationSignatureRequest({
-          debtToken: pool.variableDebtTokenAddress.toLowerCase(),
+          debtToken: variableDebtTokenAddress.toLowerCase(),
           delegatee: vaultAddress.toLowerCase(),
           value,
           deadline: deadline,
@@ -187,7 +192,7 @@ const CreditDelegationDataProvider = ({
         const txData = jsonInterface.encodeFunctionData('deployVault', [
           pool.manager,
           atomicaPool,
-          pool.variableDebtTokenAddress,
+          variableDebtTokenAddress,
           value,
           deadline,
           v,
@@ -231,12 +236,17 @@ const CreditDelegationDataProvider = ({
       const pool = pools.find((pool) => pool.id.toLowerCase() === atomicaPool.toLowerCase());
 
       if (pool && account) {
-        const nonce = await getUserDebtTokenNonce(pool.variableDebtTokenAddress);
+        const variableDebtTokenAddress =
+          pool.symbol === 'GHO'
+            ? '0xd8Aab78Fe045D67b463f0361578e01c40CbFb4B7'
+            : pool.variableDebtTokenAddress;
+
+        const nonce = await getUserDebtTokenNonce(variableDebtTokenAddress);
 
         const deadline = Date.now() + 1000 * 60 * 50;
 
         const dataToSign = await generateDelegationSignatureRequest({
-          debtToken: pool.variableDebtTokenAddress.toLowerCase(),
+          debtToken: variableDebtTokenAddress.toLowerCase(),
           delegatee: vaultAddress.toLowerCase(),
           value: amount,
           deadline: deadline,

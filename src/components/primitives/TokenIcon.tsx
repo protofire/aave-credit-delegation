@@ -138,6 +138,7 @@ ATokenIcon.displayName = 'ATokenIcon';
 interface TokenIconProps extends IconProps {
   symbol: string;
   aToken?: boolean;
+  iconUrl?: string;
 }
 
 /**
@@ -146,7 +147,7 @@ interface TokenIconProps extends IconProps {
  * @param param0
  * @returns
  */
-function SingleTokenIcon({ symbol, aToken, ...rest }: TokenIconProps) {
+function SingleTokenIcon({ symbol, aToken, iconUrl, ...rest }: TokenIconProps) {
   return (
     <Icon {...rest} sx={{ display: 'flex', position: 'relative', borderRadius: '50%', ...rest.sx }}>
       {aToken ? (
@@ -154,7 +155,7 @@ function SingleTokenIcon({ symbol, aToken, ...rest }: TokenIconProps) {
       ) : (
         // eslint-disable-next-line
         <img
-          src={`/icons/tokens/${symbol.toLowerCase()}.svg`}
+          src={iconUrl ? iconUrl : `/icons/tokens/${symbol.toLowerCase()}.svg`}
           width="100%"
           height="100%"
           alt={`${symbol} icon`}

@@ -17,6 +17,7 @@ export enum ErrorType {}
 export const FaucetModalContent = ({ poolReserve, isWrongNetwork }: ModalWrapperProps) => {
   const { gasLimit, mainTxState: faucetTxState, txError } = useModalContext();
 
+  // const normalizedAmount = getNormalizedMintAmount(poolReserve.symbol, poolReserve.decimals);
   const normalizedAmount = getNormalizedMintAmount(poolReserve.symbol, poolReserve.decimals);
 
   if (faucetTxState.success)

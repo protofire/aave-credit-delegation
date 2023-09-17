@@ -57,7 +57,7 @@ export const CreditDelegationActions = React.memo(
           const deployVaultTxData = await generateDeployVault({
             manager: pool.manager,
             atomicaPool: pool?.id,
-            debtToken: poolReserve.stableDebtTokenAddress,
+            debtToken: poolReserve.variableDebtTokenAddress,
             value: parseUnits(amount, decimals).toString(),
             delegationPercentage: 100,
           });

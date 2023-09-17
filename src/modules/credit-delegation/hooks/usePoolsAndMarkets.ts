@@ -74,7 +74,7 @@ export const usePoolsAndMarkets = () => {
   const [approvedCreditLoading, setApprovedCreditLoading] = useState<boolean>(false);
   const [approvedCreditLoaded, setApprovedCreditLoaded] = useState<boolean>(false);
 
-  const { loading: loadingVaults, vaults, refetch: refetchVaults } = useUserVaults();
+  const { loading: loadingVaults, vaults } = useUserVaults();
 
   const { baseAssetSymbol } = currentNetworkConfig;
 
@@ -166,9 +166,7 @@ export const usePoolsAndMarkets = () => {
         poolsData.map(async (pool) =>
           getUserAvailablePoolBalance(
             pool,
-            tokensToBorrow.find(
-              (token) => token.symbol === pool.capitalTokenSymbol
-            ) as TokenMetadataType,
+            marketTokens,
             poolRewards.filter((reward) => reward.poolId === pool.id)
           )
         )
@@ -180,7 +178,7 @@ export const usePoolsAndMarkets = () => {
       return myPools;
     },
     [],
-    [data?.pools, poolRewards]
+    [data?.pools, poolRewards, marketTokens]
   );
 
   const fetchBorrowAllowance = useCallback(
@@ -295,21 +293,25 @@ export const usePoolsAndMarkets = () => {
 
       const poolCapUsd = amountToUsd(
         normalize(pool.capitalRequirement, pool.capitalTokenDecimals),
-        userReserve?.formattedPriceInMarketReferenceCurrency ?? '1',
+        userReserve?.symbol === 'GHST'
+          ? '1'
+          : userReserve?.formattedPriceInMarketReferenceCurrency || '1',
         marketReferencePriceInUsd
       ).toString();
 
       const poolBalanceUsd = amountToUsd(
         normalize(pool.capitalTokenBalance, pool.capitalTokenDecimals),
-        userReserve?.formattedPriceInMarketReferenceCurrency ?? '1',
+        userReserve?.symbol === 'GHST'
+          ? '1'
+          : userReserve?.formattedPriceInMarketReferenceCurrency || '1',
         marketReferencePriceInUsd
       ).toString();
 
       return {
         asset: tokenToBorrow,
         id: pool.id,
-        symbol: pool.capitalTokenSymbol,
-        iconSymbol: pool.capitalTokenSymbol,
+        symbol: pool.capitalTokenSymbol === 'GHST' ? 'GHO' : pool.capitalTokenSymbol,
+        iconSymbol: pool.capitalTokenSymbol === 'GHST' ? 'GHO' : pool.capitalTokenSymbol,
         name: pool.name,
         manager: pool.manager,
         markets: pool.markets,
@@ -528,10 +530,11 @@ export const usePoolsAndMarkets = () => {
   const refetchAll = useCallback(
     async (blockNumber?: number) => {
       await sync(blockNumber);
-      await refetchVaults(blockNumber);
+      // await refetchVaults(blockNumber);
       await refetchLoans(blockNumber);
     },
-    [refetchVaults, refetchLoans, sync]
+    // [refetchVaults, refetchLoans, sync]
+    [refetchLoans, sync]
   );
 
   return {
@@ -551,7 +554,7 @@ export const usePoolsAndMarkets = () => {
       loadingPoolLoanChunks,
     fetchBorrowAllowance,
     fetchAllBorrowAllowances,
-    refetchVaults,
+    // refetchVaults,s
     creditLines,
     refetchLoans,
     refetchAll,

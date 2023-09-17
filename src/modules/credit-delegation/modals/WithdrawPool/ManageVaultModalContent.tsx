@@ -85,7 +85,12 @@ const RewardsNumber = ({ usdValue }: { usdValue: 'Infinity' | number | string })
   return (
     <Box sx={{ display: 'inline-flex', alignItems: 'center' }}>
       <>
-        <FormattedNumber value={+usdValue} variant="h4" />
+        {/* <FormattedNumber value={+usdValue} variant="h4" /> */}
+        <FormattedNumber
+          value={isNaN(Number(usdValue)) ? 0 : Number(usdValue)}
+          variant="h4"
+          compact
+        />
         <Typography variant="h4" sx={{ ml: 1 }}>
           <Trans>USD</Trans>
         </Typography>
@@ -146,9 +151,9 @@ export const ManageVaultModalContent = memo(
 
     const normalizedBalanceUSD = valueToBigNumber(totalAmount).multipliedBy(reserve.priceInUSD);
 
-    const interestBalanceUSD = valueToBigNumber(balances?.totalInterest ?? '0').multipliedBy(
-      reserve.priceInUSD
-    );
+    // const interestBalanceUSD = valueToBigNumber(balances?.totalInterest ?? '0').multipliedBy(
+    //   reserve.priceInUSD
+    // );
 
     const amountAfterRemovedInUsd = new BigNumber(amountAfterRemoved)
       .multipliedBy(poolReserve.formattedPriceInMarketReferenceCurrency)
@@ -176,8 +181,7 @@ export const ManageVaultModalContent = memo(
       earnedRewardIds:
         rewards?.earnings?.earnings.flatMap((earning) => earning.earnedRewardIds) || [],
       lastReward: earnings?.lastReward,
-      settlementAmount: normalize(balances?.settlement || 0, asset?.decimals || 18),
-      premiumAmount: normalize(balances?.premium || 0, asset?.decimals || 18),
+      totalInterest: balances?.totalInterest || 0,
       generateClaimInterestTxs,
     };
 
@@ -209,38 +213,80 @@ export const ManageVaultModalContent = memo(
         ) : manageType === ManageType.REWARDS ? (
           <>
             <Box sx={{ width: '100%' }}>
-              {(incentives || []).map((incentive) => (
-                <>
-                  <Row
-                    height={32}
-                    caption={
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          mb: incentives?.length ? (incentives.length > 1 ? 2 : 0) : 0,
-                        }}
-                      >
-                        <TokenIcon
-                          symbol={incentive.rewardTokenSymbol}
-                          sx={{ fontSize: '25px', mr: 1 }}
-                        />
-                        <Typography variant="h4">{incentive.rewardTokenSymbol}</Typography>
-                      </Box>
-                    }
-                    key={incentive.rewardTokenAddress}
-                    width="100%"
-                  >
-                    <RewardsNumber usdValue={incentive.usdValue} />
-                  </Row>
-                </>
-              ))}
+              {incentives?.length ? (
+                incentives.map((incentive) => (
+                  <>
+                    <Row
+                      height={32}
+                      caption={
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            mb: incentives?.length ? (incentives.length > 1 ? 2 : 0) : 0,
+                          }}
+                        >
+                          <TokenIcon
+                            symbol={incentive.rewardTokenSymbol}
+                            sx={{ fontSize: '25px', mr: 1 }}
+                          />
+                          <Typography variant="h4">{incentive.rewardTokenSymbol}</Typography>
+                        </Box>
+                      }
+                      key={incentive.rewardTokenAddress}
+                      width="100%"
+                    >
+                      <RewardsNumber usdValue={incentive.usdValue} />
+                    </Row>
+                  </>
+                ))
+              ) : (
+                <Typography sx={{ textAlign: 'center' }} variant="h3">
+                  <Trans>No rewards to claim</Trans>
+                </Typography>
+              )}
             </Box>
           </>
         ) : (
           <>
             <Box sx={{ pt: 5 }}>
-              <AssetInput
+              <>
+                {balances?.premiumsAndSettlements.map((token) => (
+                  <>
+                    <Row
+                      height={32}
+                      caption={
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            mb: balances?.premiumsAndSettlements?.length
+                              ? balances?.premiumsAndSettlements.length > 1
+                                ? 2
+                                : 0
+                              : 0,
+                          }}
+                        >
+                          <TokenIcon
+                            symbol={token.symbol.toLowerCase()}
+                            sx={{ fontSize: '25px', mr: 1 }}
+                          />
+                          <Typography variant="h4">{token.symbol}</Typography>
+                        </Box>
+                      }
+                      key={token.address}
+                      width="100%"
+                    >
+                      <RewardsNumber
+                        usdValue={valueToBigNumber(token.totalInterest)
+                          .multipliedBy(token.usdValue)
+                          .toString(10)}
+                      />
+                    </Row>
+                  </>
+                ))}
+              </>
+              {/* <AssetInput
                 value={balances?.totalInterest.toString() || '0'}
                 usdValue={interestBalanceUSD.toString(10)}
                 symbol={asset?.symbol || ''}
@@ -254,7 +300,7 @@ export const ManageVaultModalContent = memo(
                 disabled={true}
                 maxValue={balances?.totalInterest.toString()}
                 balanceText={<Trans>Interest balance</Trans>}
-              />
+              /> */}
             </Box>
           </>
         )}
@@ -270,19 +316,8 @@ export const ManageVaultModalContent = memo(
               symbol={asset?.symbol || ''}
             />
           </TxModalDetails>
-        ) : manageType === ManageType.REWARDS ? (
-          <></>
         ) : (
-          <TxModalDetails gasLimit={gasLimit} skipLoad={true} disabled={Number(0) === 0}>
-            <DetailsNumberLineWithSub
-              description={<Trans>My Interest Balance</Trans>}
-              futureValue={'0'}
-              futureValueUSD={'0.00'}
-              value={balances?.totalInterest.toString()}
-              valueUSD={interestBalanceUSD.toString(10)}
-              symbol={asset?.symbol || ''}
-            />
-          </TxModalDetails>
+          <></>
         )}
         {txError && <GasEstimationError txError={txError} />}
 

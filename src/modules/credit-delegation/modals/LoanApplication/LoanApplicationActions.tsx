@@ -74,7 +74,7 @@ export const LoanApplicationActions = React.memo(({ ...props }: LoanApplicationA
 
     const service = new GoogleSheetsApiService(NEXT_PUBLIC_BORROWERS_META_SHEET_ID);
 
-    const conn = await service.getSheet('Borrowers');
+    const conn = await service.getSheet('Markets');
 
     if (!conn?.rows) {
       setTxError({

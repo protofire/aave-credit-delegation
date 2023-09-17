@@ -52,6 +52,7 @@ export interface AtomicaSubgraphPool {
       id: string;
       title: string;
     };
+    premiumToken: string;
   }[];
 }
 
@@ -258,6 +259,7 @@ export interface AtomicaLoan {
   ratePerSec: string;
   usdRate: string;
   createdAt?: string;
+  premiumAsset?: TokenMetadataType;
 }
 
 export interface AtomicaLendingPosition {
@@ -375,8 +377,15 @@ export interface PoolBalances {
   availableWithdraw: number;
   lpBalance: string;
   capital: string;
-  settlement: number;
-  premium: number;
+  premiumsAndSettlements: {
+    premium: string;
+    settlement: string;
+    decimals: number;
+    symbol: string;
+    address: string;
+    usdValue: number;
+    totalInterest: number;
+  }[];
   rewardCurrentEarnings: RewardCurrentEarnings[];
   totalInterest: number;
 }
