@@ -78,7 +78,7 @@ export const ReserveTopDetails = ({ underlyingAsset, poolId }: ReserveTopDetails
     return loading && loadingPools ? (
       <Skeleton width={60} height={28} sx={{ background: '#383D51' }} />
     ) : (
-      <Typography variant={valueTypographyVariant}>{poolReserve.name}</Typography>
+      <Typography variant={valueTypographyVariant}>{assets[0]?.name}</Typography>
     );
   };
 
