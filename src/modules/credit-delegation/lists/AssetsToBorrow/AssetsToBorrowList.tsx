@@ -80,6 +80,8 @@ export const AssetsToBorrowList = () => {
             : -1,
         variableBorrowRate: reserve.borrowingEnabled ? Number(reserve.variableBorrowAPY) : -1,
         iconSymbol: reserve.iconSymbol === 'GHST' ? 'GHO' : reserve.iconSymbol,
+        symbol: reserve.symbol === 'GHST' ? 'GHO' : reserve.symbol,
+
         ...(reserve.isWrappedBaseAsset
           ? fetchIconSymbolAndName({
               symbol: baseAssetSymbol,
