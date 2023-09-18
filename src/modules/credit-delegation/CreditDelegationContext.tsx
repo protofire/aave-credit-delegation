@@ -101,7 +101,7 @@ const CreditDelegationDataProvider = ({
   const router = useRouter();
 
   const [activeTab, setActiveTab] = useState<'overview' | 'delegate' | 'borrow' | 'portfolio'>(
-    router.asPath.split('#')[1] as 'overview' | 'delegate' | 'borrow' | 'portfolio'
+    (router.asPath.split('#')[1] as 'overview' | 'delegate' | 'borrow' | 'portfolio') ?? 'overview'
   );
 
   const {
