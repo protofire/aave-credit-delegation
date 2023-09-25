@@ -308,9 +308,17 @@ msgstr "Available rewards"
 msgid "Available to borrow"
 msgstr "Available to borrow"
 
+#: src/modules/reserve-overview/ReserveActions.tsx
+msgid "Available to lend"
+msgstr "Available to lend"
+
 #: src/components/caps/CapsHint.tsx
 msgid "Available to supply"
 msgstr "Available to supply"
+
+#: src/modules/reserve-overview/ReserveActions.tsx
+msgid "Available to withdraw"
+msgstr "Available to withdraw"
 
 #: pages/404.page.tsx
 msgid "Back to Dashboard"
@@ -892,6 +900,7 @@ msgstr "Inconsistent flashloan parameters"
 #: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
 #: src/modules/credit-delegation/modals/RepayLoan/RepayLoanModalContent.tsx
 #: src/modules/credit-delegation/modals/WithdrawPool/ManageVaultModalContent.tsx
+#: src/modules/reserve-overview/ReserveActions.tsx
 msgid "Interest"
 msgstr "Interest"
 
@@ -977,6 +986,7 @@ msgstr "Learn more in our <0>FAQ guide</0>"
 #: pages/credit-delegation.page.tsx
 #: pages/index.page.tsx
 #: src/modules/credit-delegation/lists/PoolsList/PoolListItem.tsx
+#: src/modules/reserve-overview/ReserveActions.tsx
 msgid "Lend"
 msgstr "Lend"
 
@@ -1267,6 +1277,10 @@ msgstr "Pending..."
 msgid "Per the community, the Fantom market has been frozen."
 msgstr "Per the community, the Fantom market has been frozen."
 
+#: src/modules/reserve-overview/ReserveActions.tsx
+msgid "Please connect a wallet to view your personal information here."
+msgstr "Please connect a wallet to view your personal information here."
+
 #: src/modules/faucet/FaucetAssetsList.tsx
 msgid "Please connect your wallet to get free testnet assets."
 msgstr "Please connect your wallet to get free testnet assets."
@@ -1412,6 +1426,7 @@ msgid "Remaining debt"
 msgstr "Remaining debt"
 
 #: src/modules/credit-delegation/modals/WithdrawPool/WithdrawList/ListWithdrawModal.tsx
+#: src/modules/reserve-overview/ReserveActions.tsx
 msgid "Remaining initial deposit"
 msgstr "Remaining initial deposit"
 
@@ -1508,6 +1523,7 @@ msgid "Reward(s) to claim"
 msgstr "Reward(s) to claim"
 
 #: src/modules/credit-delegation/modals/WithdrawPool/ManageVaultModalContent.tsx
+#: src/modules/reserve-overview/ReserveActions.tsx
 msgid "Rewards"
 msgstr "Rewards"
 
@@ -2229,6 +2245,7 @@ msgstr "With testnet Faucet you can get free assets to test the Aave Protocol. M
 #: src/modules/credit-delegation/modals/WithdrawPool/ManageVaultModal.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsListItem.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsListMobileItem.tsx
+#: src/modules/reserve-overview/ReserveActions.tsx
 msgid "Withdraw"
 msgstr "Withdraw"
 
@@ -2357,6 +2374,11 @@ msgstr "Your current loan to value based on your collateral supplied."
 #: src/modules/dashboard/LiquidationRiskParametresModal/LiquidationRiskParametresModal.tsx
 msgid "Your health factor and loan to value determine the assurance of your collateral. To avoid liquidations you can supply more collateral or repay borrow positions."
 msgstr "Your health factor and loan to value determine the assurance of your collateral. To avoid liquidations you can supply more collateral or repay borrow positions."
+
+#: src/modules/reserve-overview/ReserveActions.tsx
+#: src/modules/reserve-overview/ReserveActions.tsx
+msgid "Your info"
+msgstr "Your info"
 
 #: src/modules/credit-delegation/CreditDelegationTopPanel.tsx
 msgid "Your lending capacity"

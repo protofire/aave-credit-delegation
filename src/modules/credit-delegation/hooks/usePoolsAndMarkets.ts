@@ -74,7 +74,7 @@ export const usePoolsAndMarkets = () => {
   const [approvedCreditLoading, setApprovedCreditLoading] = useState<boolean>(false);
   const [approvedCreditLoaded, setApprovedCreditLoaded] = useState<boolean>(false);
 
-  const { loading: loadingVaults, vaults } = useUserVaults();
+  const { loading: loadingVaults, vaults, refetch: refetchVaults } = useUserVaults();
 
   const { baseAssetSymbol } = currentNetworkConfig;
 
@@ -371,6 +371,7 @@ export const usePoolsAndMarkets = () => {
     poolRewards,
     poolsApy,
     poolsAvailableBalances,
+    rewardEarningsStates,
     marketReferencePriceInUsd,
     walletBalances,
     approvedCredit,
@@ -530,11 +531,11 @@ export const usePoolsAndMarkets = () => {
   const refetchAll = useCallback(
     async (blockNumber?: number) => {
       await sync(blockNumber);
-      // await refetchVaults(blockNumber);
+      await refetchVaults(blockNumber);
       await refetchLoans(blockNumber);
     },
-    // [refetchVaults, refetchLoans, sync]
-    [refetchLoans, sync]
+    [refetchVaults, refetchLoans, sync]
+    // [refetchLoans, sync]
   );
 
   return {
@@ -554,7 +555,7 @@ export const usePoolsAndMarkets = () => {
       loadingPoolLoanChunks,
     fetchBorrowAllowance,
     fetchAllBorrowAllowances,
-    // refetchVaults,s
+    refetchVaults,
     creditLines,
     refetchLoans,
     refetchAll,
