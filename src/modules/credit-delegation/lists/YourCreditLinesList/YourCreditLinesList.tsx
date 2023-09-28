@@ -9,10 +9,10 @@ import { CREDIT_DELEGATION_LIST_COLUMN_WIDTHS } from 'src/utils/creditDelegation
 
 import { CreditDelegationContentNoData } from '../../CreditDelegationContentNoData';
 import { useCreditDelegationContext } from '../../CreditDelegationContext';
-import { handleSortCreditLines } from '../../utils';
+import { handleStandardSort } from '../../utils';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListLoader } from '../ListLoader';
-import { CreditLineListItem } from './LoanApplicationListItem';
+import { CreditLineListItem } from './CreditLineListItem';
 
 const head = [
   {
@@ -24,16 +24,24 @@ const head = [
     sortKey: 'title',
   },
   {
-    title: <Trans>Loan Requested</Trans>,
+    title: <Trans>Requested Amount</Trans>,
+    sortKey: 'requestedAmountUsd',
+  },
+  {
+    title: <Trans>Approved Amount</Trans>,
     sortKey: 'amountUsd',
   },
   {
-    title: <Trans>APR</Trans>,
-    sortKey: 'market.apr',
+    title: <Trans>Balance of Pre-paid Promotional Budget</Trans>,
+    sortKey: 'topUpUsd',
   },
   {
-    title: <Trans>Available</Trans>,
-    sortKey: 'market.availableBorrowsInUSD',
+    title: <Trans>Max APR</Trans>,
+    sortKey: 'maxApr',
+  },
+  {
+    title: <Trans>Actual APR</Trans>,
+    sortKey: 'apr',
   },
 ];
 
@@ -87,12 +95,18 @@ export const YourCreditLinesList = () => {
   const { creditLines, loading } = useCreditDelegationContext();
 
   const sortedCreditLines = useMemo(
-    () => handleSortCreditLines(sortDesc, sortName, creditLines),
+    () => handleStandardSort(sortDesc, sortName, creditLines),
     [sortDesc, sortName, creditLines]
   );
 
   if (loading)
-    return <ListLoader title={<Trans>Your loan requests</Trans>} head={head.map((c) => c.title)} />;
+    return (
+      <ListLoader
+        title={<Trans>Your loan requests</Trans>}
+        head={head.map((c) => c.title)}
+        withTopMargin
+      />
+    );
 
   return (
     <>

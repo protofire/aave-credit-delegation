@@ -8,7 +8,7 @@ interface ListAPRColumnProps {
   value: number;
   incentives?: RewardIncentive[];
   symbol: string;
-  supplyAPY: string;
+  supplyAPY?: string;
 }
 
 export const ListAPRColumn = ({ value, incentives, symbol, supplyAPY }: ListAPRColumnProps) => {
@@ -19,7 +19,7 @@ export const ListAPRColumn = ({ value, incentives, symbol, supplyAPY }: ListAPRC
         incentives={incentives}
         symbol={symbol}
         data-cy={`apyType`}
-        supplyAPY={supplyAPY}
+        supplyAPY={supplyAPY || '0'}
       />
     </ListColumn>
   );

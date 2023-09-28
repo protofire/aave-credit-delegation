@@ -1,0 +1,22 @@
+query allowLists($addresses: [String!]) {
+  allowLists(where: { accounts_: { account_in: $addresses } }) {
+    id
+    owner
+    type
+    accounts {
+      id
+      account
+      value
+    }
+    createdAt
+    createdBy
+  }
+
+  _meta {
+    block {
+      number
+      timestamp
+      hash
+    }
+  }
+}

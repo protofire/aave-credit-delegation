@@ -1,14 +1,7 @@
 import { valueToBigNumber } from '@aave/math-utils';
 import { orderBy } from 'lodash';
 
-import {
-  AtomicaBorrowMarket,
-  AtomicaDelegationPool,
-  AtomicaLendingPosition,
-  AtomicaSubgraphLoanChunk,
-  CreditLine,
-  LoanStatus,
-} from './types';
+import { AtomicaBorrowMarket, AtomicaSubgraphLoanChunk, LoanStatus } from './types';
 
 const handleSymbolSort = <T extends { symbol: string }>(sortDesc: boolean, pools: T[]) => {
   if (sortDesc) {
@@ -17,15 +10,11 @@ const handleSymbolSort = <T extends { symbol: string }>(sortDesc: boolean, pools
   return pools.sort((a, b) => (b.symbol.toUpperCase() < a.symbol.toUpperCase() ? -1 : 1));
 };
 
-export const handleSortPools = (
-  sortDesc: boolean,
-  sortName: string,
-  pools: AtomicaDelegationPool[]
-): AtomicaDelegationPool[] => {
+export const handleStandardSort = <T>(sortDesc: boolean, sortName: string, items: T[]): T[] => {
   if (sortName === 'symbol') {
-    return handleSymbolSort(true, pools);
+    return handleSymbolSort(true, items as unknown as (T & { symbol: string })[]);
   } else {
-    return orderBy(pools, sortName, sortDesc ? 'desc' : 'asc');
+    return orderBy(items, sortName, sortDesc ? 'desc' : 'asc');
   }
 };
 
@@ -34,35 +23,11 @@ export const handleSortMarkets = (
   sortName: string,
   markets: AtomicaBorrowMarket[]
 ): AtomicaBorrowMarket[] => {
-  if (sortName === 'symbol') {
-    return handleSymbolSort(true, markets);
-  } else {
-    return orderBy(markets, sortName, sortDesc ? 'desc' : 'asc');
-  }
-};
+  const sorted = handleStandardSort(sortDesc, sortName, markets);
 
-export const handleSortLoans = (
-  sortDesc: boolean,
-  sortName: string,
-  positions: AtomicaLendingPosition[]
-): AtomicaLendingPosition[] => {
-  if (sortName === 'symbol') {
-    return handleSymbolSort(true, positions);
-  } else {
-    return orderBy(positions, sortName, sortDesc ? 'desc' : 'asc');
-  }
-};
-
-export const handleSortCreditLines = (
-  sortDesc: boolean,
-  sortName: string,
-  creditLines: CreditLine[]
-): CreditLine[] => {
-  if (sortName === 'symbol') {
-    return handleSymbolSort(true, creditLines);
-  } else {
-    return orderBy(creditLines, sortName, sortDesc ? 'desc' : 'asc');
-  }
+  return sorted.sort((a) => {
+    return a.allowed ? -1 : 1;
+  });
 };
 
 export const convertTimestampToDate = (timestamp: string) =>

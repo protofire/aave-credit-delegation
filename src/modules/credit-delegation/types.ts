@@ -4,6 +4,19 @@ import { BigNumber } from 'bignumber.js';
 
 import { PoolMetadata } from './hooks/usePoolsMetadata';
 
+export interface AtomicaSubgraphAllowList {
+  id: string;
+  owner: string;
+  type: number;
+  accounts: {
+    id: string;
+    account: string;
+    value: string;
+  };
+  createdAt: string;
+  createdBy: string;
+}
+
 export interface AtomicaSubgraphProduct {
   id: string;
   productId: string;
@@ -39,8 +52,8 @@ export interface AtomicaSubgraphPool {
   capitalTokenSymbol: string;
   capitalTokenAddress: string;
   capitalTokenDecimals: number;
-  manager: string;
-  managerFee: string;
+  operator: string;
+  operatorFee: string;
   capitalRequirement: string;
   capitalTokenBalance: string;
   markets: {
@@ -51,9 +64,12 @@ export interface AtomicaSubgraphPool {
     product: {
       id: string;
       title: string;
+      wording: string;
     };
     premiumToken: string;
   }[];
+  data: string;
+  details: string;
 }
 
 export interface AtomicaSubgraphMarket {
@@ -71,7 +87,11 @@ export interface AtomicaSubgraphMarket {
   product: {
     id: string;
     title: string;
+    wording: string;
+    data: string;
+    details: string;
   };
+  policyBuyerAllowListId: string;
 }
 
 export interface AtomicaSubgraphPolicy {
@@ -193,6 +213,7 @@ export interface AtomicaDelegationPool {
     product: {
       id: string;
       title: string;
+      wording: string;
     };
   }[];
   stableDebtTokenAddress: string;
@@ -205,6 +226,8 @@ export interface AtomicaDelegationPool {
   poolCapUsd: string;
   poolBalanceUsd: string;
   balances?: PoolBalances;
+  data: string;
+  details: string;
 }
 
 export interface AtomicaBorrowMarket {
@@ -229,8 +252,13 @@ export interface AtomicaBorrowMarket {
   product: {
     id: string;
     title: string;
+    wording: string;
+    data: string;
+    details: string;
   };
   asset?: TokenMetadataType;
+  allowed: boolean;
+  allowListId: string;
 }
 
 export interface AtomicaLoan {
@@ -305,6 +333,30 @@ export interface CreditLine {
   symbol: string;
   title: string;
   usdRate: string;
+  aggreement: string;
+  status: LoanStatus;
+  apr: string;
+  maxApr: string;
+}
+
+export interface ApplicationOrCreditLine {
+  id: string;
+  amount: string;
+  amountUsd?: number;
+  requestedAmount: string;
+  requestedAmountUsd?: number;
+  asset?: TokenMetadataType;
+  symbol: string;
+  title: string;
+  status: LoanStatus;
+  apr: number;
+  maxApr: number;
+  topUp: string;
+  topUpUsd?: number;
+  policyId: string;
+  aggreement: string;
+  marketId: string;
+  market?: AtomicaBorrowMarket;
 }
 
 export interface AtomicaSubgraphRewards {
@@ -414,4 +466,15 @@ export interface AtomicaLoanPool {
   loan: AtomicaLoan;
   market?: AtomicaBorrowMarket;
   pools?: (AtomicaDelegationPool | undefined)[];
+}
+export interface AssetToLend {
+  key: string;
+  symbol: string;
+  asset?: TokenMetadataType;
+  markets: AtomicaBorrowMarket[];
+  minApy: number;
+  maxApy: number;
+  securedBy: string;
+  lendingCapacity: number;
+  lendingCapacityUsd: number;
 }

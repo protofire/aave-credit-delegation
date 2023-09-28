@@ -9,6 +9,7 @@ import { Row } from 'src/components/primitives/Row';
 import { useModalContext } from 'src/hooks/useModal';
 
 import { useCreditDelegationContext } from '../../CreditDelegationContext';
+// import { useManagerDetails } from '../../hooks/useManagerDetails';
 import { AtomicaLendingPosition, LoanStatus } from '../../types';
 import { convertTimestampToDate } from '../../utils';
 import { ListAPRColumn } from '../ListAPRColumn';

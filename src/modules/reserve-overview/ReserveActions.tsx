@@ -366,16 +366,17 @@ const BorrowAction = ({
   rewardsUsd,
 }: ActionProps) => {
   return (
-    <Stack>
+    <Stack alignItems="center">
       <AvailableTooltip
         variant="description"
         text={<Trans>Available to withdraw</Trans>}
         capType={CapType.borrowCap}
       />
       <Stack
+        marginTop={5}
         sx={{ height: '44px' }}
         direction="row"
-        justifyContent="space-between"
+        justifyContent="space-evenly"
         alignItems="center"
       >
         <Stack

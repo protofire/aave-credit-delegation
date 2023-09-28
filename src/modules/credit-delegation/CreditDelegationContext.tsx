@@ -1,7 +1,8 @@
 import { ApolloProvider } from '@apollo/client';
 import { Contract, PopulatedTransaction, utils } from 'ethers';
 import { Interface } from 'ethers/lib/utils';
-import { createContext, ReactNode, useCallback, useContext } from 'react';
+import { useRouter } from 'next/router';
+import { createContext, ReactNode, useCallback, useContext, useMemo, useState } from 'react';
 import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
 import { useRootStore } from 'src/store/root';
 
@@ -9,23 +10,29 @@ import VAULT_ABI from './abi/CreditDelegationVault.json';
 import FACTORY_ABI from './abi/CreditDelegationVaultFactory.json';
 import STABLE_DEBT_TOKEN_ABI from './abi/StabeDebtTokenABI.json';
 import { client } from './apollo';
-import { CREDIT_DELEGATION_VAULT_FACTORY_ADDRESS } from './consts';
+import {
+  CREDIT_DELEGATION_VAULT_FACTORY_ADDRESS,
+  GHO_TOKEN,
+  GHO_VARIABLE_DEBT_TOKEN_ADDRESS,
+} from './consts';
 import { useLendingCapacity } from './hooks/useLendingCapacity';
 import { usePoolsAndMarkets } from './hooks/usePoolsAndMarkets';
 import {
+  ApplicationOrCreditLine,
   AtomicaBorrowMarket,
   AtomicaDelegationPool,
   AtomicaLendingPosition,
   AtomicaLoan,
   AtomicaSubgraphPolicy,
-  CreditLine,
 } from './types';
 
 export interface CreditDelgationData {
+  activeTab: 'overview' | 'delegate' | 'borrow' | 'portfolio';
+  setActiveTab: (tab: 'overview' | 'delegate' | 'borrow' | 'portfolio') => void;
   loading: boolean;
   loansLoading: boolean;
   pools: AtomicaDelegationPool[];
-  lended: string;
+  lent: string;
   loadingLendingCapacity: boolean;
   lendingCapacity: string;
   averageApy: string;
@@ -34,7 +41,7 @@ export interface CreditDelgationData {
   lendingPositions: AtomicaLendingPosition[];
   loadingLendingPositions: boolean;
   myPolicies: AtomicaSubgraphPolicy[];
-  creditLines: CreditLine[];
+  creditLines: ApplicationOrCreditLine[];
   fetchAllBorrowAllowances: (forceApprovalCheck?: boolean | undefined) => Promise<void>;
   fetchBorrowAllowance: (poolId: string, forceApprovalCheck?: boolean | undefined) => Promise<void>;
   refetchVaults: (blockNumber?: number) => Promise<unknown>;
@@ -55,8 +62,12 @@ export interface CreditDelgationData {
 }
 
 export const CreditDelegationContext = createContext({
+  activeTab: 'overview',
+  setActiveTab: () => {
+    throw new Error('Method not implemented');
+  },
   pools: [],
-  lended: '0',
+  lent: '0',
   loadingLendingCapacity: true,
   lendingCapacity: '0',
   averageApy: '0',
@@ -87,6 +98,12 @@ const CreditDelegationDataProvider = ({
 }: {
   children: ReactNode;
 }): JSX.Element | null => {
+  const router = useRouter();
+
+  const [activeTab, setActiveTab] = useState<'overview' | 'delegate' | 'borrow' | 'portfolio'>(
+    (router.asPath.split('#')[1] as 'overview' | 'delegate' | 'borrow' | 'portfolio') ?? 'overview'
+  );
+
   const {
     loading,
     loansLoading,
@@ -105,7 +122,7 @@ const CreditDelegationDataProvider = ({
   } = usePoolsAndMarkets();
 
   const {
-    lended,
+    lent,
     loading: loadingLendingCapacity,
     lendingCapacity,
     averageApy,
@@ -165,8 +182,8 @@ const CreditDelegationDataProvider = ({
 
       if (pool && account) {
         const variableDebtTokenAddress =
-          pool.symbol === 'GHO'
-            ? '0xd8Aab78Fe045D67b463f0361578e01c40CbFb4B7'
+          pool.symbol === GHO_TOKEN.symbol
+            ? GHO_VARIABLE_DEBT_TOKEN_ADDRESS
             : pool.variableDebtTokenAddress;
 
         const nonce = await getUserDebtTokenNonce(variableDebtTokenAddress);
@@ -283,28 +300,55 @@ const CreditDelegationDataProvider = ({
 
   return (
     <CreditDelegationContext.Provider
-      value={{
-        loading,
-        loansLoading,
-        pools,
-        lended,
-        loadingLendingCapacity,
-        lendingCapacity,
-        averageApy,
-        markets,
-        loans,
-        lendingPositions,
-        loadingLendingPositions,
-        refetchVaults,
-        fetchAllBorrowAllowances,
-        fetchBorrowAllowance,
-        generateDeployVault,
-        myPolicies,
-        creditLines,
-        refetchLoans,
-        refetchAll,
-        generateBorrowWithSig,
-      }}
+      value={useMemo(
+        () => ({
+          activeTab,
+          setActiveTab,
+          loading,
+          loansLoading,
+          pools,
+          lent: lent,
+          loadingLendingCapacity,
+          lendingCapacity,
+          averageApy,
+          markets,
+          loans,
+          lendingPositions,
+          loadingLendingPositions,
+          refetchVaults,
+          fetchAllBorrowAllowances,
+          fetchBorrowAllowance,
+          generateDeployVault,
+          myPolicies,
+          creditLines,
+          refetchLoans,
+          refetchAll,
+          generateBorrowWithSig,
+        }),
+        [
+          activeTab,
+          averageApy,
+          creditLines,
+          fetchAllBorrowAllowances,
+          fetchBorrowAllowance,
+          generateBorrowWithSig,
+          generateDeployVault,
+          lendingCapacity,
+          lendingPositions,
+          lent,
+          loading,
+          loadingLendingCapacity,
+          loadingLendingPositions,
+          loans,
+          loansLoading,
+          markets,
+          myPolicies,
+          pools,
+          refetchAll,
+          refetchLoans,
+          refetchVaults,
+        ]
+      )}
     >
       {children}
     </CreditDelegationContext.Provider>

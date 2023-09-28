@@ -10,7 +10,7 @@ import { CREDIT_DELEGATION_LIST_COLUMN_WIDTHS } from 'src/utils/creditDelegation
 
 import { CreditDelegationContentNoData } from '../../CreditDelegationContentNoData';
 import { useCreditDelegationContext } from '../../CreditDelegationContext';
-import { handleSortLoans } from '../../utils';
+import { handleStandardSort } from '../../utils';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListLoader } from '../ListLoader';
 import { DetailsLoanPositionsListItem } from './DetailsLoanPositionsListItem';
@@ -72,7 +72,7 @@ export const DetailsLoanPositionsList = ({ poolId }: { poolId: string }) => {
 
   const sortedLendingPositions = useMemo(
     () =>
-      handleSortLoans(
+      handleStandardSort(
         sortDesc,
         sortName,
         lendingPositions.filter((item) => item.poolId === poolId)

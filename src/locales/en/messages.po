@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2022-03-07 15:58+0100\n"
+"POT-Creation-Date: 2023-09-27 16:17-0300\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -36,13 +36,15 @@ msgid "ACTIVATE COOLDOWN"
 msgstr "ACTIVATE COOLDOWN"
 
 #: src/components/incentives/IncentivesTooltipContent.tsx
+#: src/modules/credit-delegation/lists/AllMarketsList/AllMarketsList.tsx
 #: src/modules/credit-delegation/lists/MarketsList/MarketsList.tsx
-#: src/modules/credit-delegation/lists/YourCreditLinesList/YourCreditLinesList.tsx
 #: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
 #: src/modules/credit-delegation/modals/WithdrawPool/WithdrawList/WithdrawTokensTooltip.tsx
 msgid "APR"
 msgstr "APR"
 
+#: src/modules/credit-delegation/lists/AssetsToBorrow/AssetsToBorrowList.tsx
+#: src/modules/credit-delegation/lists/AssetsToLend/AssetsToLendList.tsx
 #: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
 #: src/modules/credit-delegation/lists/LoanPositionsList/DetailsLoanPositionsList.tsx
 #: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
@@ -110,6 +112,10 @@ msgstr "Action cannot be performed because the reserve is paused"
 #: src/ui-config/errorMapping.tsx
 msgid "Action requires an active reserve"
 msgstr "Action requires an active reserve"
+
+#: src/modules/credit-delegation/lists/YourCreditLinesList/YourCreditLinesList.tsx
+msgid "Actual APR"
+msgstr "Actual APR"
 
 #: src/components/transactions/FlowCommons/Success.tsx
 msgid "Add to wallet"
@@ -181,6 +187,7 @@ msgstr "Amount of claimable rewards."
 msgid "Apply"
 msgstr "Apply"
 
+#: src/modules/credit-delegation/lists/AllMarketsList/MarketListItem.tsx
 #: src/modules/credit-delegation/lists/MarketsList/MarketListItem.tsx
 msgid "Apply for loan"
 msgstr "Apply for loan"
@@ -189,10 +196,17 @@ msgstr "Apply for loan"
 msgid "Approve with"
 msgstr "Approve with"
 
+#: src/modules/credit-delegation/lists/YourCreditLinesList/YourCreditLinesList.tsx
+msgid "Approved Amount"
+msgstr "Approved Amount"
+
 #: src/ui-config/errorMapping.tsx
 msgid "Array parameters that should be equal length are not"
 msgstr "Array parameters that should be equal length are not"
 
+#: src/modules/credit-delegation/lists/AllMarketsList/AllMarketsList.tsx
+#: src/modules/credit-delegation/lists/AssetsToBorrow/AssetsToBorrowList.tsx
+#: src/modules/credit-delegation/lists/AssetsToLend/AssetsToLendList.tsx
 #: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsList.tsx
 #: src/modules/credit-delegation/lists/MarketsList/MarketsList.tsx
 #: src/modules/credit-delegation/lists/YourCreditLinesList/YourCreditLinesList.tsx
@@ -258,10 +272,17 @@ msgstr "Asset supply is limited to a certain amount to reduce protocol exposure 
 msgid "Assets"
 msgstr "Assets"
 
+#: src/modules/credit-delegation/lists/AssetsToBorrow/AssetsToBorrowList.tsx
+#: src/modules/credit-delegation/lists/AssetsToBorrow/AssetsToBorrowList.tsx
 #: src/modules/dashboard/lists/BorrowAssetsList/BorrowAssetsList.tsx
 #: src/modules/dashboard/lists/BorrowAssetsList/BorrowAssetsList.tsx
 msgid "Assets to borrow"
 msgstr "Assets to borrow"
+
+#: src/modules/credit-delegation/lists/AssetsToLend/AssetsToLendList.tsx
+#: src/modules/credit-delegation/lists/AssetsToLend/AssetsToLendList.tsx
+msgid "Assets to lend"
+msgstr "Assets to lend"
 
 #: src/modules/dashboard/lists/SupplyAssetsList/SupplyAssetsList.tsx
 #: src/modules/dashboard/lists/SupplyAssetsList/SupplyAssetsList.tsx
@@ -277,8 +298,9 @@ msgstr "Assets with zero LTV ({assetsBlockingWithdraw}) must be withdrawn or dis
 
 #: src/components/transactions/Borrow/BorrowModalContent.tsx
 #: src/components/transactions/Withdraw/WithdrawModalContent.tsx
+#: src/modules/credit-delegation/lists/AllMarketsList/AllMarketsList.tsx
+#: src/modules/credit-delegation/lists/AssetsToBorrow/AssetsToBorrowList.tsx
 #: src/modules/credit-delegation/lists/MarketsList/MarketsList.tsx
-#: src/modules/credit-delegation/lists/YourCreditLinesList/YourCreditLinesList.tsx
 #: src/modules/dashboard/lists/BorrowAssetsList/BorrowAssetsList.tsx
 msgid "Available"
 msgstr "Available"
@@ -294,6 +316,10 @@ msgstr "Available assets"
 #: src/modules/credit-delegation/modals/ManageCreditLine/ManageCreditLineModalContent.tsx
 msgid "Available credit"
 msgstr "Available credit"
+
+#: src/modules/credit-delegation/modals/LoanWithdrawal/LoanWithdrawalModalContent.tsx
+msgid "Available credit line"
+msgstr "Available credit line"
 
 #: src/components/ChainAvailabilityText.tsx
 msgid "Available on"
@@ -326,11 +352,16 @@ msgstr "Back to Dashboard"
 
 #: src/components/transactions/AssetInput.tsx
 #: src/components/transactions/ClaimRewards/ClaimRewardsModalContent.tsx
+#: src/modules/credit-delegation/modals/LoanApplication/LoanApplicationModalContent.tsx
 #: src/modules/dashboard/lists/BorrowedPositionsList/BorrowedPositionsList.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsList.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsList.tsx
 msgid "Balance"
 msgstr "Balance"
+
+#: src/modules/credit-delegation/lists/YourCreditLinesList/YourCreditLinesList.tsx
+msgid "Balance of Pre-paid Promotional Budget"
+msgstr "Balance of Pre-paid Promotional Budget"
 
 #: src/modules/dashboard/lists/BorrowAssetsList/BorrowAssetsList.tsx
 msgid "Be careful - You are very close to liquidation. Consider depositing more collateral or paying down some of your borrowed positions"
@@ -620,6 +651,7 @@ msgid "Data couldn't be fetched, please reload graph."
 msgstr "Data couldn't be fetched, please reload graph."
 
 #: src/modules/credit-delegation/modals/LoanApplication/LoanApplicationActions.tsx
+#: src/modules/credit-delegation/modals/LoanWithdrawal/LoanWithdrawalActions.tsx
 msgid "Data source config error"
 msgstr "Data source config error"
 
@@ -755,6 +787,7 @@ msgstr "Enabling this asset as collateral increases your borrowing power and Hea
 msgid "English"
 msgstr "English"
 
+#: src/modules/credit-delegation/lists/AllMarketsList/CreateMarketButton.tsx
 #: src/modules/credit-delegation/lists/MarketsList/CreateMarketButton.tsx
 msgid "Enroll as a borrower"
 msgstr "Enroll as a borrower"
@@ -770,6 +803,10 @@ msgstr "Error connecting. Try refreshing the page."
 #: src/components/transactions/Repay/CollateralRepayModalContent.tsx
 msgid "Expected amount to repay"
 msgstr "Expected amount to repay"
+
+#: src/modules/credit-delegation/lists/AssetsToLend/AssetsToLendListItem.tsx
+msgid "Explore Pools"
+msgstr "Explore Pools"
 
 #: src/components/transactions/Faucet/CaptchaFaucetModalContent.tsx
 #: src/components/transactions/Faucet/FaucetModal.tsx
@@ -995,9 +1032,6 @@ msgid "Lend to pool"
 msgstr "Lend to pool"
 
 #: src/modules/credit-delegation/CreditDelegationTopPanel.tsx
-msgid "Lended"
-msgstr "Lended"
-
 #: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationModalContent.tsx
 msgid "Lent"
 msgstr "Lent"
@@ -1044,10 +1078,6 @@ msgstr "Loan ID"
 msgid "Loan Products & Borrowers This Pool Seeks To Issue Loans To"
 msgstr "Loan Products & Borrowers This Pool Seeks To Issue Loans To"
 
-#: src/modules/credit-delegation/lists/YourCreditLinesList/YourCreditLinesList.tsx
-msgid "Loan Requested"
-msgstr "Loan Requested"
-
 #: src/modules/credit-delegation/lists/LoanPositionsList/DetailsLoanPositionsList.tsx
 #: src/modules/credit-delegation/lists/LoanPositionsList/DetailsLoanPositionsList.tsx
 msgid "Loans funded by this pool"
@@ -1061,13 +1091,13 @@ msgstr "Ltv validation failed"
 msgid "MAX"
 msgstr "MAX"
 
-#: src/modules/credit-delegation/lists/YourCreditLinesList/LoanApplicationListItem.tsx
+#: src/modules/credit-delegation/lists/YourCreditLinesList/CreditLineListItem.tsx
 msgid "Manage"
 msgstr "Manage"
 
 #: src/modules/credit-delegation/modals/ManageCreditLine/ManageCreditLineModal.tsx
-msgid "Manage credit line"
-msgstr "Manage credit line"
+msgid "Manage the desired size of your Credit Line"
+msgstr "Manage the desired size of your Credit Line"
 
 #: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
 msgid "Manager"
@@ -1077,6 +1107,8 @@ msgstr "Manager"
 msgid "Market"
 msgstr "Market"
 
+#: src/modules/credit-delegation/lists/AllMarketsList/AllMarketsList.tsx
+#: src/modules/credit-delegation/lists/AllMarketsList/AllMarketsList.tsx
 #: src/modules/credit-delegation/lists/MarketsList/MarketsList.tsx
 #: src/modules/credit-delegation/lists/MarketsList/MarketsList.tsx
 #: src/modules/markets/MarketsTopPanel.tsx
@@ -1086,6 +1118,10 @@ msgstr "Markets"
 #: src/components/transactions/AssetInput.tsx
 msgid "Max"
 msgstr "Max"
+
+#: src/modules/credit-delegation/lists/YourCreditLinesList/YourCreditLinesList.tsx
+msgid "Max APR"
+msgstr "Max APR"
 
 #: src/modules/staking/StakingPanel.tsx
 msgid "Max slashing"
@@ -1125,16 +1161,20 @@ msgid "Migrating"
 msgstr "Migrating"
 
 #: src/modules/credit-delegation/modals/ManageCreditLine/ManageCreditLineActions.tsx
-msgid "Modify loan request"
-msgstr "Modify loan request"
+msgid "Modify Desired Credit Line Size"
+msgstr "Modify Desired Credit Line Size"
 
 #: src/modules/credit-delegation/modals/ManageCreditLine/ManageCreditLineActions.tsx
-msgid "Modifying loan request..."
-msgstr "Modifying loan request..."
+msgid "Modifying desired credit line size..."
+msgstr "Modifying desired credit line size..."
 
 #: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
 msgid "My Asset Balance"
 msgstr "My Asset Balance"
+
+#: src/modules/credit-delegation/lists/AssetsToLend/AssetsToLendList.tsx
+msgid "My Lending Capacity"
+msgstr "My Lending Capacity"
 
 #: src/modules/credit-delegation/modals/WithdrawPool/ManageVaultModalContent.tsx
 msgid "My Pool Balance"
@@ -1144,6 +1184,7 @@ msgstr "My Pool Balance"
 msgid "My lending Capacity"
 msgstr "My lending Capacity"
 
+#: src/modules/credit-delegation/lists/AllMarketsList/AllMarketsList.tsx
 #: src/modules/credit-delegation/lists/MarketsList/MarketsList.tsx
 #: src/modules/credit-delegation/lists/YourCreditLinesList/YourCreditLinesList.tsx
 #: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
@@ -1256,6 +1297,10 @@ msgstr "Ok, Close"
 msgid "Ok, I got it"
 msgstr "Ok, I got it"
 
+#: src/modules/credit-delegation/lists/AssetsToBorrow/AssetsToBorrowListItem.tsx
+msgid "Open a Credit Line"
+msgstr "Open a Credit Line"
+
 #: src/ui-config/errorMapping.tsx
 msgid "Operation not supported"
 msgstr "Operation not supported"
@@ -1264,9 +1309,17 @@ msgstr "Operation not supported"
 msgid "Our team will review your application and get back to you within 24 hours."
 msgstr "Our team will review your application and get back to you within 24 hours."
 
+#: pages/index.page.tsx
+msgid "Overview"
+msgstr "Overview"
+
 #: pages/404.page.tsx
 msgid "Page not found"
 msgstr "Page not found"
+
+#: src/modules/credit-delegation/lists/YourCreditLinesList/CreditLineListItem.tsx
+msgid "Pending"
+msgstr "Pending"
 
 #: src/components/transactions/CollateralChange/CollateralChangeActions.tsx
 #: src/components/transactions/Faucet/FaucetActions.tsx
@@ -1340,6 +1393,10 @@ msgstr "Pool addresses provider is not registered"
 #: src/modules/credit-delegation/lists/PoolsList/PoolsList.tsx
 msgid "Pools to lend to using your line of credit"
 msgstr "Pools to lend to using your line of credit"
+
+#: pages/index.page.tsx
+msgid "Portfolio"
+msgstr "Portfolio"
 
 #: src/modules/dashboard/lists/SlippageList.tsx
 msgid "Powered by"
@@ -1481,18 +1538,27 @@ msgstr "Repaying loan {repayType}..."
 msgid "Repaying {symbol}"
 msgstr "Repaying {symbol}"
 
-#: src/modules/credit-delegation/lists/YourCreditLinesList/LoanApplicationListItem.tsx
-msgid "Request"
-msgstr "Request"
+#: src/modules/credit-delegation/modals/LoanWithdrawal/LoanWithdrawalModal.tsx
+msgid "Request a withdrawal"
+msgstr "Request a withdrawal"
 
 #: src/modules/credit-delegation/modals/RequestLoan/RequestLoanModal.tsx
 msgid "Request loan"
 msgstr "Request loan"
 
 #: src/modules/credit-delegation/lists/YourLoansList/ListRepaidColumn.tsx
+#: src/modules/credit-delegation/modals/LoanWithdrawal/LoanWithdrawalModalContent.tsx
 #: src/modules/credit-delegation/modals/RequestLoan/RequestLoanModalContent.tsx
 msgid "Requested"
 msgstr "Requested"
+
+#: src/modules/credit-delegation/lists/YourCreditLinesList/YourCreditLinesList.tsx
+msgid "Requested Amount"
+msgstr "Requested Amount"
+
+#: src/modules/credit-delegation/modals/LoanWithdrawal/LoanWithdrawalActions.tsx
+msgid "Requesting"
+msgstr "Requesting"
 
 #: src/modules/credit-delegation/modals/RequestLoan/RequestLoanModalContent.tsx
 msgid "Requesting loan from <0>{0}</0>"
@@ -1538,6 +1604,10 @@ msgstr "Risk details"
 #: src/modules/dashboard/LiquidationRiskParametresModal/LiquidationRiskParametresModal.tsx
 msgid "Safety of your deposited collateral against the borrowed assets and its underlying value."
 msgstr "Safety of your deposited collateral against the borrowed assets and its underlying value."
+
+#: src/modules/credit-delegation/lists/AssetsToLend/AssetsToLendList.tsx
+msgid "Secured By"
+msgstr "Secured By"
 
 #: src/components/transactions/Warnings/ChangeNetworkWarning.tsx
 msgid "Seems like we can't switch the network automatically. Please check if you can change it from the wallet."
@@ -1588,9 +1658,17 @@ msgstr "Show"
 msgid "Show assets with 0 balance"
 msgstr "Show assets with 0 balance"
 
+#: src/modules/credit-delegation/modals/LoanWithdrawal/LoanWithdrawalActions.tsx
+msgid "Sign & request withdrawal"
+msgstr "Sign & request withdrawal"
+
 #: src/components/transactions/DelegationTxsWrapper.tsx
 msgid "Sign to continue"
 msgstr "Sign to continue"
+
+#: src/modules/credit-delegation/modals/LoanWithdrawal/SignatureInput.tsx
+msgid "Signature"
+msgstr "Signature"
 
 #: src/components/transactions/DelegationTxsWrapper.tsx
 msgid "Signatures ready"
@@ -2242,6 +2320,7 @@ msgstr "With testnet Faucet you can get free assets to test the Aave Protocol. M
 #: src/components/transactions/Withdraw/WithdrawModal.tsx
 #: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsListItem.tsx
 #: src/modules/credit-delegation/lists/LoanPositionsList/LoanPositionsListItem.tsx
+#: src/modules/credit-delegation/lists/YourCreditLinesList/CreditLineListItem.tsx
 #: src/modules/credit-delegation/modals/WithdrawPool/ManageVaultModal.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsListItem.tsx
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsListMobileItem.tsx
@@ -2358,6 +2437,11 @@ msgstr "You will exit isolation mode and other tokens can now be used as collate
 msgid "You {action} <0/> {symbol}"
 msgstr "You {action} <0/> {symbol}"
 
+#: src/modules/credit-delegation/lists/AllMarketsList/MarketListItem.tsx
+#: src/modules/credit-delegation/lists/MarketsList/MarketListItem.tsx
+msgid "Your address isn't on the allowed list of this market"
+msgstr "Your address isn't on the allowed list of this market"
+
 #: src/modules/credit-delegation/CreditDelegationTopPanel.tsx
 msgid "Your average APY"
 msgstr "Your average APY"
@@ -2394,6 +2478,7 @@ msgid "Your loan requests"
 msgstr "Your loan requests"
 
 #: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
+#: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
 msgid "Your loans"
 msgstr "Your loans"
 
@@ -2413,10 +2498,6 @@ msgstr "Your reward balance is 0"
 #: src/modules/dashboard/lists/SuppliedPositionsList/SuppliedPositionsList.tsx
 msgid "Your supplies"
 msgstr "Your supplies"
-
-#: src/modules/credit-delegation/lists/YourLoansList/YourLoansList.tsx
-msgid "Your withdrawal requests"
-msgstr "Your withdrawal requests"
 
 #: src/modules/credit-delegation/lists/PoolsList/WalletEmptyInfo.tsx
 #: src/modules/dashboard/lists/SupplyAssetsList/WalletEmptyInfo.tsx

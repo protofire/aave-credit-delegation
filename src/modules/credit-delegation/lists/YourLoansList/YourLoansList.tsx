@@ -111,13 +111,15 @@ export const YourLoansList = () => {
   }, [pools, loans, markets]);
 
   if (loading)
-    return <ListLoader title={<Trans>Your loans</Trans>} head={head.map((c) => c.title)} />;
+    return (
+      <ListLoader title={<Trans>Your loans</Trans>} head={head.map((c) => c.title)} withTopMargin />
+    );
 
   return (
     <ListWrapper
       titleComponent={
         <Typography component="div" variant="h3" sx={{ mr: 4 }}>
-          <Trans>Your withdrawal requests</Trans>
+          <Trans>Your loans</Trans>
         </Typography>
       }
       localStorageName="yourLoansCreditDelegationTableCollapse"

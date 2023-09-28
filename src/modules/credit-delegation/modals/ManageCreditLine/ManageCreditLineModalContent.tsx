@@ -1,7 +1,7 @@
 import { WEI_DECIMALS } from '@aave/math-utils';
 import { Trans } from '@lingui/macro';
 import { Box, Typography } from '@mui/material';
-import { memo, useMemo, useState } from 'react';
+import { memo, useState } from 'react';
 import { AssetInput } from 'src/components/transactions/AssetInput';
 import { GasEstimationError } from 'src/components/transactions/FlowCommons/GasEstimationError';
 import { ModalWrapperProps } from 'src/components/transactions/FlowCommons/ModalWrapper';
@@ -9,29 +9,21 @@ import {
   DetailsNumberLine,
   TxModalDetails,
 } from 'src/components/transactions/FlowCommons/TxModalDetails';
-import { useWalletBalances } from 'src/hooks/app-data-provider/useWalletBalances';
 import { useModalContext } from 'src/hooks/useModal';
 import { roundToTokenDecimals } from 'src/utils/utils';
 
-import { CreditLine } from '../../types';
+import { ApplicationOrCreditLine } from '../../types';
 import { ManageCreditLineActions } from './ManageCreditLineActions';
 
 interface ManageCreditLineModalContentProps extends ModalWrapperProps {
-  creditLine: CreditLine;
+  creditLine: ApplicationOrCreditLine;
 }
 
 export const ManageCreditLineModalContent = memo(
   ({ creditLine, isWrongNetwork }: ManageCreditLineModalContentProps) => {
     const { mainTxState: supplyTxState, gasLimit, txError } = useModalContext();
-    const { walletBalances } = useWalletBalances();
 
-    const [newAmount, setNewAmount] = useState(creditLine.amount);
-
-    // TODO: Atomica USDC doesnt show in the wallet balance
-    const walletBalance = useMemo(
-      () => walletBalances[creditLine.asset?.address || '']?.amount,
-      [walletBalances, creditLine.asset?.address]
-    );
+    const [newAmount, setNewAmount] = useState(creditLine.requestedAmount);
 
     const handleChange = (value: string) => {
       const decimalTruncatedValue = roundToTokenDecimals(
@@ -46,6 +38,7 @@ export const ManageCreditLineModalContent = memo(
       amount: newAmount,
       asset: creditLine.asset,
       isWrongNetwork,
+      creditLine,
     };
 
     return (
@@ -59,17 +52,15 @@ export const ManageCreditLineModalContent = memo(
           <AssetInput
             value={newAmount}
             onChange={handleChange}
-            usdValue={creditLine.amountUsd}
+            usdValue={creditLine.requestedAmountUsd?.toString() || '0'}
             symbol={creditLine.asset?.symbol || ''}
             assets={[
               {
-                balance: walletBalance,
                 symbol: creditLine.asset?.symbol || '',
                 iconSymbol: creditLine.asset?.symbol || '',
               },
             ]}
             disabled={supplyTxState.loading}
-            maxValue={walletBalance}
             balanceText={<Trans>Available credit</Trans>}
           />
         </Box>

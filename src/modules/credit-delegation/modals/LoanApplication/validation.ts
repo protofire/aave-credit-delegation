@@ -1,6 +1,7 @@
 import Ajv, { ErrorObject, JSONSchemaType } from 'ajv';
 import ajvErrors from 'ajv-errors';
 import addFormats from 'ajv-formats';
+import { uniq } from 'lodash';
 
 const ajv = new Ajv({ coerceTypes: true, allErrors: true, $data: true });
 
@@ -47,9 +48,6 @@ const schema: JSONSchemaType<LoanApplicationData> = {
     topUp: {
       type: 'number',
       minimum: 0,
-      maximum: {
-        $data: '1/amount',
-      },
     },
     maxApr: {
       type: 'number',
@@ -93,7 +91,7 @@ export const getValidationFunction = (
         properties:
           config?.reduce((acc, entity) => {
             acc[entity.listId] = {
-              enum: entity.options,
+              enum: uniq(entity.options),
               title: entity.title,
             };
             return acc;

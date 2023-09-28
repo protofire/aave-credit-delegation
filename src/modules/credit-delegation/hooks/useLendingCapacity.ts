@@ -2,6 +2,7 @@ import { InterestRate } from '@aave/contract-helpers';
 import { USD_DECIMALS, valueToBigNumber } from '@aave/math-utils';
 import { useMemo } from 'react';
 import { useAppDataContext } from 'src/hooks/app-data-provider/useAppDataProvider';
+import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
 import {
   assetCanBeBorrowedByUser,
   getMaxAmountAvailableToBorrow,
@@ -12,8 +13,10 @@ import { AtomicaDelegationPool } from '../types';
 export const useLendingCapacity = (pools?: AtomicaDelegationPool[]) => {
   const { user, reserves, marketReferencePriceInUsd, loading } = useAppDataContext();
 
+  const { currentAccount } = useWeb3Context();
+
   const lendingCapacity = useMemo(() => {
-    if (pools === undefined || loading) return '0';
+    if (pools === undefined || loading || !currentAccount) return '0';
 
     const validReserves = reserves.filter((reserve) => assetCanBeBorrowedByUser(reserve, user));
 
@@ -31,9 +34,9 @@ export const useLendingCapacity = (pools?: AtomicaDelegationPool[]) => {
       .shiftedBy(-USD_DECIMALS);
 
     return vailableBorrowsUSD.toFixed(2);
-  }, [reserves, marketReferencePriceInUsd, user, loading, pools]);
+  }, [reserves, marketReferencePriceInUsd, user, loading, pools, currentAccount]);
 
-  const lended = useMemo(() => {
+  const lent = useMemo(() => {
     if (pools === undefined) return '0';
     return pools
       .reduce((acc, pool) => acc.plus(pool.approvedCreditUsdBig), valueToBigNumber(0))
@@ -42,7 +45,7 @@ export const useLendingCapacity = (pools?: AtomicaDelegationPool[]) => {
   }, [pools]);
 
   const averageApy = useMemo(() => {
-    if (pools === undefined || Number(lended) === 0) return '0';
+    if (pools === undefined || Number(lent) === 0) return '0';
 
     return pools
       .reduce((acc, pool) => {
@@ -50,14 +53,14 @@ export const useLendingCapacity = (pools?: AtomicaDelegationPool[]) => {
           .times(pool.approvedCreditUsd ?? '0')
           .plus(acc);
       }, valueToBigNumber(0))
-      .dividedBy(lended)
+      .dividedBy(lent)
       .toString();
-  }, [pools, lended]);
+  }, [pools, lent]);
 
   return {
     loading: loading || pools === undefined,
     lendingCapacity,
-    lended,
+    lent: lent,
     averageApy,
   };
 };

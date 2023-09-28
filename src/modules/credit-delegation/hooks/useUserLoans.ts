@@ -1,4 +1,3 @@
-import { ERC20Service, TokenMetadataType } from '@aave/contract-helpers';
 import {
   normalize,
   normalizeBN,
@@ -9,22 +8,22 @@ import {
 import { loader } from 'graphql.macro';
 import { useCallback, useMemo } from 'react';
 import { useAppDataContext } from 'src/hooks/app-data-provider/useAppDataProvider';
-import { useProtocolDataContext } from 'src/hooks/useProtocolDataContext';
 import { amountToUsd } from 'src/utils/utils';
 
 import {
+  ApplicationOrCreditLine,
   AtomicaBorrowMarket,
   AtomicaLoan,
   AtomicaSubgraphLoan,
   AtomicaSubgraphLoanChunk,
   AtomicaSubgraphLoanRequest,
   AtomicaSubgraphPolicy,
-  CreditLine,
   LoanStatus,
 } from '../types';
 import { getRequestStatus } from '../utils';
-import useAsyncMemo from './useAsyncMemo';
+import { useApplications } from './useApplications';
 import { useSubgraph } from './useSubgraph';
+import { useTokensData } from './useTokensData';
 
 const LOANS_QUERY = loader('../queries/loans.gql');
 const LOAN_CHUNKS_QUERY = loader('../queries/loan-chunks.gql');
@@ -33,7 +32,6 @@ export const useUserLoans = (
   policies?: AtomicaSubgraphPolicy[],
   markets: AtomicaBorrowMarket[] = []
 ) => {
-  const { jsonRpcProvider } = useProtocolDataContext();
   const { marketReferencePriceInUsd, reserves } = useAppDataContext();
 
   const policyIds = useMemo(() => policies?.map((policy) => policy.policyId), [policies]);
@@ -62,44 +60,17 @@ export const useUserLoans = (
     },
   });
 
+  const { applications, reload: refetchApplications } = useApplications();
+
   const tokenIds = useMemo(
-    () =>
-      policies?.reduce<string[]>((tokenIds, policy) => {
-        if (
-          tokenIds.includes(policy.market.capitalToken) ||
-          tokenIds.includes(policy.market.premiumToken)
-        )
-          return tokenIds;
-
-        tokenIds.push(policy.market.capitalToken);
-
-        if (policy.market.premiumToken !== policy.market.capitalToken)
-          tokenIds.push(policy.market.premiumToken);
-
-        return tokenIds;
-      }, []),
+    () => policies?.map((policy) => policy.market.capitalToken) ?? [],
     [policies]
   );
 
-  const [tokenData, { loading: loadingTokenData }] = useAsyncMemo<TokenMetadataType[]>(
-    async () => {
-      if (!tokenIds?.length) {
-        return [];
-      }
-
-      const erc20Service = new ERC20Service(jsonRpcProvider());
-      const tokensData = await Promise.all(
-        tokenIds.map(async (tokenId) => erc20Service.getTokenData(tokenId))
-      );
-
-      return tokensData;
-    },
-    [],
-    [tokenIds]
-  );
+  const { data: tokenData, loading: loadingTokenData } = useTokensData(tokenIds);
 
   const loans: AtomicaLoan[] = useMemo(() => {
-    if (!data?.loans || !chunksData?.loanChunks || loadingTokenData) {
+    if (!data?.loans || loadingTokenData) {
       return [];
     }
 
@@ -132,7 +103,7 @@ export const useUserLoans = (
       );
 
       const chunks =
-        loan !== undefined
+        loan !== undefined && chunksData !== undefined
           ? chunksData.loanChunks
               .filter((chunk) => chunk.loanId === loan.id)
               .map((chunk) => ({
@@ -226,22 +197,63 @@ export const useUserLoans = (
 
     return requests;
   }, [
-    data?.loans,
-    chunksData?.loanChunks,
-    tokenData,
-    marketReferencePriceInUsd,
+    data,
+    chunksData,
     loadingTokenData,
-    reserves,
     policies,
-    data?.loanRequests,
+    tokenData,
+    reserves,
+    marketReferencePriceInUsd,
   ]);
 
-  const creditLines: CreditLine[] = useMemo(() => {
+  const creditLines: ApplicationOrCreditLine[] = useMemo(() => {
     if (!policies) {
       return [];
     }
 
-    return policies?.map((policy) => {
+    const pendingApplications = applications.map((application): ApplicationOrCreditLine => {
+      const asset = tokenData?.find(
+        (token) => token.address.toLowerCase() === application.asset?.address.toLowerCase()
+      );
+
+      const reserve = reserves.find((reserve) => {
+        if (asset?.symbol.toLowerCase() === 'eth') return reserve.isWrappedBaseAsset;
+
+        return reserve.symbol.toLowerCase() === asset?.symbol.toLowerCase();
+      });
+
+      const amountUsd = amountToUsd(
+        application.amount,
+        reserve?.formattedPriceInMarketReferenceCurrency ?? '1',
+        marketReferencePriceInUsd
+      ).toNumber();
+
+      return {
+        id: `${application.id}`,
+        amount: '0',
+        amountUsd: 0,
+        requestedAmount: application.amount,
+        requestedAmountUsd: amountUsd,
+        apr: 0,
+        maxApr: application.maxApr,
+        status: LoanStatus.Pending,
+        symbol: asset?.symbol ?? '',
+        asset,
+        title: `${application.product?.title}: ${application.title}`,
+        topUp: application.topUp,
+        topUpUsd: amountToUsd(
+          application.topUp,
+          reserve?.formattedPriceInMarketReferenceCurrency ?? '1',
+          marketReferencePriceInUsd
+        ).toNumber(),
+        policyId: '',
+        aggreement: '',
+        marketId: '',
+        market: undefined,
+      };
+    });
+
+    const activeCreditLines = policies?.map((policy) => {
       const asset = tokenData?.find(
         (token) => token.address.toLowerCase() === policy?.market.capitalToken.toLowerCase()
       );
@@ -252,23 +264,33 @@ export const useUserLoans = (
         return reserve.symbol.toLowerCase() === asset?.symbol.toLowerCase();
       });
 
-      const amount = normalize(policy.coverage, asset?.decimals ?? 0).toString();
+      const requestedAmount = normalize(policy.coverage, asset?.decimals ?? 0).toString();
 
-      const amountUsd = amountToUsd(
-        amount,
+      const requestedAmountUsd = amountToUsd(
+        requestedAmount,
         reserve?.formattedPriceInMarketReferenceCurrency ?? '1',
         marketReferencePriceInUsd
-      ).toString();
+      ).toNumber();
 
       const market = markets.find(
         (market) => market.marketId.toLowerCase() === policy.marketId.toLowerCase()
       );
 
+      const topUp = normalize(policy.premiumDeposit, asset?.decimals ?? 0).toString();
+
+      const topUpUsd = amountToUsd(
+        topUp,
+        reserve?.formattedPriceInMarketReferenceCurrency ?? '1',
+        marketReferencePriceInUsd
+      ).toNumber();
+
       return {
         id: policy.id,
         policyId: policy.policyId,
-        amount,
-        amountUsd,
+        amount: '0',
+        amountUsd: 0,
+        requestedAmount: requestedAmount,
+        requestedAmountUsd: requestedAmountUsd,
         usdRate: amountToUsd(
           1,
           reserve?.formattedPriceInMarketReferenceCurrency ?? '1',
@@ -279,16 +301,24 @@ export const useUserLoans = (
         title: `${market?.product.title}:${market?.title}`,
         asset,
         symbol: asset?.symbol ?? '',
+        aggreement: market?.product.wording ?? 'unknown',
+        status: LoanStatus.Active,
+        apr: Number(market?.apr ?? 0),
+        maxApr: Number(market?.apr ?? 0),
+        topUp,
+        topUpUsd,
+        agreement: market?.product.wording ?? '',
       };
     });
-  }, [policies, reserves, tokenData, marketReferencePriceInUsd, markets]);
+
+    return [...pendingApplications, ...activeCreditLines];
+  }, [policies, applications, tokenData, reserves, marketReferencePriceInUsd, markets]);
 
   const refetchLoans = useCallback(
     async (blockNumber?: number) => {
-      sync(blockNumber);
-      syncChunks(blockNumber);
+      await Promise.all([sync(blockNumber), syncChunks(blockNumber), refetchApplications()]);
     },
-    [sync, syncChunks]
+    [refetchApplications, sync, syncChunks]
   );
 
   return {

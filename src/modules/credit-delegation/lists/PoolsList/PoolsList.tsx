@@ -8,8 +8,9 @@ import { CREDIT_DELEGATION_LIST_COLUMN_WIDTHS } from 'src/utils/creditDelegation
 
 import { ListWrapper } from '../../../../components/lists/ListWrapper';
 import { useWalletBalances } from '../../../../hooks/app-data-provider/useWalletBalances';
+import { HIDDEN_POOLS } from '../../consts';
 import { useCreditDelegationContext } from '../../CreditDelegationContext';
-import { handleSortPools } from '../../utils';
+import { handleStandardSort } from '../../utils';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListLoader } from '../ListLoader';
 import { PoolListItem } from './PoolListItem';
@@ -83,9 +84,14 @@ export const PoolsList = () => {
 
   const { loading: loadingPools, pools } = useCreditDelegationContext();
 
+  const filteredPools = useMemo(
+    () => pools.filter((pool) => !HIDDEN_POOLS.includes(pool.id.toLowerCase())),
+    [pools]
+  );
+
   const sortedPools = useMemo(
-    () => handleSortPools(sortDesc, sortName, pools),
-    [sortDesc, sortName, pools]
+    () => handleStandardSort(sortDesc, sortName, filteredPools),
+    [sortDesc, sortName, filteredPools]
   );
 
   if (loadingPools || loading)

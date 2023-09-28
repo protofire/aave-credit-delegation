@@ -88,18 +88,17 @@ export const MarketsList = () => {
   const borrowDisabled = !markets.length;
 
   const sortedMarkets = useMemo(
-    () => handleSortMarkets(sortDesc, sortName, markets),
+    () =>
+      handleSortMarkets(
+        sortDesc,
+        sortName,
+        markets.filter((market) => market.allowed)
+      ),
     [sortDesc, sortName, markets]
   );
 
   if (loading)
-    return (
-      <ListLoader
-        title={<Trans>Markets</Trans>}
-        head={head.map((col) => col.title)}
-        withTopMargin
-      />
-    );
+    return <ListLoader title={<Trans>Markets</Trans>} head={head.map((col) => col.title)} />;
 
   return (
     <ListWrapper

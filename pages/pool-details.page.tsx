@@ -52,7 +52,6 @@ export default function PoolDetails() {
             <Box
               sx={{
                 display: { xs: 'block', lg: 'block' },
-                // width: { xs: '100%', lg: '416px' },
                 width: { xs: '100%', lg: '50%' },
               }}
             >

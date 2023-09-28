@@ -8,7 +8,7 @@ import { Trans } from '@lingui/macro';
 // import { AddressInput } from '../AddressInput';
 import { Box, Checkbox, Typography } from '@mui/material';
 import BigNumber from 'bignumber.js';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Warning } from 'src/components/primitives/Warning';
 import { AssetInput } from 'src/components/transactions/AssetInput';
 import { GasEstimationError } from 'src/components/transactions/FlowCommons/GasEstimationError';
@@ -26,6 +26,7 @@ import { useProtocolDataContext } from 'src/hooks/useProtocolDataContext';
 import { roundToTokenDecimals } from 'src/utils/utils';
 
 import { useCreditDelegationContext } from '../../CreditDelegationContext';
+import { useTokensData } from '../../hooks/useTokensData';
 import { CreditDelegationActions } from './CreditDelegationActions';
 
 export enum ErrorType {
@@ -42,7 +43,7 @@ export const CreditDelegationModalContent = React.memo(
     const { currentNetworkConfig } = useProtocolDataContext();
     const { mainTxState: supplyTxState, gasLimit, txError } = useModalContext();
 
-    const { pools, lended } = useCreditDelegationContext();
+    const { pools, lent: lent, lendingCapacity } = useCreditDelegationContext();
     const pool = pools.find((p) => p.id === poolId);
 
     // states
@@ -51,9 +52,13 @@ export const CreditDelegationModalContent = React.memo(
 
     const supplyUnWrapped = underlyingAsset.toLowerCase() === API_ETH_MOCK_ADDRESS.toLowerCase();
 
-    const maxAmountToDelegate = valueToBigNumber(pool?.availableBalance || '0')
+    const { data: assets } = useTokensData(
+      useMemo(() => [poolReserve.underlyingAsset], [poolReserve.underlyingAsset])
+    );
+
+    const maxAmountToDelegate = valueToBigNumber(lendingCapacity)
       .minus(
-        valueToBigNumber(lended)
+        valueToBigNumber(lent)
           .shiftedBy(USD_DECIMALS)
           .dividedBy(marketReferencePriceInUsd)
           .dividedBy(poolReserve.formattedPriceInMarketReferenceCurrency)
@@ -80,8 +85,6 @@ export const CreditDelegationModalContent = React.memo(
       .shiftedBy(-USD_DECIMALS);
 
     const isMaxSelected = amount === maxAmountToDelegate;
-
-    console.log({ poolReserve });
 
     const supplyActionsProps = {
       amount,
@@ -137,14 +140,14 @@ export const CreditDelegationModalContent = React.memo(
             value={amount}
             onChange={handleChange}
             usdValue={amountInUsd.toString(10)}
-            symbol={supplyUnWrapped ? currentNetworkConfig.baseAssetSymbol : poolReserve.symbol}
+            symbol={supplyUnWrapped ? currentNetworkConfig.baseAssetSymbol : assets[0]?.symbol}
             assets={[
               {
                 balance: maxAmountToDelegate,
-                symbol: supplyUnWrapped ? currentNetworkConfig.baseAssetSymbol : poolReserve.symbol,
+                symbol: supplyUnWrapped ? currentNetworkConfig.baseAssetSymbol : assets[0]?.symbol,
                 iconSymbol: supplyUnWrapped
                   ? currentNetworkConfig.baseAssetSymbol
-                  : poolReserve.iconSymbol,
+                  : assets[0]?.iconSymbol,
               },
             ]}
             isMaxSelected={isMaxSelected}

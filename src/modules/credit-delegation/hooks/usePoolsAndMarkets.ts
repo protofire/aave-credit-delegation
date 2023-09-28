@@ -1,9 +1,4 @@
-import {
-  API_ETH_MOCK_ADDRESS,
-  ERC20Service,
-  InterestRate,
-  TokenMetadataType,
-} from '@aave/contract-helpers';
+import { API_ETH_MOCK_ADDRESS, InterestRate } from '@aave/contract-helpers';
 import {
   normalize,
   normalizeBN,
@@ -40,6 +35,7 @@ import {
   PoolBalances,
 } from '../types';
 import { convertTimestampToDate } from '../utils';
+import { useAllowLists } from './useAllowLists';
 import useAsyncMemo from './useAsyncMemo';
 import { useLendingPositions as usePoolLoanChunks } from './useLendingPositions';
 import { useMarketsApr } from './useMarketsApr';
@@ -48,10 +44,14 @@ import { usePoolsApy } from './usePoolsApy';
 import { usePoolsMetadata } from './usePoolsMetadata';
 import { useRiskPool } from './useRiskPool';
 import { useSubgraph } from './useSubgraph';
+import { useTokensData } from './useTokensData';
 import { useUserLoans } from './useUserLoans';
 import { useUserVaults } from './useUserVaults';
 
-const MAIN_QUERY = loader('../queries/main.gql');
+const MY_POLICIES_QUERY = loader('../queries/myPolicies.gql');
+const MARKETS_QUERY = loader('../queries/markets.gql');
+
+const POOLS_QUERY = loader('../queries/pools.gql');
 
 type ApproveCredit = Record<string, { amount: string; amountUsd: string; amountUsdBig: BigNumber }>;
 
@@ -62,7 +62,7 @@ export const usePoolsAndMarkets = () => {
     marketReferencePriceInUsd,
     loading: appDataLoading,
   } = useAppDataContext();
-  const { currentNetworkConfig, jsonRpcProvider } = useProtocolDataContext();
+  const { currentNetworkConfig } = useProtocolDataContext();
   const { walletBalances } = useWalletBalances();
   const account = useRootStore((state) => state.account);
   const metadata = usePoolsMetadata();
@@ -70,11 +70,17 @@ export const usePoolsAndMarkets = () => {
   const poolsApy = usePoolsApy();
   const { getUserAvailablePoolBalance, rewardEarningsStates } = useRiskPool();
 
-  const [approvedCredit, setApprovedCredit] = useState<ApproveCredit>({});
+  const [approvedCredit, setApprovedCredit] = useState<Record<string, ApproveCredit>>({});
   const [approvedCreditLoading, setApprovedCreditLoading] = useState<boolean>(false);
   const [approvedCreditLoaded, setApprovedCreditLoaded] = useState<boolean>(false);
 
   const { loading: loadingVaults, vaults, refetch: refetchVaults } = useUserVaults();
+
+  const { loading: loadingAllowLists, allowLists } = useAllowLists(
+    account ? [account.toLowerCase()] : undefined
+  );
+
+  const allowListIds = useMemo(() => allowLists?.map((item) => item.id) || [], [allowLists]);
 
   const { baseAssetSymbol } = currentNetworkConfig;
 
@@ -91,6 +97,8 @@ export const usePoolsAndMarkets = () => {
         .shiftedBy(-USD_DECIMALS)
         .toFixed(2);
 
+      const iconSymbol = reserve.iconSymbol === 'GHST' ? 'GHO' : reserve.iconSymbol;
+
       return {
         ...reserve,
         address: reserve.underlyingAsset,
@@ -103,7 +111,7 @@ export const usePoolsAndMarkets = () => {
             ? Number(reserve.stableBorrowAPY)
             : -1,
         variableBorrowRate: reserve.borrowingEnabled ? Number(reserve.variableBorrowAPY) : -1,
-        iconSymbol: reserve.iconSymbol,
+        iconSymbol,
         ...(reserve.isWrappedBaseAsset
           ? fetchIconSymbolAndName({
               symbol: baseAssetSymbol,
@@ -114,56 +122,71 @@ export const usePoolsAndMarkets = () => {
     });
 
   const {
-    loading: mainLoading,
-    error,
-    data,
-    sync,
+    loading: myPoliciesLoading,
+    error: myPoliciesError,
+    data: myPoliciesData,
+    sync: myPoliciesSync,
   } = useSubgraph<{
-    pools: AtomicaSubgraphPool[];
-    markets: AtomicaSubgraphMarket[];
     myPolicies: AtomicaSubgraphPolicy[];
-  }>(MAIN_QUERY, {
+  }>(MY_POLICIES_QUERY, {
     variables: {
       productIds: PRODUCT_IDS,
-      managerIds: POOL_MANAGER_IDS,
       owner: account.toLowerCase(),
     },
     skip: !account,
   });
 
+  const {
+    loading: marketsLoading,
+    error: marketsError,
+    data: marketsData,
+    sync: marketsSync,
+  } = useSubgraph<{
+    markets: AtomicaSubgraphMarket[];
+  }>(MARKETS_QUERY, {
+    variables: {
+      productIds: PRODUCT_IDS,
+    },
+  });
+
+  const {
+    loading: poolsLoading,
+    error: poolsError,
+    data: poolsData,
+    sync: poolsSync,
+  } = useSubgraph<{
+    pools: AtomicaSubgraphPool[];
+  }>(POOLS_QUERY, {
+    variables: {
+      operatorIds: POOL_MANAGER_IDS,
+    },
+  });
+
   const { loading: loadingPoolLoanChunks, data: poolLoanChunks } = usePoolLoanChunks(
-    useMemo(() => data?.pools.map((pool) => pool.id), [data?.pools])
+    useMemo(() => poolsData?.pools.map((pool) => pool.id), [poolsData?.pools])
   );
 
   const { loading: loadingPoolRewards, data: poolRewards } = usePoolRewards(
-    data?.pools.map((pool) => pool.id)
+    poolsData?.pools?.map((pool) => pool.id)
   );
 
-  const [marketTokens, { loading: loadingMarketTokens }] = useAsyncMemo<TokenMetadataType[]>(
-    async () => {
-      const tokens = Array.from(
+  const marketTokensIds = useMemo(
+    () =>
+      Array.from(
         new Set([
-          ...(data?.markets.map((market) => market.capitalToken) ?? []),
-          ...(data?.markets.map((market) => market.premiumToken) ?? []),
+          ...(marketsData?.markets.map((market) => market.capitalToken) ?? []),
+          ...(marketsData?.markets.map((market) => market.premiumToken) ?? []),
         ])
-      );
-
-      const erc20Service = new ERC20Service(jsonRpcProvider());
-      const tokensData = await Promise.all(
-        tokens.map(async (token) => erc20Service.getTokenData(token))
-      );
-
-      return tokensData;
-    },
-    [],
-    [data?.markets]
+      ),
+    [marketsData?.markets]
   );
+  const { data: marketTokens, loading: loadingMarketTokens } = useTokensData(marketTokensIds);
 
   const [poolsAvailableBalances, { loading: loadingPoolsBalance }] = useAsyncMemo<PoolBalances[]>(
     async () => {
-      const poolsData = Array.from(data?.pools ?? []);
+      const pools = Array.from(poolsData?.pools ?? []);
       const myPools = await Promise.all(
-        poolsData.map(async (pool) =>
+        pools.map(async (pool) =>
           getUserAvailablePoolBalance(
             pool,
             marketTokens,
@@ -178,14 +201,16 @@ export const usePoolsAndMarkets = () => {
       return myPools;
     },
     [],
-    [data?.pools, poolRewards, marketTokens]
+    [poolsData?.pools, poolRewards, marketTokens]
   );
 
   const fetchBorrowAllowance = useCallback(
     async (poolId: string, forceApprovalCheck?: boolean) => {
       // Check approved amount on-chain on first load or if an action triggers a re-check such as an approval being confirmed
       if (approvedCredit[poolId] === undefined || forceApprovalCheck) {
-        const pool = data?.pools.find((pool) => pool.id.toLowerCase() === poolId.toLowerCase());
+        const pool = poolsData?.pools.find(
+          (pool) => pool.id.toLowerCase() === poolId.toLowerCase()
+        );
 
         if (!pool) {
           return;
@@ -208,17 +233,27 @@ export const usePoolsAndMarkets = () => {
 
             return {
               ...prev,
-              [poolId.toLowerCase()]: {
-                amount: vault.loanAmount ?? '0',
-                amountUsdBig,
-                amountUsd: amountUsdBig.toFixed(2),
+              [vault.id]: {
+                ...prev[vault.id],
+                [poolId.toLowerCase()]: {
+                  amount: vault.loanAmount ?? '0',
+                  amountUsdBig,
+                  amountUsd: amountUsdBig.toFixed(2),
+                },
               },
             };
           });
         }
       }
     },
-    [approvedCredit, data?.pools, vaults, reserves, setApprovedCredit, marketReferencePriceInUsd]
+    [
+      approvedCredit,
+      poolsData?.pools,
+      vaults,
+      reserves,
+      setApprovedCredit,
+      marketReferencePriceInUsd,
+    ]
   );
 
   const fetchAllBorrowAllowances = useCallback(
@@ -229,7 +264,7 @@ export const usePoolsAndMarkets = () => {
       setApprovedCreditLoading(true);
 
       await Promise.all(
-        (data?.pools ?? []).map((pool) => fetchBorrowAllowance(pool.id, forceApprovalCheck))
+        (poolsData?.pools ?? []).map((pool) => fetchBorrowAllowance(pool.id, forceApprovalCheck))
       );
       setApprovedCreditLoading(false);
     },
@@ -239,20 +274,21 @@ export const usePoolsAndMarkets = () => {
       setApprovedCreditLoading,
       approvedCreditLoading,
       loadingVaults,
-      data?.pools,
+      poolsData?.pools,
     ]
   );
 
   useEffect(() => {
-    if (!appDataLoading && !mainLoading && !approvedCreditLoaded && !loadingVaults) {
+    if (!appDataLoading && !approvedCreditLoaded && !loadingVaults) {
       fetchAllBorrowAllowances();
       setApprovedCreditLoaded(true);
     }
-  }, [fetchAllBorrowAllowances, appDataLoading, mainLoading, approvedCreditLoaded, loadingVaults]);
+  }, [fetchAllBorrowAllowances, appDataLoading, approvedCreditLoaded, loadingVaults]);
 
   const pools: AtomicaDelegationPool[] = useMemo(() => {
     if (
-      mainLoading ||
+      marketsLoading ||
+      poolsLoading ||
       appDataLoading ||
       approvedCreditLoading ||
       loadingVaults ||
@@ -262,7 +298,7 @@ export const usePoolsAndMarkets = () => {
       return [];
     }
 
-    return (data?.pools ?? []).map((pool: AtomicaSubgraphPool) => {
+    return (poolsData?.pools ?? []).map((pool: AtomicaSubgraphPool) => {
       const userReserve = reserves.find((reserve) => reserve.symbol === pool.capitalTokenSymbol);
 
       const tokenToBorrow = tokensToBorrow.find(
@@ -307,13 +343,15 @@ export const usePoolsAndMarkets = () => {
         marketReferencePriceInUsd
       ).toString();
 
+      const vaultApprovedCredit = vault?.id ? approvedCredit[vault.id] : undefined;
+
       return {
         asset: tokenToBorrow,
         id: pool.id,
         symbol: pool.capitalTokenSymbol === 'GHST' ? 'GHO' : pool.capitalTokenSymbol,
         iconSymbol: pool.capitalTokenSymbol === 'GHST' ? 'GHO' : pool.capitalTokenSymbol,
         name: pool.name,
-        manager: pool.manager,
+        manager: pool.operator,
         markets: pool.markets,
         walletBalance:
           (userReserve?.underlyingAsset && walletBalances[userReserve?.underlyingAsset]?.amount) ??
@@ -330,10 +368,10 @@ export const usePoolsAndMarkets = () => {
         availableBalance: tokenToBorrow?.availableBorrows ?? '0.0',
         availableBalanceUsd: tokenToBorrow?.availableBorrowsInUSD ?? '0.0',
         metadata: poolMetadata,
-        approvedCredit: approvedCredit[pool.id.toLowerCase()]?.amount ?? '0.0',
-        approvedCreditUsd: approvedCredit[pool.id.toLowerCase()]?.amountUsd ?? '0.0',
+        approvedCredit: vaultApprovedCredit?.[pool.id.toLowerCase()]?.amount ?? '0.0',
+        approvedCreditUsd: vaultApprovedCredit?.[pool.id.toLowerCase()]?.amountUsd ?? '0.0',
         approvedCreditUsdBig:
-          approvedCredit[pool.id.toLowerCase()]?.amountUsdBig ?? valueToBigNumber(0),
+          vaultApprovedCredit?.[pool.id.toLowerCase()]?.amountUsdBig ?? valueToBigNumber(0),
         vault,
         stableDebtTokenAddress: userReserve?.stableDebtTokenAddress ?? '',
         variableDebtTokenAddress: userReserve?.variableDebtTokenAddress ?? '',
@@ -348,22 +386,25 @@ export const usePoolsAndMarkets = () => {
           earnings: rewardEarnings,
         },
         userAvailableWithdraw: balances?.availableWithdraw ?? 0,
-        managerFee: normalize(pool.managerFee, 18),
+        managerFee: normalize(pool.operatorFee, 18),
         poolCap: normalize(pool.capitalRequirement, pool.capitalTokenDecimals),
         poolBalance: normalize(pool.capitalTokenBalance, pool.capitalTokenDecimals),
         poolCapUsd,
         poolBalanceUsd,
         balances,
+        data: pool.data,
+        details: pool.details,
       };
     });
   }, [
-    mainLoading,
+    marketsLoading,
+    poolsLoading,
     appDataLoading,
     approvedCreditLoading,
     loadingVaults,
     loadingPoolRewards,
     loadingPoolsBalance,
-    data?.pools,
+    poolsData?.pools,
     reserves,
     tokensToBorrow,
     metadata,
@@ -378,11 +419,11 @@ export const usePoolsAndMarkets = () => {
   ]);
 
   const markets: AtomicaBorrowMarket[] = useMemo(() => {
-    if (mainLoading || appDataLoading || loadingMarketTokens) {
+    if (appDataLoading || loadingMarketTokens || loadingAllowLists) {
       return [];
     }
 
-    return (data?.markets ?? []).map((market: AtomicaSubgraphMarket) => {
+    return (marketsData?.markets ?? []).map((market: AtomicaSubgraphMarket) => {
       const token =
         marketTokens?.find(
           (token) => token.address.toLowerCase() === market.capitalToken.toLowerCase()
@@ -418,18 +459,23 @@ export const usePoolsAndMarkets = () => {
         apr,
         product: market.product,
         asset: token,
+        allowed:
+          market.policyBuyerAllowListId === '0' ||
+          allowListIds.includes(market.policyBuyerAllowListId),
+        allowListId: market.policyBuyerAllowListId,
       };
     });
   }, [
-    data?.markets,
+    marketsData?.markets,
     walletBalances,
     reserves,
     marketsApr,
     marketTokens,
     loadingMarketTokens,
-    mainLoading,
     appDataLoading,
     tokensToBorrow,
+    allowListIds,
+    loadingAllowLists,
   ]);
 
   const {
@@ -437,16 +483,10 @@ export const usePoolsAndMarkets = () => {
     loans,
     creditLines,
     refetchLoans,
-  } = useUserLoans(data?.myPolicies, markets);
+  } = useUserLoans(myPoliciesData?.myPolicies, markets);
 
   const effectiveLendingPositions: AtomicaLendingPosition[] = useMemo(() => {
-    if (
-      mainLoading ||
-      appDataLoading ||
-      approvedCreditLoading ||
-      loadingVaults ||
-      loadingPoolLoanChunks
-    ) {
+    if (appDataLoading || approvedCreditLoading || loadingVaults || loadingPoolLoanChunks) {
       return [];
     }
 
@@ -515,7 +555,6 @@ export const usePoolsAndMarkets = () => {
       }) ?? []
     );
   }, [
-    mainLoading,
     appDataLoading,
     approvedCreditLoading,
     loadingVaults,
@@ -530,29 +569,35 @@ export const usePoolsAndMarkets = () => {
 
   const refetchAll = useCallback(
     async (blockNumber?: number) => {
-      await sync(blockNumber);
+      await myPoliciesSync(blockNumber);
+      await poolsSync(blockNumber);
+      await marketsSync(blockNumber);
       await refetchVaults(blockNumber);
       await refetchLoans(blockNumber);
     },
-    [refetchVaults, refetchLoans, sync]
-    // [refetchLoans, sync]
+    [myPoliciesSync, poolsSync, marketsSync, refetchVaults, refetchLoans]
   );
 
   return {
     pools,
     markets,
     loans,
-    myPolicies: data?.myPolicies || [],
+    myPolicies: myPoliciesData?.myPolicies || [],
     lendingPositions: effectiveLendingPositions,
-    error,
-    loading: mainLoading || appDataLoading || approvedCreditLoading || loadingVaults,
-    loansLoading,
-    loadingLendingPositions:
-      mainLoading ||
+    error: myPoliciesError || poolsError || marketsError,
+    loading:
+      myPoliciesLoading ||
       appDataLoading ||
       approvedCreditLoading ||
       loadingVaults ||
+      poolsLoading ||
+      marketsLoading ||
+      loadingMarketTokens ||
+      loadingAllowLists ||
       loadingPoolLoanChunks,
+    loansLoading,
+    loadingLendingPositions:
+      appDataLoading || approvedCreditLoading || loadingVaults || loadingPoolLoanChunks,
     fetchBorrowAllowance,
     fetchAllBorrowAllowances,
     refetchVaults,

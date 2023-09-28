@@ -1,0 +1,35 @@
+query main($operatorIds: [String]!) {
+  pools(where: { owner_in: $operatorIds }) {
+    id
+    name
+    capitalTokenSymbol
+    capitalTokenAddress
+    capitalTokenDecimals
+    operator
+    operatorFee
+    owner
+    capitalRequirement
+    capitalTokenBalance
+    data
+    details
+    markets {
+      id
+      title
+      details
+      wording
+      product {
+        id
+        title
+        wording
+      }
+    }
+  }
+
+  _meta {
+    block {
+      number
+      timestamp
+      hash
+    }
+  }
+}

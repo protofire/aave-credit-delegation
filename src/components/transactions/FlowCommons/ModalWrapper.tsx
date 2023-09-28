@@ -1,12 +1,12 @@
 import { API_ETH_MOCK_ADDRESS, PERMISSION } from '@aave/contract-helpers';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ReactElement } from 'react-markdown/lib/react-markdown';
 import {
   ComputedReserveData,
   ComputedUserReserveData,
   useAppDataContext,
 } from 'src/hooks/app-data-provider/useAppDataProvider';
-import { useExternalDataProvider } from 'src/hooks/app-data-provider/useExternalDataProvider';
+// import { useExternalDataProvider } from 'src/hooks/app-data-provider/useExternalDataProvider';
 import { useWalletBalances } from 'src/hooks/app-data-provider/useWalletBalances';
 import { AssetCapsProvider } from 'src/hooks/useAssetCaps';
 import { useIsWrongNetwork } from 'src/hooks/useIsWrongNetwork';
@@ -14,6 +14,7 @@ import { useModalContext } from 'src/hooks/useModal';
 import { usePermissions } from 'src/hooks/usePermissions';
 import { useProtocolDataContext } from 'src/hooks/useProtocolDataContext';
 import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
+import { ATOMICA_GHO_TOKEN_ADDRESS, GHO_TOKEN } from 'src/modules/credit-delegation/consts';
 import { getNetworkConfig, isFeatureEnabled } from 'src/utils/marketsAndNetworksConfig';
 
 import { TxModalTitle } from '../FlowCommons/TxModalTitle';
@@ -54,20 +55,20 @@ export const ModalWrapper: React.FC<{
   const { user, reserves } = useAppDataContext();
   const { txError, mainTxState } = useModalContext();
   const { permissions } = usePermissions();
-  const { getExternalReserve } = useExternalDataProvider();
+  // const { getExternalReserve } = useExternalDataProvider();
 
-  const [poolReserve, setPoolReserve] = React.useState<ComputedReserveData>(reserves[0]);
+  // const [poolReserve, setPoolReserve] = React.useState<ComputedReserveData>(reserves[0]);
 
   const { isWrongNetwork, requiredChainId } = useIsWrongNetwork(_requiredChainId);
 
-  useEffect(() => {
-    if (reserves) {
-      (async () => {
-        const pool = await getPoolReserve();
-        setPoolReserve(pool);
-      })();
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (reserves) {
+  //     (async () => {
+  //       const pool = await getPoolReserve();
+  //       setPoolReserve(pool);
+  //     })();
+  //   }
+  // }, []);
 
   if (txError && txError.blocking) {
     return <TxErrorView txError={txError} />;
@@ -82,23 +83,34 @@ export const ModalWrapper: React.FC<{
     return <>{currentMarketData.permissionComponent}</>;
   }
 
-  const getPoolReserve = () => {
-    const pool = reserves.find((reserve) => {
-      if (underlyingAsset.toLowerCase() === API_ETH_MOCK_ADDRESS.toLowerCase())
-        return reserve.isWrappedBaseAsset;
-      return underlyingAsset === reserve.underlyingAsset;
-    });
+  // const getPoolReserve = () => {
+  //   const pool = reserves.find((reserve) => {
+  //     if (underlyingAsset.toLowerCase() === API_ETH_MOCK_ADDRESS.toLowerCase())
+  //       return reserve.isWrappedBaseAsset;
+  //     return underlyingAsset === reserve.underlyingAsset;
+  //   });
 
-    if (!pool || underlyingAsset === '0xa13f6c1047f90642039ef627c66b758bcec513ba')
-      return getExternalReserve(underlyingAsset);
-    return pool;
-  };
+  //   if (!pool || underlyingAsset === '0xa13f6c1047f90642039ef627c66b758bcec513ba')
+  //     return getExternalReserve(underlyingAsset);
+  //   return pool;
+  // };
 
-  // const poolReserve = reserves.find((reserve) => {
-  //   if (underlyingAsset.toLowerCase() === API_ETH_MOCK_ADDRESS.toLowerCase())
-  //     return reserve.isWrappedBaseAsset;
-  //   return underlyingAsset === reserve.underlyingAsset;
-  // }) as ComputedReserveData;
+  const poolReserve = reserves.find((reserve) => {
+    if (underlyingAsset.toLowerCase() === API_ETH_MOCK_ADDRESS.toLowerCase())
+      return reserve.isWrappedBaseAsset;
+
+    if (underlyingAsset.toLowerCase() === GHO_TOKEN.address.toLowerCase()) {
+      return reserve.underlyingAsset.toLowerCase() === ATOMICA_GHO_TOKEN_ADDRESS.toLowerCase();
+    }
+
+    return underlyingAsset.toLowerCase() === reserve.underlyingAsset.toLowerCase();
+  }) as ComputedReserveData;
+
+  console.log({
+    poolReserve,
+    underlyingAsset,
+    reserves,
+  });
 
   const userReserve = user?.userReservesData.find((userReserve) => {
     if (underlyingAsset.toLowerCase() === API_ETH_MOCK_ADDRESS.toLowerCase())
@@ -107,9 +119,9 @@ export const ModalWrapper: React.FC<{
   }) as ComputedUserReserveData;
 
   const symbol =
-    poolReserve.isWrappedBaseAsset && !keepWrappedSymbol
+    poolReserve?.isWrappedBaseAsset && !keepWrappedSymbol
       ? currentNetworkConfig.baseAssetSymbol
-      : poolReserve.symbol;
+      : poolReserve?.symbol;
 
   return (
     <AssetCapsProvider asset={poolReserve}>

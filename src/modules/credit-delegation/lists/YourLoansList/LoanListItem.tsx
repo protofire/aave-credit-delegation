@@ -55,9 +55,9 @@ export const LoanListItem = (loan: AtomicaLoan) => {
 
   return (
     <ListItemWrapper
-      symbol={asset?.symbol ?? 'unknown'}
-      iconSymbol={asset?.symbol ?? 'unknown'}
-      name={asset?.name ?? 'unknown'}
+      symbol={asset?.symbol ?? 'Unknown'}
+      iconSymbol={asset?.symbol ?? 'default'}
+      name={asset?.name ?? 'Unknown'}
     >
       <ListColumn>
         {market?.product.title}: {market?.title}
@@ -72,7 +72,7 @@ export const LoanListItem = (loan: AtomicaLoan) => {
         status={status}
       />
 
-      <ListAPRColumn symbol={asset?.symbol ?? 'unknown'} value={apr} />
+      <ListAPRColumn symbol={asset?.symbol ?? 'default'} value={apr} />
 
       {status === LoanStatus.Active ? (
         <ListRepaidColumn
