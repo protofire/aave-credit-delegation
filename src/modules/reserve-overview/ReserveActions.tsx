@@ -42,7 +42,6 @@ import { CreditDelegationModal } from '../credit-delegation/modals/CreditDelegat
 import { ManageVaultModal } from '../credit-delegation/modals/WithdrawPool/ManageVaultModal';
 import { AtomicaDelegationPool } from '../credit-delegation/types';
 import { calcAccruedInterest } from '../credit-delegation/utils';
-import { PanelItem } from './ReservePanels';
 
 interface ReserveActionsProps {
   reserve: ComputedReserveData;
@@ -278,7 +277,7 @@ const ActionsSkeleton = () => {
 
 const PaperWrapper = ({ children }: { children: ReactNode }) => {
   return (
-    <Paper sx={{ pt: 4, pb: { xs: 4, xsm: 6 }, px: { xs: 4, xsm: 6 } }}>
+    <Paper sx={{ pt: 4, pb: { xs: 4, xsm: 6 }, px: { xs: 4, xsm: 6 }, height: '100%' }}>
       <Typography variant="h3" sx={{ mb: 6 }}>
         <Trans>Your info</Trans>
       </Typography>
@@ -323,7 +322,7 @@ const SupplyAction = ({ value, usdValue, symbol, disable, onActionClicked }: Act
   return (
     <Stack>
       <AvailableTooltip
-        variant="description"
+        variant="h3"
         text={<Trans>Available to lend</Trans>}
         capType={CapType.supplyCap}
       />
@@ -366,9 +365,9 @@ const BorrowAction = ({
   rewardsUsd,
 }: ActionProps) => {
   return (
-    <Stack alignItems="center">
+    <Stack>
       <AvailableTooltip
-        variant="description"
+        variant="h3"
         text={<Trans>Available to withdraw</Trans>}
         capType={CapType.borrowCap}
       />
@@ -376,22 +375,12 @@ const BorrowAction = ({
         marginTop={5}
         sx={{ height: '44px' }}
         direction="row"
-        justifyContent="space-evenly"
+        justifyContent="space-between"
         alignItems="center"
       >
-        <Stack
-          sx={{ height: '44px' }}
-          direction="row"
-          justifyContent="space-evenly"
-          alignItems="center"
-        >
-          <PanelItem
-            title={
-              <Box display="flex" alignItems="center">
-                <Trans>Remaining initial deposit</Trans>
-              </Box>
-            }
-          >
+        <Stack direction="column" justifyContent="space-evenly" alignItems="flex-start">
+          <Box>
+            <Trans>Remaining initial deposit</Trans>
             <FormattedNumber
               value={capitalUsd || '0'}
               variant="subheader2"
@@ -399,15 +388,10 @@ const BorrowAction = ({
               symbolsColor="text.muted"
               symbol="USD"
             />
-          </PanelItem>
+          </Box>
 
-          <PanelItem
-            title={
-              <Box display="flex" alignItems="center">
-                <Trans>Interest</Trans>
-              </Box>
-            }
-          >
+          <Box display="flex" alignItems="center">
+            <Trans>Interest</Trans>
             <FormattedNumber
               value={interestBalanceUSD || '0'}
               variant="subheader2"
@@ -415,15 +399,10 @@ const BorrowAction = ({
               symbolsColor="text.muted"
               symbol="USD"
             />
-          </PanelItem>
+          </Box>
 
-          <PanelItem
-            title={
-              <Box display="flex" alignItems="center">
-                <Trans>Rewards</Trans>
-              </Box>
-            }
-          >
+          <Box display="flex" alignItems="center">
+            <Trans>Rewards</Trans>
             <FormattedNumber
               value={rewardsUsd || '0'}
               variant="subheader2"
@@ -431,7 +410,7 @@ const BorrowAction = ({
               symbolsColor="text.muted"
               symbol="USD"
             />
-          </PanelItem>
+          </Box>
         </Stack>
         <Button
           sx={{ height: '36px', width: '96px' }}
@@ -523,7 +502,7 @@ const DepositedAmount = ({ value, symbol, usdValue, type }: DepositedAmountProps
       </Box>
       <Box>
         <Typography variant="description" color="text.secondary">
-          {type === 'balance' ? 'My asset balance' : 'Deposited amount'}
+          {type === 'balance' ? 'My asset balance' : 'Initial deposited amount'}
         </Typography>
         {type === 'deposit' && <ValueWithSymbol value={value} symbol={symbol} />}
         <FormattedNumber

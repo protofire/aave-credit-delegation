@@ -1,5 +1,5 @@
 import { Trans } from '@lingui/macro';
-import { Box, Paper, Typography } from '@mui/material';
+import { Box, Paper, Skeleton, Typography } from '@mui/material';
 import { ComputedReserveData } from 'src/hooks/app-data-provider/useAppDataProvider';
 import { useAssetCaps } from 'src/hooks/useAssetCaps';
 import { useProtocolDataContext } from 'src/hooks/useProtocolDataContext';
@@ -26,7 +26,7 @@ export const ReserveConfiguration: React.FC<ReserveConfigurationProps> = ({ rese
   const { supplyCap, debtCeiling } = useAssetCaps();
   const showSupplyCapStatus: boolean = reserve.supplyCap !== '0';
 
-  const { pools } = useCreditDelegationContext();
+  const { pools, loading: loadingPools } = useCreditDelegationContext();
 
   const pool = pools.find((pool) => pool.id === poolId) as AtomicaDelegationPool;
 
@@ -42,9 +42,18 @@ export const ReserveConfiguration: React.FC<ReserveConfigurationProps> = ({ rese
             mb: '36px',
           }}
         >
-          <Typography variant="h3">
-            <Trans>Pool Overview: {pool?.metadata?.Label}</Trans>
-          </Typography>
+          {loadingPools ? (
+            <Skeleton
+              variant="rectangular"
+              width="100%"
+              height={40}
+              sx={{ background: '#383D51' }}
+            />
+          ) : (
+            <Typography variant="h3">
+              <Trans>Pool Overview: {pool?.metadata?.Label}</Trans>
+            </Typography>
+          )}
         </Box>
 
         <PanelRow>
@@ -54,15 +63,24 @@ export const ReserveConfiguration: React.FC<ReserveConfigurationProps> = ({ rese
           >
             Details
           </Typography>
-          <SupplyInfo
-            reserve={reserve}
-            currentMarketData={currentMarketData}
-            renderCharts={renderCharts}
-            showSupplyCapStatus={showSupplyCapStatus}
-            supplyCap={supplyCap}
-            debtCeiling={debtCeiling}
-            pool={pool}
-          />
+          {loadingPools && !pool ? (
+            <Skeleton
+              variant="rectangular"
+              width="100%"
+              height={300}
+              sx={{ background: '#383D51' }}
+            />
+          ) : (
+            <SupplyInfo
+              reserve={reserve}
+              currentMarketData={currentMarketData}
+              renderCharts={renderCharts}
+              showSupplyCapStatus={showSupplyCapStatus}
+              supplyCap={supplyCap}
+              debtCeiling={debtCeiling}
+              pool={pool}
+            />
+          )}
         </PanelRow>
       </Paper>
     </>

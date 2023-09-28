@@ -17,6 +17,7 @@ query main($operatorIds: [String]!) {
       title
       details
       wording
+      premiumToken
       product {
         id
         title

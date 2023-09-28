@@ -61,12 +61,12 @@ export interface AtomicaSubgraphPool {
     title: string;
     wording: string;
     details: string;
+    premiumToken: string;
     product: {
       id: string;
       title: string;
       wording: string;
     };
-    premiumToken: string;
   }[];
   data: string;
   details: string;

@@ -2163,10 +2163,6 @@ msgstr "USD"
 msgid "Unavailable"
 msgstr "Unavailable"
 
-#: src/modules/reserve-overview/SupplyInfo.tsx
-msgid "Unbacked"
-msgstr "Unbacked"
-
 #: src/ui-config/errorMapping.tsx
 msgid "Unbacked mint cap is exceeded"
 msgstr "Unbacked mint cap is exceeded"

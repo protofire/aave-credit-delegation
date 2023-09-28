@@ -14,7 +14,7 @@ import { MarketDataType } from 'src/utils/marketsAndNetworksConfig';
 
 import { useManagerDetails } from '../credit-delegation/hooks/useManagerDetails';
 import { AtomicaDelegationPool } from '../credit-delegation/types';
-import { ApyGraphContainer } from './graphs/ApyGraphContainer';
+// import { ApyGraphContainer } from './graphs/ApyGraphContainer';
 import { PanelItem } from './ReservePanels';
 
 interface SupplyInfoProps {
@@ -27,7 +27,7 @@ interface SupplyInfoProps {
   pool: AtomicaDelegationPool;
 }
 
-export const SupplyInfo = ({ reserve, currentMarketData, renderCharts, pool }: SupplyInfoProps) => {
+export const SupplyInfo = ({ reserve, pool }: SupplyInfoProps) => {
   const { balances, manager } = pool || {};
   const { managerDetails } = useManagerDetails(manager);
 
@@ -51,7 +51,7 @@ export const SupplyInfo = ({ reserve, currentMarketData, renderCharts, pool }: S
         }}
       >
         <CapsCircularStatus
-          value={(Number(pool?.poolBalance) / Number(pool?.poolCap)) * 100}
+          value={(Number(pool?.poolBalance) / Number(pool?.poolCap)) * 100 || 0}
           tooltipContent={
             <>
               <Trans>
@@ -77,6 +77,7 @@ export const SupplyInfo = ({ reserve, currentMarketData, renderCharts, pool }: S
             </>
           }
         />
+
         <PanelItem
           title={
             <Box display="flex" alignItems="center">
@@ -99,7 +100,7 @@ export const SupplyInfo = ({ reserve, currentMarketData, renderCharts, pool }: S
           }
         >
           <Box>
-            <FormattedNumber value={pool?.poolBalance} variant="main16" compact />
+            <FormattedNumber value={pool?.poolBalance || 0} variant="main16" compact />
             <Typography
               component="span"
               color="text.primary"
@@ -108,10 +109,10 @@ export const SupplyInfo = ({ reserve, currentMarketData, renderCharts, pool }: S
             >
               <Trans>of</Trans>
             </Typography>
-            <FormattedNumber value={pool?.poolCap} variant="main16" />
+            <FormattedNumber value={pool?.poolCap || 0} variant="main16" />
           </Box>
           <Box>
-            <ReserveSubheader value={pool?.poolBalanceUsd} />
+            <ReserveSubheader value={pool?.poolBalanceUsd || '0'} />
             <Typography
               component="span"
               color="text.secondary"
@@ -135,25 +136,25 @@ export const SupplyInfo = ({ reserve, currentMarketData, renderCharts, pool }: S
 
           <IncentivesButton
             incentives={incentives}
-            value={Number(pool?.supplyAPY) + Number(pool?.rewardAPY)}
+            value={Number(pool?.supplyAPY) + Number(pool?.rewardAPY) || 0}
             displayBlank={true}
-            supplyAPY={pool?.supplyAPY}
+            supplyAPY={pool?.supplyAPY || '0'}
           />
         </PanelItem>
-        {reserve.unbacked && reserve.unbacked !== '0' && (
+        {/* {reserve.unbacked && reserve.unbacked !== '0' && (
           <PanelItem title={<Trans>Unbacked</Trans>}>
             <FormattedNumber value={reserve.unbacked} variant="main16" symbol={reserve.name} />
             <ReserveSubheader value={reserve.unbackedUSD} />
           </PanelItem>
-        )}
+        )} */}
       </Box>
-      {renderCharts && (reserve.borrowingEnabled || Number(reserve.totalDebt) > 0) && (
+      {/* {renderCharts && (reserve.borrowingEnabled || Number(reserve.totalDebt) > 0) && (
         <ApyGraphContainer
           graphKey="supply"
           reserve={reserve}
           currentMarketData={currentMarketData}
         />
-      )}
+      )} */}
       <div>
         <Box
           sx={{ display: 'inline-flex', alignItems: 'center', pt: '42px', pb: '12px' }}
@@ -195,6 +196,9 @@ export const SupplyInfo = ({ reserve, currentMarketData, renderCharts, pool }: S
             sx={{
               display: 'inline-flex',
               textDecoration: 'underline',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
             }}
           >
             {managerDetails?.website}

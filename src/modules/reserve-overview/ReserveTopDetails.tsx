@@ -12,8 +12,7 @@ import {
   ComputedReserveData,
   useAppDataContext,
 } from '../../hooks/app-data-provider/useAppDataProvider';
-import { useCreditDelegationContext } from '../credit-delegation/CreditDelegationContext';
-// import { AtomicaDelegationPool } from '../credit-delegation/types';
+// import { useCreditDelegationContext } from '../credit-delegation/CreditDelegationContext';
 import { AddTokenDropdown } from './AddTokenDropdown';
 import { TokenLinkDropdown } from './TokenLinkDropdown';
 
@@ -29,7 +28,7 @@ export const ReserveTopDetails = ({ underlyingAsset }: ReserveTopDetailsProps) =
   const { market, network } = getMarketInfoById(currentMarket);
   const { addERC20Token, switchNetwork, chainId: connectedChainId, connected } = useWeb3Context();
 
-  const { loading: loadingPools } = useCreditDelegationContext();
+  // const { loading: loadingPools } = useCreditDelegationContext();
 
   const theme = useTheme();
   const downToSM = useMediaQuery(theme.breakpoints.down('sm'));
@@ -37,8 +36,6 @@ export const ReserveTopDetails = ({ underlyingAsset }: ReserveTopDetailsProps) =
   const poolReserve = reserves.find(
     (reserve) => reserve.underlyingAsset === underlyingAsset
   ) as ComputedReserveData;
-
-  // const pool = pools.find((pool) => pool.id === poolId) as AtomicaDelegationPool;
 
   const iconSymbol = poolReserve.symbol === 'GHST' ? 'gho' : poolReserve.iconSymbol;
   const name = poolReserve.symbol === 'GHST' ? 'Gho token' : poolReserve.name;
@@ -49,7 +46,7 @@ export const ReserveTopDetails = ({ underlyingAsset }: ReserveTopDetailsProps) =
   const ReserveIcon = () => {
     return (
       <Box mr={3} sx={{ mr: 3, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        {loading || loadingPools ? (
+        {loading ? (
           <Skeleton variant="circular" width={40} height={40} sx={{ background: '#383D51' }} />
         ) : (
           <img
@@ -64,7 +61,7 @@ export const ReserveTopDetails = ({ underlyingAsset }: ReserveTopDetailsProps) =
   };
 
   const ReserveName = () => {
-    return loading && loadingPools ? (
+    return loading ? (
       <Skeleton width={60} height={28} sx={{ background: '#383D51' }} />
     ) : (
       <Typography variant={valueTypographyVariant}>{name}</Typography>
@@ -97,7 +94,7 @@ export const ReserveTopDetails = ({ underlyingAsset }: ReserveTopDetailsProps) =
               onClick={() => {
                 // https://github.com/vercel/next.js/discussions/34980
                 if (history.state.idx !== 0) router.back();
-                else router.push('/credit-delegation');
+                else router.push('/');
               }}
               sx={{ mr: 3, mb: downToSM ? '24px' : '0' }}
             >
@@ -136,7 +133,7 @@ export const ReserveTopDetails = ({ underlyingAsset }: ReserveTopDetailsProps) =
                 )}
                 <Box sx={{ display: 'inline-flex', alignItems: 'center' }}>
                   <ReserveName />
-                  {loading && loadingPools ? (
+                  {loading ? (
                     <Skeleton width={16} height={16} sx={{ ml: 1, background: '#383D51' }} />
                   ) : (
                     <Box sx={{ display: 'flex' }}>
@@ -189,16 +186,8 @@ export const ReserveTopDetails = ({ underlyingAsset }: ReserveTopDetailsProps) =
               )}
             </Box>
           </TopInfoPanelItem>
-          {/* <Divider
-            orientation="vertical"
-            flexItem
-            sx={{ my: 1, borderColor: 'rgba(235, 235, 239, 0.08)' }}
-          /> */}
         </>
       )}
-      {/* <TopInfoPanelItem title={<Trans>Pool Name</Trans>} loading={loadingPools} hideIcon>
-        <Trans>{pool?.metadata?.Label}</Trans>
-      </TopInfoPanelItem> */}
     </TopInfoPanel>
   );
 };

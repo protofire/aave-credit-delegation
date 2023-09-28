@@ -41,9 +41,10 @@ export default function PoolDetails() {
             <Box
               sx={{
                 display: { xs: 'block', lg: 'block' },
-                // width: { xs: '100%', lg: 'calc(100% - 432px)' },
+                // width: { xs: '100%', lg: 'calc(100% - 432px' },
                 width: { xs: '100%', lg: '50%' },
                 mr: { xs: 0, lg: 4 },
+                height: '432px',
               }}
             >
               {reserve && <ReserveConfiguration poolId={poolId} reserve={reserve} />}
@@ -53,6 +54,7 @@ export default function PoolDetails() {
               sx={{
                 display: { xs: 'block', lg: 'block' },
                 width: { xs: '100%', lg: '50%' },
+                height: '432px',
               }}
             >
               <ReserveActions reserve={reserve} poolId={poolId} />
