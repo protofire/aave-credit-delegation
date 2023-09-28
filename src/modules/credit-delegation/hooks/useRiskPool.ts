@@ -245,7 +245,7 @@ export const useRiskPool = () => {
     const accountPoolRewards = await getAccountPoolRewards(rewards);
 
     return rewards.reduce((tokens, reward) => {
-      const coinId = getCoinId(reward.rewardTokenName);
+      const coinId = getCoinId(reward.rewardTokenName === 'GHST' ? 'gho' : reward.rewardTokenName);
       let token: Reward = tokens[coinId];
 
       const poolReward = (accountPoolRewards || []).find(
@@ -262,8 +262,9 @@ export const useRiskPool = () => {
           id: reward.rewardToken,
           logoURI: DEFAULT_LOGO,
           decimals: reward?.rewardTokenDecimals || '0',
-          symbol: reward?.rewardTokenSymbol || '',
-          name: reward?.rewardTokenName || '',
+          symbol:
+            reward?.rewardTokenSymbol === 'GHST' ? GHO_TOKEN.symbol : reward?.rewardTokenSymbol,
+          name: reward?.rewardTokenSymbol === 'GHST' ? GHO_TOKEN.name : reward?.rewardTokenName,
           amount: new BigNumber(0),
           duration: duration.toNumber(),
           earned: new BigNumber(0),

@@ -36,6 +36,7 @@ export const useCoinRate = () => {
       if (!coinIds.length) return;
       const rates: Rate = await getPrice(coinIds);
       Object.entries(rates).forEach(([coinId, { usd }]) => {
+        if (!tokens[coinId]) return;
         tokens[coinId].tokenUsdPrice = usd;
       });
     } catch (error) {

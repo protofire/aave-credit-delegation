@@ -333,9 +333,9 @@ const SupplyAction = ({ value, usdValue, symbol, disable, onActionClicked }: Act
         alignItems="center"
       >
         <Box>
-          <ValueWithSymbol value={value} symbol={symbol} />
+          <ValueWithSymbol value={value || '0'} symbol={symbol} />
           <FormattedNumber
-            value={usdValue}
+            value={usdValue || '0.0'}
             variant="subheader2"
             color="text.muted"
             symbolsColor="text.muted"
@@ -381,37 +381,41 @@ const BorrowAction = ({
         <Stack direction="column" justifyContent="space-evenly" alignItems="flex-start">
           <Box>
             <Trans>Remaining initial deposit</Trans>
-            <FormattedNumber
-              value={capitalUsd || '0'}
-              variant="subheader2"
-              color="text.muted"
-              symbolsColor="text.muted"
-              symbol="USD"
-            />
           </Box>
 
-          <Box display="flex" alignItems="center">
+          <Box>
             <Trans>Interest</Trans>
-            <FormattedNumber
-              value={interestBalanceUSD || '0'}
-              variant="subheader2"
-              color="text.muted"
-              symbolsColor="text.muted"
-              symbol="USD"
-            />
           </Box>
 
-          <Box display="flex" alignItems="center">
+          <Box>
             <Trans>Rewards</Trans>
-            <FormattedNumber
-              value={rewardsUsd || '0'}
-              variant="subheader2"
-              color="text.muted"
-              symbolsColor="text.muted"
-              symbol="USD"
-            />
           </Box>
         </Stack>
+
+        <Stack direction="column" justifyContent="center" alignItems="flex-end">
+          <FormattedNumber
+            value={capitalUsd || '0'}
+            variant="subheader2"
+            color="text.muted"
+            symbolsColor="text.muted"
+            symbol="USD"
+          />
+          <FormattedNumber
+            value={interestBalanceUSD || '0'}
+            variant="subheader2"
+            color="text.muted"
+            symbolsColor="text.muted"
+            symbol="USD"
+          />
+          <FormattedNumber
+            value={rewardsUsd || '0'}
+            variant="subheader2"
+            color="text.muted"
+            symbolsColor="text.muted"
+            symbol="USD"
+          />
+        </Stack>
+
         <Button
           sx={{ height: '36px', width: '96px' }}
           onClick={onActionClicked}
@@ -463,7 +467,7 @@ interface ValueWithSymbolProps {
   children?: ReactNode;
 }
 
-const ValueWithSymbol = ({ value, symbol, children }: ValueWithSymbolProps) => {
+export const ValueWithSymbol = ({ value, symbol, children }: ValueWithSymbolProps) => {
   return (
     <Stack direction="row" alignItems="center" gap={1}>
       <FormattedNumber value={value} variant="h4" color="text.primary" />
@@ -504,9 +508,9 @@ const DepositedAmount = ({ value, symbol, usdValue, type }: DepositedAmountProps
         <Typography variant="description" color="text.secondary">
           {type === 'balance' ? 'My asset balance' : 'Initial deposited amount'}
         </Typography>
-        {type === 'deposit' && <ValueWithSymbol value={value} symbol={symbol} />}
+        {type === 'deposit' && <ValueWithSymbol value={value || '0'} symbol={symbol} />}
         <FormattedNumber
-          value={usdValue}
+          value={usdValue || '0.0'}
           variant={type === 'deposit' ? 'subheader2' : 'h4'}
           color={type === 'deposit' ? 'text.muted' : 'text.primary'}
           symbolsColor="text.muted"

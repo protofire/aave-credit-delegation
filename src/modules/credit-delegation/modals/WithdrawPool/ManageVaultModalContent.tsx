@@ -1,6 +1,6 @@
 import { normalize, USD_DECIMALS, valueToBigNumber, WEI_DECIMALS } from '@aave/math-utils';
 import { Trans } from '@lingui/macro';
-import { Box, Typography } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 import BigNumber from 'bignumber.js';
 import { parseUnits } from 'ethers/lib/utils';
 import { memo, useRef, useState } from 'react';
@@ -18,6 +18,7 @@ import {
 } from 'src/components/transactions/FlowCommons/TxModalDetails';
 import { useAppDataContext } from 'src/hooks/app-data-provider/useAppDataProvider';
 import { useModalContext } from 'src/hooks/useModal';
+import { ValueWithSymbol } from 'src/modules/reserve-overview/ReserveActions';
 
 import { useRiskPool } from '../../hooks/useRiskPool';
 import { AtomicaDelegationPool } from '../../types';
@@ -167,6 +168,8 @@ export const ManageVaultModalContent = memo(
         rewardTokenAddress: earning.rewardId,
         endedAt: earning.endedAt,
         usdValue: earning.usdValue,
+        value: earning.value,
+        decimals: earning.decimals,
       };
     });
 
@@ -236,7 +239,18 @@ export const ManageVaultModalContent = memo(
                       key={incentive.rewardTokenAddress}
                       width="100%"
                     >
-                      <RewardsNumber usdValue={incentive.usdValue} />
+                      <Stack direction="column" justifyContent="center" alignItems="flex-end">
+                        <ValueWithSymbol
+                          value={normalize(incentive.value, incentive.decimals) || '0'}
+                          symbol={incentive.rewardTokenSymbol}
+                        />
+                        <FormattedNumber
+                          value={incentive.usdValue || '0'}
+                          color="text.muted"
+                          variant="subheader2"
+                          symbol="USD"
+                        />
+                      </Stack>
                     </Row>
                   </>
                 ))

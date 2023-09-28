@@ -14,7 +14,6 @@ import { MarketDataType } from 'src/utils/marketsAndNetworksConfig';
 
 import { useManagerDetails } from '../credit-delegation/hooks/useManagerDetails';
 import { AtomicaDelegationPool } from '../credit-delegation/types';
-// import { ApyGraphContainer } from './graphs/ApyGraphContainer';
 import { PanelItem } from './ReservePanels';
 
 interface SupplyInfoProps {
@@ -128,7 +127,7 @@ export const SupplyInfo = ({ reserve, pool }: SupplyInfoProps) => {
         <PanelItem title={<Trans>APY</Trans>}>
           {!incentives?.length && (
             <FormattedNumber
-              value={Number(pool?.supplyAPY) + Number(pool?.rewardAPY)}
+              value={Number(pool?.supplyAPY) + Number(pool?.rewardAPY) || 0}
               percent
               variant="main16"
             />
@@ -141,20 +140,7 @@ export const SupplyInfo = ({ reserve, pool }: SupplyInfoProps) => {
             supplyAPY={pool?.supplyAPY || '0'}
           />
         </PanelItem>
-        {/* {reserve.unbacked && reserve.unbacked !== '0' && (
-          <PanelItem title={<Trans>Unbacked</Trans>}>
-            <FormattedNumber value={reserve.unbacked} variant="main16" symbol={reserve.name} />
-            <ReserveSubheader value={reserve.unbackedUSD} />
-          </PanelItem>
-        )} */}
       </Box>
-      {/* {renderCharts && (reserve.borrowingEnabled || Number(reserve.totalDebt) > 0) && (
-        <ApyGraphContainer
-          graphKey="supply"
-          reserve={reserve}
-          currentMarketData={currentMarketData}
-        />
-      )} */}
       <div>
         <Box
           sx={{ display: 'inline-flex', alignItems: 'center', pt: '42px', pb: '12px' }}
@@ -207,7 +193,7 @@ export const SupplyInfo = ({ reserve, pool }: SupplyInfoProps) => {
 
         <ReserveOverviewBox title={<Trans>Pool Manager Fee</Trans>}>
           <FormattedNumber
-            value={pool?.managerFee}
+            value={pool?.managerFee || '0'}
             percent
             variant="secondary14"
             visibleDecimals={2}
