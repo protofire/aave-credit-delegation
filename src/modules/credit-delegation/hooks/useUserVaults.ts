@@ -8,7 +8,6 @@ const VAULTS_QUERY = loader('../queries/vaults.gql');
 
 export const useUserVaults = () => {
   const [account, accountLoading] = useRootStore((state) => [state.account, state.accountLoading]);
-
   const { loading, error, data, sync } = useSubgraph<{ vaults: SubgraphVault[] }>(VAULTS_QUERY, {
     skip: !account,
     variables: {

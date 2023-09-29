@@ -2,7 +2,6 @@ import { valueToBigNumber } from '@aave/math-utils';
 import { Trans } from '@lingui/macro';
 import { Box, Typography } from '@mui/material';
 import { CapsCircularStatus } from 'src/components/caps/CapsCircularStatus';
-import { DebtCeilingStatus } from 'src/components/caps/DebtCeilingStatus';
 import { IncentivesButton } from 'src/components/incentives/IncentivesButton';
 import { FormattedNumber } from 'src/components/primitives/FormattedNumber';
 import { Link } from 'src/components/primitives/Link';
@@ -13,8 +12,8 @@ import { ComputedReserveData } from 'src/hooks/app-data-provider/useAppDataProvi
 import { AssetCapHookData } from 'src/hooks/useAssetCaps';
 import { MarketDataType } from 'src/utils/marketsAndNetworksConfig';
 
+import { useManagerDetails } from '../credit-delegation/hooks/useManagerDetails';
 import { AtomicaDelegationPool } from '../credit-delegation/types';
-import { ApyGraphContainer } from './graphs/ApyGraphContainer';
 import { PanelItem } from './ReservePanels';
 
 interface SupplyInfoProps {
@@ -27,15 +26,20 @@ interface SupplyInfoProps {
   pool: AtomicaDelegationPool;
 }
 
-export const SupplyInfo = ({
-  reserve,
-  currentMarketData,
-  renderCharts,
-  showSupplyCapStatus,
-  debtCeiling,
-  pool,
-}: SupplyInfoProps) => {
-  const { rewards } = pool || {};
+export const SupplyInfo = ({ reserve, pool }: SupplyInfoProps) => {
+  const { balances, manager } = pool || {};
+  const { managerDetails } = useManagerDetails(manager);
+
+  const incentives = balances?.rewardCurrentEarnings?.map((earning) => {
+    return {
+      incentiveAPR: earning.apy?.div(10000).toString(10) || '0',
+      rewardTokenSymbol: earning.symbol,
+      rewardTokenAddress: earning.rewardId,
+      endedAt: earning.endedAt,
+      usdValue: earning.usdValue,
+    };
+  });
+
   return (
     <Box sx={{ flexGrow: 1, minWidth: 0, maxWidth: '100%', width: '100%' }}>
       <Box
@@ -45,127 +49,98 @@ export const SupplyInfo = ({
           flexWrap: 'wrap',
         }}
       >
-        {showSupplyCapStatus ? (
-          // With supply cap
-          <>
-            <CapsCircularStatus
-              value={(Number(pool?.poolBalance) / Number(pool?.poolCap)) * 100}
-              tooltipContent={
+        <CapsCircularStatus
+          value={(Number(pool?.poolBalance) / Number(pool?.poolCap)) * 100 || 0}
+          tooltipContent={
+            <>
+              <Trans>
+                Maximum amount available to supply is{' '}
+                <FormattedNumber
+                  value={
+                    valueToBigNumber(reserve.supplyCap).toNumber() -
+                    valueToBigNumber(reserve.totalLiquidity).toNumber()
+                  }
+                  variant="secondary12"
+                />{' '}
+                {reserve.symbol} (
+                <FormattedNumber
+                  value={
+                    valueToBigNumber(reserve.supplyCapUSD).toNumber() -
+                    valueToBigNumber(reserve.totalLiquidityUSD).toNumber()
+                  }
+                  variant="secondary12"
+                  symbol="USD"
+                />
+                ).
+              </Trans>
+            </>
+          }
+        />
+
+        <PanelItem
+          title={
+            <Box display="flex" alignItems="center">
+              <Trans>Pool Capacity</Trans>
+              <TextWithTooltip>
                 <>
                   <Trans>
-                    Maximum amount available to supply is{' '}
-                    <FormattedNumber
-                      value={
-                        valueToBigNumber(reserve.supplyCap).toNumber() -
-                        valueToBigNumber(reserve.totalLiquidity).toNumber()
-                      }
-                      variant="secondary12"
-                    />{' '}
-                    {reserve.symbol} (
-                    <FormattedNumber
-                      value={
-                        valueToBigNumber(reserve.supplyCapUSD).toNumber() -
-                        valueToBigNumber(reserve.totalLiquidityUSD).toNumber()
-                      }
-                      variant="secondary12"
-                      symbol="USD"
-                    />
-                    ).
-                  </Trans>
+                    Asset supply is limited to a certain amount to reduce protocol exposure to the
+                    asset and to help manage risks involved.
+                  </Trans>{' '}
+                  <Link
+                    href="https://docs.aave.com/developers/whats-new/supply-borrow-caps"
+                    underline="always"
+                  >
+                    <Trans>Learn more</Trans>
+                  </Link>
                 </>
-              }
-            />
-            <PanelItem
-              title={
-                <Box display="flex" alignItems="center">
-                  <Trans>Pool Capacity</Trans>
-                  <TextWithTooltip>
-                    <>
-                      <Trans>
-                        Asset supply is limited to a certain amount to reduce protocol exposure to
-                        the asset and to help manage risks involved.
-                      </Trans>{' '}
-                      <Link
-                        href="https://docs.aave.com/developers/whats-new/supply-borrow-caps"
-                        underline="always"
-                      >
-                        <Trans>Learn more</Trans>
-                      </Link>
-                    </>
-                  </TextWithTooltip>
-                </Box>
-              }
+              </TextWithTooltip>
+            </Box>
+          }
+        >
+          <Box>
+            <FormattedNumber value={pool?.poolBalance || 0} variant="main16" compact />
+            <Typography
+              component="span"
+              color="text.primary"
+              variant="secondary16"
+              sx={{ display: 'inline-block', mx: 1 }}
             >
-              <Box>
-                <FormattedNumber value={pool?.poolBalance} variant="main16" compact />
-                <Typography
-                  component="span"
-                  color="text.primary"
-                  variant="secondary16"
-                  sx={{ display: 'inline-block', mx: 1 }}
-                >
-                  <Trans>of</Trans>
-                </Typography>
-                <FormattedNumber value={pool?.poolCap} variant="main16" />
-              </Box>
-              <Box>
-                <ReserveSubheader value={pool?.poolBalanceUsd} />
-                <Typography
-                  component="span"
-                  color="text.secondary"
-                  variant="secondary12"
-                  sx={{ display: 'inline-block', mx: 1 }}
-                >
-                  <Trans>of</Trans>
-                </Typography>
-                <ReserveSubheader value={pool?.poolCapUsd} />
-              </Box>
-            </PanelItem>
-          </>
-        ) : (
-          // Without supply cap
-          <PanelItem
-            title={
-              <Box display="flex" alignItems="center">
-                <Trans>Total supplied</Trans>
-              </Box>
-            }
-          >
-            <FormattedNumber value={reserve.totalLiquidity} variant="main16" compact />
-            <ReserveSubheader value={reserve.totalLiquidityUSD} />
-          </PanelItem>
-        )}
+              <Trans>of</Trans>
+            </Typography>
+            <FormattedNumber value={pool?.poolCap || 0} variant="main16" />
+          </Box>
+          <Box>
+            <ReserveSubheader value={pool?.poolBalanceUsd || '0'} />
+            <Typography
+              component="span"
+              color="text.secondary"
+              variant="secondary12"
+              sx={{ display: 'inline-block', mx: 1 }}
+            >
+              <Trans>of</Trans>
+            </Typography>
+            <ReserveSubheader value={pool?.poolCapUsd} />
+          </Box>
+        </PanelItem>
+
         <PanelItem title={<Trans>APY</Trans>}>
-          <FormattedNumber value={pool?.supplyAPY} percent variant="main16" />
+          {!incentives?.length && (
+            <FormattedNumber
+              value={Number(pool?.supplyAPY) + Number(pool?.rewardAPY) || 0}
+              percent
+              variant="main16"
+            />
+          )}
+
           <IncentivesButton
-            symbol={reserve.symbol}
-            incentives={[
-              {
-                incentiveAPR: pool?.rewardAPY,
-                rewardTokenAddress: rewards?.rewards?.length ? rewards?.rewards[0].rewardToken : '',
-                rewardTokenSymbol: rewards?.rewards?.length
-                  ? rewards?.rewards[0].rewardTokenSymbol
-                  : '',
-              },
-            ]}
+            incentives={incentives}
+            value={Number(pool?.supplyAPY) + Number(pool?.rewardAPY) || 0}
             displayBlank={true}
-            endDate={rewards?.rewards?.length ? rewards?.rewards[0].endedAtConverted : ''}
+            supplyAPY={pool?.supplyAPY || '0'}
           />
         </PanelItem>
-        {reserve.unbacked && reserve.unbacked !== '0' && (
-          <PanelItem title={<Trans>Unbacked</Trans>}>
-            <FormattedNumber value={reserve.unbacked} variant="main16" symbol={reserve.name} />
-            <ReserveSubheader value={reserve.unbackedUSD} />
-          </PanelItem>
-        )}
       </Box>
-      {renderCharts && (reserve.borrowingEnabled || Number(reserve.totalDebt) > 0) && (
-        <ApyGraphContainer
-          graphKey="supply"
-          reserve={reserve}
-          currentMarketData={currentMarketData}
-        />
-      )}
       <div>
         <Box
           sx={{ display: 'inline-flex', alignItems: 'center', pt: '42px', pb: '12px' }}
@@ -176,47 +151,58 @@ export const SupplyInfo = ({
           </Typography>
         </Box>
       </div>
-      {reserve.reserveLiquidationThreshold !== '0' && (
-        <Box
-          sx={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            justifyContent: 'space-between',
-          }}
-        >
-          <ReserveOverviewBox title={<Trans>Name</Trans>}>
-            <Trans>Protofire.io</Trans>
-          </ReserveOverviewBox>
-
-          <ReserveOverviewBox title={<Trans>Pool Manager Fee</Trans>}>
-            <FormattedNumber
-              value={pool?.managerFee}
-              percent
-              variant="secondary14"
-              visibleDecimals={2}
-            />
-          </ReserveOverviewBox>
-
-          <ReserveOverviewBox title={<Trans>Pool Manager Website</Trans>}>
-            {/* <FormattedNumber
-              value={reserve.formattedReserveLiquidationBonus}
-              percent
-              variant="secondary14"
-              visibleDecimals={2}
-            /> */}
-          </ReserveOverviewBox>
-
-          {reserve.isIsolated && (
-            <ReserveOverviewBox fullWidth>
-              <DebtCeilingStatus
-                debt={reserve.isolationModeTotalDebtUSD}
-                ceiling={reserve.debtCeilingUSD}
-                usageData={debtCeiling}
+      <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'space-between',
+          gap: 2,
+        }}
+      >
+        <ReserveOverviewBox title={<Trans>Name</Trans>}>
+          <Box
+            sx={{
+              display: 'inline-flex',
+            }}
+          >
+            {managerDetails?.logo && (
+              <img
+                src={managerDetails?.logo}
+                alt={managerDetails?.title}
+                style={{ width: 20, height: 20, marginRight: 2 }}
               />
-            </ReserveOverviewBox>
-          )}
-        </Box>
-      )}
+            )}
+            <Trans>{managerDetails?.title}</Trans>
+          </Box>
+        </ReserveOverviewBox>
+
+        <ReserveOverviewBox title={<Trans>Website</Trans>}>
+          <Link
+            href={managerDetails?.website ?? ''}
+            sx={{
+              display: 'inline-flex',
+              textDecoration: 'underline',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            {managerDetails?.website}
+          </Link>
+        </ReserveOverviewBox>
+
+        <ReserveOverviewBox title={<Trans>Pool Manager Fee</Trans>}>
+          <FormattedNumber
+            value={pool?.managerFee || '0'}
+            percent
+            variant="secondary14"
+            visibleDecimals={2}
+          />
+        </ReserveOverviewBox>
+        <ReserveOverviewBox title={<Trans>Description</Trans>} fullWidth>
+          <Trans>{managerDetails?.description || '-'}</Trans>
+        </ReserveOverviewBox>
+      </Box>
     </Box>
   );
 };

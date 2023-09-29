@@ -8,8 +8,8 @@ import { ListButtonsColumn } from '../ListButtonsColumn';
 export const BorrowerListItem = ({
   title,
   product,
-  details,
   wording,
+  creditLine,
 }: {
   id: string;
   title: string;
@@ -19,12 +19,14 @@ export const BorrowerListItem = ({
   };
   wording: string;
   details: string;
+  creditLine?: string;
 }) => {
   return (
     <ListItem>
       <ListColumn align="center">{product.title}</ListColumn>
       <ListColumn align="center">{title}</ListColumn>
-      <ListColumn align="center">{details ?? '--'}</ListColumn>
+      {/* <ListColumn align="center">{details ?? '--'}</ListColumn> */}
+      <ListColumn align="center">{creditLine ?? '--'}</ListColumn>
       <ListButtonsColumn>
         <Button
           endIcon={

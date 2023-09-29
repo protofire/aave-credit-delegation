@@ -102,7 +102,11 @@ export const RepayLoanActions = memo(
           repayType === 'Interest'
             ? riskPoolController.repayInterest
             : riskPoolController.repayPrincipal;
-
+        console.log({
+          repayType,
+          vlaue: parseUnits(amount, asset?.decimals ?? WEI_DECIMALS).toString(),
+          token: asset?.address,
+        });
         setMainTxState({ ...mainTxState, loading: true });
 
         const response = await repayFunction(

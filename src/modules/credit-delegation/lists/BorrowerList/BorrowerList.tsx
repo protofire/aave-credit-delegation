@@ -17,8 +17,9 @@ import { BorrowerListItem } from './BorrowerListItem';
 
 const head = [
   { title: <Trans key="product">Product</Trans>, sortKey: 'product' },
-  { title: <Trans key="market">Market</Trans>, sortKey: 'market' },
-  { title: <Trans key="market">Details</Trans>, sortKey: 'details' },
+  { title: <Trans key="market">Borrower</Trans>, sortKey: 'market' },
+  // { title: <Trans key="market">Details</Trans>, sortKey: 'details' },
+  { title: <Trans key="market">Credit line size</Trans>, sortKey: 'creditLine' },
 ];
 
 interface HeaderProps {
@@ -65,23 +66,39 @@ export const BorrowerList = ({ poolId }: { poolId: string }) => {
   const [sortName, setSortName] = useState('');
   const [sortDesc, setSortDesc] = useState(false);
 
-  const { pools, loading: loadingPools } = useCreditDelegationContext();
+  const { pools, loading: loadingPools, creditLines } = useCreditDelegationContext();
 
   const borrowersList = useMemo(
     () => pools.filter((pool) => pool.id === poolId) as AtomicaDelegationPool[],
     [poolId, pools]
   );
 
+  const borrowersWithCreditLines = useMemo(
+    () =>
+      borrowersList[0]?.markets.map((market) => {
+        const creditLine = creditLines.find((creditLine) => creditLine.market?.id === market.id);
+        return {
+          ...market,
+          creditLine: creditLine?.amountUsd,
+        };
+      }),
+    [borrowersList, creditLines]
+  );
+
   if (loading || loadingPools)
     return (
-      <ListLoader title={<Trans>Borrowers</Trans>} head={head.map((c) => c.title)} withTopMargin />
+      <ListLoader
+        title={<Trans>Loan Products & Borrowers This Pool Seeks To Issue Loans To</Trans>}
+        head={head.map((c) => c.title)}
+        withTopMargin
+      />
     );
 
   return (
     <ListWrapper
       titleComponent={
         <Typography component="div" variant="h3" sx={{ mr: 4 }}>
-          <Trans>Borrowers</Trans>
+          <Trans>Loan Products & Borrowers This Pool Seeks To Issue Loans To</Trans>
         </Typography>
       }
       localStorageName="loanPositionsCreditDelegationTableCollapse"
@@ -100,8 +117,12 @@ export const BorrowerList = ({ poolId }: { poolId: string }) => {
           sortName={sortName}
         />
       )}
+      {/* borrowersWithCreditLines */}
+      {/* {borrowersList[0]?.markets.map((item) => (
+        <BorrowerListItem key={item.id} {...item} />
+      ))} */}
 
-      {borrowersList[0]?.markets.map((item) => (
+      {borrowersWithCreditLines?.map((item) => (
         <BorrowerListItem key={item.id} {...item} />
       ))}
     </ListWrapper>

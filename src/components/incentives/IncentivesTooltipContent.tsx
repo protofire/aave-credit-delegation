@@ -1,23 +1,23 @@
-import { ReserveIncentiveResponse } from '@aave/math-utils/dist/esm/formatters/incentive/calculate-reserve-incentives';
+// import { ReserveIncentiveResponse } from '@aave/math-utils/dist/esm/formatters/incentive/calculate-reserve-incentives';
 import { Trans } from '@lingui/macro';
-import { Box, Typography } from '@mui/material';
+import { Box, Divider, Typography } from '@mui/material';
+import { RewardIncentive } from 'src/modules/credit-delegation/types';
 
 import { FormattedNumber } from '../primitives/FormattedNumber';
 import { Row } from '../primitives/Row';
 import { TokenIcon } from '../primitives/TokenIcon';
 
 interface IncentivesTooltipContentProps {
-  incentives: ReserveIncentiveResponse[];
+  incentives: RewardIncentive[];
   incentivesNetAPR: 'Infinity' | number;
-  symbol: string;
-  endDate?: string;
+  value: string | number;
+  supplyAPY: string;
 }
 
 export const IncentivesTooltipContent = ({
   incentives,
-  incentivesNetAPR,
-  symbol,
-  endDate,
+  value,
+  supplyAPY,
 }: IncentivesTooltipContentProps) => {
   const typographyVariant = 'secondary12';
 
@@ -27,9 +27,9 @@ export const IncentivesTooltipContent = ({
         {incentiveAPR !== 'Infinity' ? (
           <>
             <FormattedNumber value={+incentiveAPR} percent variant={typographyVariant} />
-            <Typography variant={typographyVariant} sx={{ ml: 1 }}>
+            {/* <Typography variant={typographyVariant} sx={{ ml: 1 }}>
               <Trans>APR</Trans>
-            </Typography>
+            </Typography> */}
           </>
         ) : (
           <>
@@ -43,6 +43,8 @@ export const IncentivesTooltipContent = ({
     );
   };
 
+  // const baseAPY = incentivesNetAPR !== 'Infinity' ? +value - incentivesNetAPR : 0;
+
   return (
     <Box
       sx={{
@@ -52,11 +54,29 @@ export const IncentivesTooltipContent = ({
         flexDirection: 'column',
       }}
     >
-      <Typography variant="caption" color="text.secxondary" mb={3}>
-        <Trans>Participating in this pool gives annualized {symbol} rewards.</Trans>
-      </Typography>
+      <Row caption={<Trans>Net APY</Trans>} height={32}>
+        <Number incentiveAPR={value} />
+      </Row>
+      <Row
+        caption={
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              mb: incentives.length > 1 ? 2 : 0,
+              paddingTop: '10px',
+            }}
+          >
+            <Typography variant={typographyVariant}>{'Base rate:'}</Typography>
+          </Box>
+        }
+        width="100%"
+      >
+        <Number incentiveAPR={supplyAPY} />
+      </Row>
 
       <Box sx={{ width: '100%' }}>
+        <Divider />
         {incentives.map((incentive) => (
           <>
             <Row
@@ -67,13 +87,17 @@ export const IncentivesTooltipContent = ({
                     display: 'flex',
                     alignItems: 'center',
                     mb: incentives.length > 1 ? 2 : 0,
+                    paddingTop: '10px',
                   }}
                 >
                   <TokenIcon
                     symbol={incentive.rewardTokenSymbol}
                     sx={{ fontSize: '20px', mr: 1 }}
                   />
-                  <Typography variant={typographyVariant}>{incentive.rewardTokenSymbol}</Typography>
+                  <Typography variant={typographyVariant}>
+                    {incentive.rewardTokenSymbol}
+                    {' Reward rate:'}
+                  </Typography>
                 </Box>
               }
               key={incentive.rewardTokenAddress}
@@ -89,6 +113,7 @@ export const IncentivesTooltipContent = ({
                     display: 'flex',
                     alignItems: 'center',
                     mb: incentives.length > 1 ? 2 : 0,
+                    paddingTop: '10px',
                   }}
                 >
                   <Typography variant={typographyVariant}>Reward end date:</Typography>
@@ -97,19 +122,26 @@ export const IncentivesTooltipContent = ({
               key={incentive.rewardTokenSymbol}
               width="100%"
             >
-              {/* <Number incentiveAPR={incentive.incentiveAPR} /> */}
-              <Trans>{endDate}</Trans>
+              <Trans>{incentive.endedAt}</Trans>
             </Row>
+            <Divider />
           </>
         ))}
-
-        {incentives.length > 1 && (
-          <Box sx={(theme) => ({ pt: 1, mt: 1, border: `1px solid ${theme.palette.divider}` })}>
-            <Row caption={<Trans>Net APR</Trans>} height={32}>
+        {/* border: `1px solid ${theme.palette.divider}` */}
+        {/* {incentives.length > 1 && (
+          <Box sx={{ pt: 1, mt: 1 }}>
+            <Row caption={<Trans>Incentives APR</Trans>} height={32} captionVariant={'description'}>
               <Number incentiveAPR={incentivesNetAPR} />
             </Row>
+            <Row caption={<Trans>Base APR</Trans>} height={32} captionVariant={'description'}>
+              <Number incentiveAPR={baseAPR} />
+            </Row>
+            <Divider />
+            <Row caption={<Trans>Net APY</Trans>} height={32}>
+              <Number incentiveAPR={value} />
+            </Row>
           </Box>
-        )}
+        )} */}
       </Box>
     </Box>
   );

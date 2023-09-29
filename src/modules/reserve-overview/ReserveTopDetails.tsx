@@ -1,17 +1,7 @@
 import { Trans } from '@lingui/macro';
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackOutlined';
-import {
-  Box,
-  Button,
-  Divider,
-  Skeleton,
-  SvgIcon,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from '@mui/material';
+import { Box, Button, Skeleton, SvgIcon, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { useRouter } from 'next/router';
-import { useMemo } from 'react';
 import { getMarketInfoById, MarketLogo } from 'src/components/MarketSwitcher';
 import { useProtocolDataContext } from 'src/hooks/useProtocolDataContext';
 import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
@@ -22,9 +12,7 @@ import {
   ComputedReserveData,
   useAppDataContext,
 } from '../../hooks/app-data-provider/useAppDataProvider';
-import { useCreditDelegationContext } from '../credit-delegation/CreditDelegationContext';
-import { useTokensData } from '../credit-delegation/hooks/useTokensData';
-import { AtomicaDelegationPool } from '../credit-delegation/types';
+// import { useCreditDelegationContext } from '../credit-delegation/CreditDelegationContext';
 import { AddTokenDropdown } from './AddTokenDropdown';
 import { TokenLinkDropdown } from './TokenLinkDropdown';
 
@@ -33,14 +21,14 @@ interface ReserveTopDetailsProps {
   poolId: string;
 }
 
-export const ReserveTopDetails = ({ underlyingAsset, poolId }: ReserveTopDetailsProps) => {
+export const ReserveTopDetails = ({ underlyingAsset }: ReserveTopDetailsProps) => {
   const router = useRouter();
   const { reserves, loading } = useAppDataContext();
   const { currentMarket, currentChainId } = useProtocolDataContext();
   const { market, network } = getMarketInfoById(currentMarket);
   const { addERC20Token, switchNetwork, chainId: connectedChainId, connected } = useWeb3Context();
 
-  const { pools, loading: loadingPools } = useCreditDelegationContext();
+  // const { loading: loadingPools } = useCreditDelegationContext();
 
   const theme = useTheme();
   const downToSM = useMediaQuery(theme.breakpoints.down('sm'));
@@ -49,22 +37,20 @@ export const ReserveTopDetails = ({ underlyingAsset, poolId }: ReserveTopDetails
     (reserve) => reserve.underlyingAsset === underlyingAsset
   ) as ComputedReserveData;
 
-  const { data: assets } = useTokensData(
-    useMemo(() => [poolReserve?.underlyingAsset], [poolReserve?.underlyingAsset])
-  );
-
-  const pool = pools.find((pool) => pool.id === poolId) as AtomicaDelegationPool;
+  const iconSymbol = poolReserve.symbol === 'GHST' ? 'gho' : poolReserve.iconSymbol;
+  const name = poolReserve.symbol === 'GHST' ? 'Gho token' : poolReserve.name;
+  const symbol = poolReserve.symbol === 'GHST' ? 'GHO' : poolReserve.symbol;
 
   const valueTypographyVariant = downToSM ? 'main16' : 'main21';
 
   const ReserveIcon = () => {
     return (
       <Box mr={3} sx={{ mr: 3, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        {loading || loadingPools ? (
+        {loading ? (
           <Skeleton variant="circular" width={40} height={40} sx={{ background: '#383D51' }} />
         ) : (
           <img
-            src={`/icons/tokens/${assets[0]?.iconSymbol.toLowerCase()}.svg`}
+            src={`/icons/tokens/${iconSymbol.toLowerCase()}.svg`}
             width="40px"
             height="40px"
             alt=""
@@ -75,10 +61,10 @@ export const ReserveTopDetails = ({ underlyingAsset, poolId }: ReserveTopDetails
   };
 
   const ReserveName = () => {
-    return loading && loadingPools ? (
+    return loading ? (
       <Skeleton width={60} height={28} sx={{ background: '#383D51' }} />
     ) : (
-      <Typography variant={valueTypographyVariant}>{assets[0]?.name}</Typography>
+      <Typography variant={valueTypographyVariant}>{name}</Typography>
     );
   };
 
@@ -106,7 +92,9 @@ export const ReserveTopDetails = ({ underlyingAsset, poolId }: ReserveTopDetails
                 </SvgIcon>
               }
               onClick={() => {
-                router.push('/#delegate');
+                // https://github.com/vercel/next.js/discussions/34980
+                if (history.state.idx !== 0) router.back();
+                else router.push('/');
               }}
               sx={{ mr: 3, mb: downToSM ? '24px' : '0' }}
             >
@@ -140,12 +128,12 @@ export const ReserveTopDetails = ({ underlyingAsset, poolId }: ReserveTopDetails
               <Box>
                 {!loading && (
                   <Typography sx={{ color: '#A5A8B6' }} variant="caption">
-                    {assets[0]?.symbol}
+                    {symbol}
                   </Typography>
                 )}
                 <Box sx={{ display: 'inline-flex', alignItems: 'center' }}>
                   <ReserveName />
-                  {loading && loadingPools ? (
+                  {loading ? (
                     <Skeleton width={16} height={16} sx={{ ml: 1, background: '#383D51' }} />
                   ) : (
                     <Box sx={{ display: 'flex' }}>
@@ -172,7 +160,7 @@ export const ReserveTopDetails = ({ underlyingAsset, poolId }: ReserveTopDetails
       {!downToSM && (
         <>
           <TopInfoPanelItem
-            title={!loading && <Trans>{assets[0]?.symbol}</Trans>}
+            title={!loading && <Trans>{symbol}</Trans>}
             withoutIconWrapper
             icon={<ReserveIcon />}
             loading={loading}
@@ -198,72 +186,8 @@ export const ReserveTopDetails = ({ underlyingAsset, poolId }: ReserveTopDetails
               )}
             </Box>
           </TopInfoPanelItem>
-          <Divider
-            orientation="vertical"
-            flexItem
-            sx={{ my: 1, borderColor: 'rgba(235, 235, 239, 0.08)' }}
-          />
         </>
       )}
-      <TopInfoPanelItem title={<Trans>Pool Name</Trans>} loading={loadingPools} hideIcon>
-        {/* <FormattedNumber
-          // value={Math.max(Number(poolReserve?.totalLiquidityUSD), 0)}
-          value={Math.max(Number(pool?.availableBalanceUsd), 0)}
-          symbol="USD"
-          variant={valueTypographyVariant}
-          symbolsVariant={symbolsTypographyVariant}
-          symbolsColor="#A5A8B6"
-        /> */}
-        <Trans>{pool?.metadata?.Label}</Trans>
-      </TopInfoPanelItem>
-
-      {/* <TopInfoPanelItem title={<Trans>Available liquidity</Trans>} loading={loading} hideIcon>
-        <FormattedNumber
-          value={Math.max(Number(poolReserve?.availableLiquidityUSD), 0)}
-          symbol="USD"
-          variant={valueTypographyVariant}
-          symbolsVariant={symbolsTypographyVariant}
-          symbolsColor="#A5A8B6"
-        />
-      </TopInfoPanelItem> */}
-
-      {/* <TopInfoPanelItem title={<Trans>Utilization Rate</Trans>} loading={loading} hideIcon>
-        <FormattedNumber
-          value={poolReserve?.borrowUsageRatio}
-          percent
-          variant={valueTypographyVariant}
-          symbolsVariant={symbolsTypographyVariant}
-          symbolsColor="#A5A8B6"
-        />
-      </TopInfoPanelItem> */}
-
-      {/* <TopInfoPanelItem title={<Trans>Oracle price</Trans>} loading={loading} hideIcon>
-        <Box sx={{ display: 'inline-flex', alignItems: 'center' }}>
-          <FormattedNumber
-            value={poolReserve?.priceInUSD}
-            symbol="USD"
-            variant={valueTypographyVariant}
-            symbolsVariant={symbolsTypographyVariant}
-            symbolsColor="#A5A8B6"
-          />
-          {loading ? (
-            <Skeleton width={16} height={16} sx={{ ml: 1, background: '#383D51' }} />
-          ) : (
-            <CircleIcon tooltipText="View oracle contract" downToSM={downToSM}>
-              <Link
-                href={currentNetworkConfig.explorerLinkBuilder({
-                  address: poolReserve?.priceOracle,
-                })}
-                sx={iconStyling}
-              >
-                <SvgIcon sx={{ fontSize: downToSM ? '12px' : '14px' }}>
-                  <ExternalLinkIcon />
-                </SvgIcon>
-              </Link>
-            </CircleIcon>
-          )}
-        </Box>
-      </TopInfoPanelItem> */}
     </TopInfoPanel>
   );
 };

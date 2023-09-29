@@ -1,4 +1,4 @@
-import { API_ETH_MOCK_ADDRESS, InterestRate, TokenMetadataType } from '@aave/contract-helpers';
+import { API_ETH_MOCK_ADDRESS, InterestRate } from '@aave/contract-helpers';
 import {
   normalize,
   normalizeBN,
@@ -158,7 +158,7 @@ export const usePoolsAndMarkets = () => {
     pools: AtomicaSubgraphPool[];
   }>(POOLS_QUERY, {
     variables: {
-      managerIds: POOL_MANAGER_IDS,
+      operatorIds: POOL_MANAGER_IDS,
     },
   });
 
@@ -167,7 +167,7 @@ export const usePoolsAndMarkets = () => {
   );
 
   const { loading: loadingPoolRewards, data: poolRewards } = usePoolRewards(
-    poolsData?.pools.map((pool) => pool.id)
+    poolsData?.pools?.map((pool) => pool.id)
   );
 
   const marketTokensIds = useMemo(
@@ -182,28 +182,26 @@ export const usePoolsAndMarkets = () => {
   );
   const { data: marketTokens, loading: loadingMarketTokens } = useTokensData(marketTokensIds);
 
-  const [poolsAvailableBalances, { loading: loadingPoolsAvailableBalance }] = useAsyncMemo<
-    PoolBalances[]
-  >(
+  const [poolsAvailableBalances, { loading: loadingPoolsBalance }] = useAsyncMemo<PoolBalances[]>(
     async () => {
-      const data = Array.from(poolsData?.pools ?? []);
+      const pools = Array.from(poolsData?.pools ?? []);
       const myPools = await Promise.all(
-        data.map(async (pool) =>
+        pools.map(async (pool) =>
           getUserAvailablePoolBalance(
             pool,
-            tokensToBorrow.find(
-              (token) => token.symbol === pool.capitalTokenSymbol
-            ) as TokenMetadataType,
-            poolRewards.filter((reward) => reward.poolId === pool.id),
-            reserves.find((reserve) => reserve.symbol === pool.capitalTokenSymbol)
-              ?.totalLiquidity || ''
+            marketTokens,
+            poolRewards.filter((reward) => reward.poolId === pool.id)
           )
         )
-      );
+      ).catch((e) => {
+        console.error('Error get pools available balances', e);
+        return [];
+      });
+
       return myPools;
     },
     [],
-    [poolsData?.pools, poolRewards]
+    [poolsData?.pools, poolRewards, marketTokens]
   );
 
   const fetchBorrowAllowance = useCallback(
@@ -295,7 +293,7 @@ export const usePoolsAndMarkets = () => {
       approvedCreditLoading ||
       loadingVaults ||
       loadingPoolRewards ||
-      loadingPoolsAvailableBalance
+      loadingPoolsBalance
     ) {
       return [];
     }
@@ -331,13 +329,17 @@ export const usePoolsAndMarkets = () => {
 
       const poolCapUsd = amountToUsd(
         normalize(pool.capitalRequirement, pool.capitalTokenDecimals),
-        userReserve?.formattedPriceInMarketReferenceCurrency ?? '1',
+        userReserve?.symbol === 'GHST'
+          ? '1'
+          : userReserve?.formattedPriceInMarketReferenceCurrency || '1',
         marketReferencePriceInUsd
       ).toString();
 
       const poolBalanceUsd = amountToUsd(
         normalize(pool.capitalTokenBalance, pool.capitalTokenDecimals),
-        userReserve?.formattedPriceInMarketReferenceCurrency ?? '1',
+        userReserve?.symbol === 'GHST'
+          ? '1'
+          : userReserve?.formattedPriceInMarketReferenceCurrency || '1',
         marketReferencePriceInUsd
       ).toString();
 
@@ -349,7 +351,7 @@ export const usePoolsAndMarkets = () => {
         symbol: pool.capitalTokenSymbol === 'GHST' ? 'GHO' : pool.capitalTokenSymbol,
         iconSymbol: pool.capitalTokenSymbol === 'GHST' ? 'GHO' : pool.capitalTokenSymbol,
         name: pool.name,
-        manager: pool.manager,
+        manager: pool.operator,
         markets: pool.markets,
         walletBalance:
           (userReserve?.underlyingAsset && walletBalances[userReserve?.underlyingAsset]?.amount) ??
@@ -384,7 +386,7 @@ export const usePoolsAndMarkets = () => {
           earnings: rewardEarnings,
         },
         userAvailableWithdraw: balances?.availableWithdraw ?? 0,
-        managerFee: normalize(pool.managerFee, 18),
+        managerFee: normalize(pool.operatorFee, 18),
         poolCap: normalize(pool.capitalRequirement, pool.capitalTokenDecimals),
         poolBalance: normalize(pool.capitalTokenBalance, pool.capitalTokenDecimals),
         poolCapUsd,
@@ -401,7 +403,7 @@ export const usePoolsAndMarkets = () => {
     approvedCreditLoading,
     loadingVaults,
     loadingPoolRewards,
-    loadingPoolsAvailableBalance,
+    loadingPoolsBalance,
     poolsData?.pools,
     reserves,
     tokensToBorrow,
@@ -412,8 +414,8 @@ export const usePoolsAndMarkets = () => {
     poolsAvailableBalances,
     rewardEarningsStates,
     marketReferencePriceInUsd,
-    approvedCredit,
     walletBalances,
+    approvedCredit,
   ]);
 
   const markets: AtomicaBorrowMarket[] = useMemo(() => {

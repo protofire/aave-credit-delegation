@@ -3,7 +3,7 @@ query markets($productIds: [String]!) {
     id
     marketId
     title
-    author
+    operator
     aggregatedPools {
       id
       poolList

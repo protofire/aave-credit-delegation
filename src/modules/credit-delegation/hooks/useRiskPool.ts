@@ -4,11 +4,12 @@ import BigNumber from 'bignumber.js';
 import { Contract, PopulatedTransaction } from 'ethers';
 import { Interface } from 'ethers/lib/utils';
 import { useState } from 'react';
-import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
+import { useProtocolDataContext } from 'src/hooks/useProtocolDataContext';
+// import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
 import { useRootStore } from 'src/store/root';
 
 import RISK_POOL_ABI from '../abi/RiskPool.json';
-import { DEFAULT_LOGO } from '../consts';
+import { DEFAULT_LOGO, GHO_TOKEN } from '../consts';
 import {
   AccountPoolReward,
   AtomicaSubgraphPool,
@@ -17,22 +18,22 @@ import {
   PoolEarnings,
   Reward,
 } from '../types';
-import { useCoinRate } from './useCoinRate';
+import { convertTimestampToDate } from '../utils';
+import { Rate, useCoinRate } from './useCoinRate';
 
 export type TokenMap = {
   [key: string]: Reward;
 };
 
 export const useRiskPool = () => {
-  const { provider } = useWeb3Context();
+  // const { provider } = useWeb3Context();
+  const { jsonRpcProvider } = useProtocolDataContext();
   const [account] = useRootStore((state) => [state.account]);
-  const { getPriceMap, getPrice } = useCoinRate();
+  const { getPriceMap, getCoinId, getPrice } = useCoinRate();
 
   const [rewardEarningsStates, setRewardEarningsStates] = useState<PoolEarnings[]>([]);
 
   const jsonInterface = new Interface(RISK_POOL_ABI);
-
-  const getCoinId = (tokenName: string) => tokenName.replace(' ', '-').toLowerCase();
 
   const getCurrentlyEarned = (
     rewardRate: BigNumber,
@@ -49,60 +50,122 @@ export const useRiskPool = () => {
 
   const getUserAvailablePoolBalance = async (
     pool: AtomicaSubgraphPool,
-    token: TokenMetadataType,
-    rewards: AtomicaSubgraphRewards[],
-    totalLiquidity: string
+    marketTokens: TokenMetadataType[],
+    rewards: AtomicaSubgraphRewards[]
   ) => {
-    const contract = new Contract(pool.id, RISK_POOL_ABI, provider?.getSigner());
-    const balance = await contract.balanceOf(account.toLowerCase());
-    const { capitalTokenBalance, poolTokenTotalSupply } = await contract.stats();
-    const { apy, earnings, lastReward } = await calculatePoolRewards(
-      rewards,
-      token.name,
-      totalLiquidity,
-      token
-    );
+    try {
+      const contract = new Contract(pool.id, RISK_POOL_ABI, jsonRpcProvider());
+      const balance = await contract.balanceOf(account.toLowerCase());
 
-    const newRewardEarningStates = [
-      ...rewardEarningsStates,
-      {
-        apy,
-        earnings,
-        lastReward,
-        poolId: pool.id,
-      },
-    ];
-    setRewardEarningsStates(newRewardEarningStates);
+      const { capitalTokenBalance, poolTokenTotalSupply } = await contract.stats();
 
-    const currentylEarned = getCurrentlyEarned(
-      earnings[0]?.rewardRate || new BigNumber(0),
-      earnings[0]?.earned || new BigNumber(0),
-      new BigNumber(Math.floor(earnings[0]?.updatedAt || 0 / 1000)).toNumber(),
-      earnings[0]?.endedAt?.toNumber() || 0
-    );
+      const capitalTokenDecimals =
+        marketTokens.find((token) => token.address === pool.capitalTokenAddress)?.decimals || 18;
 
-    const userTotalBalance = normalize(balance.toString(), 18);
-    const myPercentage =
-      (Number(userTotalBalance) / Number(normalize(poolTokenTotalSupply.toString(), 18))) * 100;
-    const myCapital = normalize((myPercentage / 100) * capitalTokenBalance, token.decimals || 18);
+      const marketsPremiumTokens = Array.from(
+        new Set(pool.markets.map((market) => market.premiumToken))
+      );
 
-    const { premium, settlement } = await getUserPoolSettlementPremiums(pool.id, token.address);
+      const { apys, earnings, lastReward } = await calculatePoolRewards(rewards);
 
-    const normalizedPremium = Number(normalize(premium.toString(), token.decimals || 18));
-    const normalizedSettlement = Number(normalize(settlement.toString(), token.decimals || 18));
+      setRewardEarningsStates([
+        ...rewardEarningsStates,
+        {
+          apys,
+          earnings,
+          lastReward,
+          poolId: pool.id,
+        },
+      ]);
 
-    return {
-      id: pool.id,
-      availableWithdraw: Number(myCapital) + normalizedPremium + normalizedSettlement,
-      lpBalance: balance.toString(),
-      capital: myCapital,
-      settlement: normalizedSettlement,
-      premium: normalizedPremium,
-      currentlyEarned: currentylEarned,
-      currentylEarnedUsd: Number(currentylEarned) * (lastReward?.tokenUsdPrice || 0),
-      totalInterest: normalizedSettlement + normalizedPremium,
-      earningDecimals: earnings[0]?.decimals,
-    };
+      const rewardCurrentEarnings = calculateCurrentlyEarned(earnings, apys);
+      const userTotalBalance = normalize(balance.toString(), 18);
+      const myPercentage =
+        (Number(userTotalBalance) / Number(normalize(poolTokenTotalSupply.toString(), 18))) * 100;
+      const myCapital = normalize((myPercentage / 100) * capitalTokenBalance, capitalTokenDecimals);
+
+      let totalSettlement = 0;
+      let totalPremium = 0;
+      const marketPremiumTokensPrice: { [key: string]: number } = {};
+
+      const premiumsAndSettlements = await Promise.all(
+        marketsPremiumTokens.map(async (token) => {
+          const { premium, settlement } = await getUserPoolSettlementPremiums(contract, token);
+
+          let tokenData = marketTokens.find((marketToken) => marketToken.address === token);
+
+          if (token === GHO_TOKEN.address) tokenData = GHO_TOKEN;
+
+          const normalizedPremium = Number(
+            normalize(premium.toString(), tokenData?.decimals || 18)
+          );
+          const normalizedSettlement = Number(
+            normalize(settlement.toString(), tokenData?.decimals || 18)
+          );
+
+          totalPremium += normalizedPremium;
+          totalSettlement += normalizedSettlement;
+
+          const tokenId = tokenData?.symbol === 'GHO' ? 'gho' : getCoinId(tokenData?.name || '');
+          if (tokenId) marketPremiumTokensPrice[tokenId] = 0;
+
+          return {
+            premium,
+            settlement,
+            decimals: tokenData?.decimals || 18,
+            symbol: tokenData?.symbol || '',
+            address: tokenData?.address || '',
+            usdValue: 0,
+            totalInterest: normalizedPremium + normalizedSettlement,
+          };
+        })
+      );
+
+      const pricesUsd: Rate = await getPrice(Object.keys(marketPremiumTokensPrice));
+
+      premiumsAndSettlements.forEach((premiumAndSettlement) => {
+        const tokenId = getCoinId(premiumAndSettlement.symbol);
+        if (tokenId) {
+          premiumAndSettlement.usdValue = pricesUsd[tokenId]?.usd || 0;
+        }
+      });
+
+      return {
+        id: pool.id,
+        availableWithdraw: Number(myCapital) + totalPremium + totalSettlement,
+        lpBalance: balance.toString(),
+        capital: myCapital,
+        premiumsAndSettlements,
+        rewardCurrentEarnings,
+        totalInterest: totalSettlement + totalPremium,
+      };
+    } catch (error) {
+      throw new Error(error + pool.id);
+    }
+  };
+
+  const calculateCurrentlyEarned = (
+    earnings: EarnedToken[],
+    apys: { apy?: BigNumber; rewardId?: string }[]
+  ) => {
+    return earnings.map((earning) => {
+      const currentlyEarned = getCurrentlyEarned(
+        earning.rewardRate || new BigNumber(0),
+        earning.earned || new BigNumber(0),
+        new BigNumber(Math.floor(earning?.updatedAt || 0 / 1000)).toNumber(),
+        earning.endedAt?.toNumber() || 0
+      );
+
+      return {
+        value: currentlyEarned,
+        rewardId: earning.id,
+        usdValue: Number(normalize(currentlyEarned, earning.decimals)) * earning.price,
+        decimals: earning.decimals,
+        symbol: earning.symbol,
+        endedAt: convertTimestampToDate(earning.endedAt.toString()),
+        apy: apys?.find((apy) => apy.rewardId === earning.id)?.apy,
+      };
+    });
   };
 
   const generateWithdrawTx = async (poolTokenAmount: string, pool: string) => {
@@ -182,7 +245,7 @@ export const useRiskPool = () => {
     const accountPoolRewards = await getAccountPoolRewards(rewards);
 
     return rewards.reduce((tokens, reward) => {
-      const coinId = getCoinId(reward.rewardTokenName);
+      const coinId = getCoinId(reward.rewardTokenName === 'GHST' ? 'gho' : reward.rewardTokenName);
       let token: Reward = tokens[coinId];
 
       const poolReward = (accountPoolRewards || []).find(
@@ -199,8 +262,9 @@ export const useRiskPool = () => {
           id: reward.rewardToken,
           logoURI: DEFAULT_LOGO,
           decimals: reward?.rewardTokenDecimals || '0',
-          symbol: reward?.rewardTokenSymbol || '',
-          name: reward?.rewardTokenName || '',
+          symbol:
+            reward?.rewardTokenSymbol === 'GHST' ? GHO_TOKEN.symbol : reward?.rewardTokenSymbol,
+          name: reward?.rewardTokenSymbol === 'GHST' ? GHO_TOKEN.name : reward?.rewardTokenName,
           amount: new BigNumber(0),
           duration: duration.toNumber(),
           earned: new BigNumber(0),
@@ -257,26 +321,37 @@ export const useRiskPool = () => {
   const annualRewardSummaryInUsd = (tokens: TokenMap) => {
     let rewardSum = new BigNumber(0);
 
-    Array.from(Object.values(tokens)).forEach(async (token) => {
+    const annualRewardPerTokens = Object.values(tokens).map((token) => {
       if (token.tokenUsdPrice) {
-        rewardSum = rewardSum.plus(
-          (token.duration &&
-            normalizeBN(token.amount, Number(token.decimals))
+        const apy = token.duration
+          ? normalizeBN(token.amount, Number(token.decimals))
               .times(token.tokenUsdPrice)
               .div(token.duration)
-              .times(SECONDS_PER_YEAR)) ||
-            0
-        );
+              .times(SECONDS_PER_YEAR)
+          : new BigNumber(0);
+
+        rewardSum = rewardSum.plus(apy);
+
+        return {
+          apy,
+          rewardId: token.id,
+        };
       }
     });
 
-    return rewardSum;
+    return {
+      rewardSum,
+      annualRewardPerTokens,
+    };
   };
 
   const calculateRewards = async (rewards: AtomicaSubgraphRewards[]) => {
     const rewardTokens = await getPoolRewardTokens(rewards, new Date().getTime());
+
     await getPriceMap(rewardTokens);
+
     const annualRewardSummary = annualRewardSummaryInUsd(rewardTokens);
+
     return {
       lastReward: getMostRecentReward(rewardTokens),
       annualRewardSummary,
@@ -284,29 +359,23 @@ export const useRiskPool = () => {
     };
   };
 
-  const calculatePoolRewards = async (
-    rewards: AtomicaSubgraphRewards[],
-    name: string,
-    totalLiquidity: string,
-    asset?: TokenMetadataType
-  ): Promise<PoolEarnings> => {
-    const { annualRewardSummary, earnings, lastReward } = await calculateRewards(rewards);
-    const poolRate = await getPrice([getCoinId(name)]);
-
-    const poolBalanceUsd = normalizeBN(totalLiquidity, asset?.decimals || WEI_DECIMALS).times(
-      poolRate
-    );
+  const calculatePoolRewards = async (rewards: AtomicaSubgraphRewards[]): Promise<PoolEarnings> => {
+    const { earnings, lastReward, annualRewardSummary } = await calculateRewards(rewards);
 
     return {
       earnings,
       lastReward,
-      apy: annualRewardSummary.div(poolBalanceUsd).times(100),
-      poolId: '1',
+      apys: annualRewardSummary.annualRewardPerTokens.map((rewardApy) => {
+        return {
+          apy: rewardApy?.apy,
+          rewardId: rewardApy?.rewardId,
+        };
+      }),
+      poolId: rewards[0]?.poolId || '',
     };
   };
 
-  const getUserPoolSettlementPremiums = async (pool: string, token: string) => {
-    const contract = new Contract(pool, RISK_POOL_ABI, provider?.getSigner());
+  const getUserPoolSettlementPremiums = async (contract: Contract, token: string) => {
     const settlementValue = await contract.accumulatedSettlement(account, token);
     const premiumValue = await contract.accumulatedPremium(account, token);
     return {

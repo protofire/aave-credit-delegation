@@ -1,10 +1,12 @@
 import { normalize, USD_DECIMALS, valueToBigNumber, WEI_DECIMALS } from '@aave/math-utils';
 import { Trans } from '@lingui/macro';
-import { Box, Typography } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 import BigNumber from 'bignumber.js';
 import { parseUnits } from 'ethers/lib/utils';
 import { memo, useRef, useState } from 'react';
+import { FormattedNumber } from 'src/components/primitives/FormattedNumber';
 import { Row } from 'src/components/primitives/Row';
+import { TokenIcon } from 'src/components/primitives/TokenIcon';
 import { StyledTxModalToggleButton } from 'src/components/StyledToggleButton';
 import { StyledTxModalToggleGroup } from 'src/components/StyledToggleButtonGroup';
 import { AssetInput } from 'src/components/transactions/AssetInput';
@@ -16,6 +18,7 @@ import {
 } from 'src/components/transactions/FlowCommons/TxModalDetails';
 import { useAppDataContext } from 'src/hooks/app-data-provider/useAppDataProvider';
 import { useModalContext } from 'src/hooks/useModal';
+import { ValueWithSymbol } from 'src/modules/reserve-overview/ReserveActions';
 
 import { useRiskPool } from '../../hooks/useRiskPool';
 import { AtomicaDelegationPool } from '../../types';
@@ -79,6 +82,24 @@ const ManageTypeSwitch = ({ setManageType, manageType }: ManageTypeSwitchProps) 
   );
 };
 
+const RewardsNumber = ({ usdValue }: { usdValue: 'Infinity' | number | string }) => {
+  return (
+    <Box sx={{ display: 'inline-flex', alignItems: 'center' }}>
+      <>
+        {/* <FormattedNumber value={+usdValue} variant="h4" /> */}
+        <FormattedNumber
+          value={isNaN(Number(usdValue)) ? 0 : Number(usdValue)}
+          variant="h4"
+          compact
+        />
+        <Typography variant="h4" sx={{ ml: 1 }}>
+          <Trans>USD</Trans>
+        </Typography>
+      </>
+    </Box>
+  );
+};
+
 export const ManageVaultModalContent = memo(
   ({
     userReserve,
@@ -131,14 +152,26 @@ export const ManageVaultModalContent = memo(
 
     const normalizedBalanceUSD = valueToBigNumber(totalAmount).multipliedBy(reserve.priceInUSD);
 
-    const interestBalanceUSD = valueToBigNumber(balances?.totalInterest ?? '0').multipliedBy(
-      reserve.priceInUSD
-    );
+    // const interestBalanceUSD = valueToBigNumber(balances?.totalInterest ?? '0').multipliedBy(
+    //   reserve.priceInUSD
+    // );
 
     const amountAfterRemovedInUsd = new BigNumber(amountAfterRemoved)
       .multipliedBy(poolReserve.formattedPriceInMarketReferenceCurrency)
       .multipliedBy(marketReferencePriceInUsd)
       .shiftedBy(-USD_DECIMALS);
+
+    const incentives = balances?.rewardCurrentEarnings?.map((earning) => {
+      return {
+        incentiveAPR: earning.apy?.div(10000).toString(10) || '0',
+        rewardTokenSymbol: earning.symbol,
+        rewardTokenAddress: earning.rewardId,
+        endedAt: earning.endedAt,
+        usdValue: earning.usdValue,
+        value: earning.value,
+        decimals: earning.decimals,
+      };
+    });
 
     const actionProps = {
       poolId: id,
@@ -148,10 +181,10 @@ export const ManageVaultModalContent = memo(
       manageType,
       generateWithdrawTx,
       generateClaimRewardsTx,
-      earnedRewardIds: rewards?.earnings?.earnings[0]?.earnedRewardIds || [],
+      earnedRewardIds:
+        rewards?.earnings?.earnings.flatMap((earning) => earning.earnedRewardIds) || [],
       lastReward: earnings?.lastReward,
-      settlementAmount: normalize(balances?.settlement || 0, asset?.decimals || 18),
-      premiumAmount: normalize(balances?.premium || 0, asset?.decimals || 18),
+      totalInterest: balances?.totalInterest || 0,
       generateClaimInterestTxs,
     };
 
@@ -182,40 +215,92 @@ export const ManageVaultModalContent = memo(
           </>
         ) : manageType === ManageType.REWARDS ? (
           <>
-            <Box sx={{ pt: 5 }}>
-              <AssetInput
-                value={normalize(
-                  balances?.currentlyEarned ?? 0,
-                  balances?.earningDecimals ?? WEI_DECIMALS
-                )}
-                usdValue={normalize(
-                  balances?.currentylEarnedUsd ?? 0,
-                  balances?.earningDecimals ?? WEI_DECIMALS
-                )}
-                symbol={earnings?.lastReward?.symbol || ''}
-                assets={[
-                  {
-                    balance: normalize(
-                      balances?.currentlyEarned || new BigNumber(0),
-                      earnings?.earnings[0]?.decimals || WEI_DECIMALS
-                    ),
-                    symbol: earnings?.lastReward?.symbol || '',
-                    iconSymbol: earnings?.lastReward?.symbol || 'default',
-                  },
-                ]}
-                disabled={true}
-                maxValue={normalize(
-                  balances?.currentlyEarned || new BigNumber(0),
-                  earnings?.earnings[0]?.decimals || WEI_DECIMALS
-                )}
-                balanceText={<Trans>Rewards balance</Trans>}
-              />
+            <Box sx={{ width: '100%' }}>
+              {incentives?.length ? (
+                incentives.map((incentive) => (
+                  <>
+                    <Row
+                      height={32}
+                      caption={
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            mb: incentives?.length ? (incentives.length > 1 ? 2 : 0) : 0,
+                          }}
+                        >
+                          <TokenIcon
+                            symbol={incentive.rewardTokenSymbol}
+                            sx={{ fontSize: '25px', mr: 1 }}
+                          />
+                          <Typography variant="h4">{incentive.rewardTokenSymbol}</Typography>
+                        </Box>
+                      }
+                      key={incentive.rewardTokenAddress}
+                      width="100%"
+                    >
+                      <Stack direction="column" justifyContent="center" alignItems="flex-end">
+                        <ValueWithSymbol
+                          value={normalize(incentive.value, incentive.decimals) || '0'}
+                          symbol={incentive.rewardTokenSymbol}
+                        />
+                        <FormattedNumber
+                          value={incentive.usdValue || '0'}
+                          color="text.muted"
+                          variant="subheader2"
+                          symbol="USD"
+                        />
+                      </Stack>
+                    </Row>
+                  </>
+                ))
+              ) : (
+                <Typography sx={{ textAlign: 'center' }} variant="h3">
+                  <Trans>No rewards to claim</Trans>
+                </Typography>
+              )}
             </Box>
           </>
         ) : (
           <>
             <Box sx={{ pt: 5 }}>
-              <AssetInput
+              <>
+                {balances?.premiumsAndSettlements.map((token) => (
+                  <>
+                    <Row
+                      height={32}
+                      caption={
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            mb: balances?.premiumsAndSettlements?.length
+                              ? balances?.premiumsAndSettlements.length > 1
+                                ? 2
+                                : 0
+                              : 0,
+                          }}
+                        >
+                          <TokenIcon
+                            symbol={token.symbol.toLowerCase()}
+                            sx={{ fontSize: '25px', mr: 1 }}
+                          />
+                          <Typography variant="h4">{token.symbol}</Typography>
+                        </Box>
+                      }
+                      key={token.address}
+                      width="100%"
+                    >
+                      <RewardsNumber
+                        usdValue={valueToBigNumber(token.totalInterest)
+                          .multipliedBy(token.usdValue)
+                          .toString(10)}
+                      />
+                    </Row>
+                  </>
+                ))}
+              </>
+              {/* <AssetInput
                 value={balances?.totalInterest.toString() || '0'}
                 usdValue={interestBalanceUSD.toString(10)}
                 symbol={asset?.symbol || ''}
@@ -229,7 +314,7 @@ export const ManageVaultModalContent = memo(
                 disabled={true}
                 maxValue={balances?.totalInterest.toString()}
                 balanceText={<Trans>Interest balance</Trans>}
-              />
+              /> */}
             </Box>
           </>
         )}
@@ -245,34 +330,8 @@ export const ManageVaultModalContent = memo(
               symbol={asset?.symbol || ''}
             />
           </TxModalDetails>
-        ) : manageType === ManageType.REWARDS ? (
-          <TxModalDetails gasLimit={gasLimit} skipLoad={true} disabled={Number(0) === 0}>
-            <DetailsNumberLineWithSub
-              description={<Trans>My Rewards Balance</Trans>}
-              futureValue={'0'}
-              futureValueUSD={'0.00'}
-              value={normalize(
-                balances?.currentylEarnedUsd ?? 0,
-                balances?.earningDecimals ?? WEI_DECIMALS
-              )}
-              valueUSD={normalize(
-                balances?.currentylEarnedUsd ?? 0,
-                balances?.earningDecimals ?? WEI_DECIMALS
-              )}
-              symbol={asset?.symbol || ''}
-            />
-          </TxModalDetails>
         ) : (
-          <TxModalDetails gasLimit={gasLimit} skipLoad={true} disabled={Number(0) === 0}>
-            <DetailsNumberLineWithSub
-              description={<Trans>My Interest Balance</Trans>}
-              futureValue={'0'}
-              futureValueUSD={'0.00'}
-              value={balances?.totalInterest.toString()}
-              valueUSD={interestBalanceUSD.toString(10)}
-              symbol={asset?.symbol || ''}
-            />
-          </TxModalDetails>
+          <></>
         )}
         {txError && <GasEstimationError txError={txError} />}
 

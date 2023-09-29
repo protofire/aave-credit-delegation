@@ -1,30 +1,30 @@
-import { ReserveIncentiveResponse } from '@aave/math-utils/dist/esm/formatters/incentive/calculate-reserve-incentives';
+// import { ReserveIncentiveResponse } from '@aave/math-utils/dist/esm/formatters/incentive/calculate-reserve-incentives';
 import { Box } from '@mui/material';
+import { RewardIncentive } from 'src/modules/credit-delegation/types';
 
 import { FormattedNumber } from '../primitives/FormattedNumber';
-import { NoData } from '../primitives/NoData';
+// import { NoData } from '../primitives/NoData';
 import { IncentivesButton } from './IncentivesButton';
 
 interface IncentivesCardProps {
   symbol: string;
   value: string | number;
-  incentives?: ReserveIncentiveResponse[];
+  incentives?: RewardIncentive[];
   variant?: 'main14' | 'main16' | 'secondary14';
   symbolsVariant?: 'secondary14' | 'secondary16';
   align?: 'center' | 'flex-end';
   color?: string;
-  endDate?: string;
+  supplyAPY: string;
 }
 
 export const IncentivesCard = ({
-  symbol,
   value,
   incentives,
   variant = 'secondary14',
   symbolsVariant,
   align,
   color,
-  endDate,
+  supplyAPY,
 }: IncentivesCardProps) => {
   return (
     <Box
@@ -36,7 +36,7 @@ export const IncentivesCard = ({
         textAlign: 'center',
       }}
     >
-      {value.toString() !== '-1' ? (
+      {/* {!incentives?.length ? (
         <FormattedNumber
           value={value}
           percent
@@ -47,9 +47,20 @@ export const IncentivesCard = ({
         />
       ) : (
         <NoData variant={variant} color={color || 'text.secondary'} />
+      )} */}
+
+      {!incentives?.length && (
+        <FormattedNumber
+          value={value}
+          percent
+          variant={variant}
+          symbolsVariant={symbolsVariant}
+          color={color}
+          symbolsColor={color}
+        />
       )}
 
-      <IncentivesButton incentives={incentives} symbol={symbol} endDate={endDate} />
+      <IncentivesButton incentives={incentives} value={value} supplyAPY={supplyAPY} />
     </Box>
   );
 };

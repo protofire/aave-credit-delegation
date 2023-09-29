@@ -1,5 +1,5 @@
 import { API_ETH_MOCK_ADDRESS, InterestRate } from '@aave/contract-helpers';
-import { normalize, valueToBigNumber } from '@aave/math-utils';
+import { valueToBigNumber, WEI_DECIMALS } from '@aave/math-utils';
 import { Trans } from '@lingui/macro';
 import {
   Box,
@@ -12,9 +12,9 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import React, { ReactNode, useState } from 'react';
-import { WalletIcon } from 'src/components/icons/WalletIcon';
-import { getMarketInfoById } from 'src/components/MarketSwitcher';
+import { BigNumber } from 'bignumber.js';
+import React, { ReactNode, useEffect, useMemo, useState } from 'react';
+import { ChartPieIcon } from 'src/components/icons/ChartPieIcon';
 import { FormattedNumber } from 'src/components/primitives/FormattedNumber';
 import { StyledTxModalToggleButton } from 'src/components/StyledToggleButton';
 import { StyledTxModalToggleGroup } from 'src/components/StyledToggleButtonGroup';
@@ -23,12 +23,12 @@ import {
   ComputedReserveData,
   useAppDataContext,
 } from 'src/hooks/app-data-provider/useAppDataProvider';
+import { useExternalDataProvider } from 'src/hooks/app-data-provider/useExternalDataProvider';
 import { useWalletBalances } from 'src/hooks/app-data-provider/useWalletBalances';
 import { useModalContext } from 'src/hooks/useModal';
 import { usePermissions } from 'src/hooks/usePermissions';
 import { useProtocolDataContext } from 'src/hooks/useProtocolDataContext';
 import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
-import { BuyWithFiat } from 'src/modules/staking/BuyWithFiat';
 import { useRootStore } from 'src/store/root';
 import { getMaxAmountAvailableToBorrow } from 'src/utils/getMaxAmountAvailableToBorrow';
 import { getMaxAmountAvailableToSupply } from 'src/utils/getMaxAmountAvailableToSupply';
@@ -41,7 +41,7 @@ import { useCreditDelegationContext } from '../credit-delegation/CreditDelegatio
 import { CreditDelegationModal } from '../credit-delegation/modals/CreditDelegation/CreditDelegationModal';
 import { ManageVaultModal } from '../credit-delegation/modals/WithdrawPool/ManageVaultModal';
 import { AtomicaDelegationPool } from '../credit-delegation/types';
-import { PanelItem } from './ReservePanels';
+import { calcAccruedInterest } from '../credit-delegation/utils';
 
 interface ReserveActionsProps {
   reserve: ComputedReserveData;
@@ -54,19 +54,40 @@ export const ReserveActions = ({ reserve, poolId }: ReserveActionsProps) => {
   const { currentAccount, loading: loadingWeb3Context } = useWeb3Context();
   const { isPermissionsLoading } = usePermissions();
   const { openCreditDelegation, openManageVault } = useModalContext();
-  const { currentMarket, currentNetworkConfig } = useProtocolDataContext();
+  const { currentNetworkConfig } = useProtocolDataContext();
   const { user, loading: loadingReserves, marketReferencePriceInUsd } = useAppDataContext();
   const { walletBalances, loading: loadingWalletBalance } = useWalletBalances();
   const {
     poolComputed: { minRemainingBaseTokenBalance },
   } = useRootStore();
-  const { pools, loading: loadingPools } = useCreditDelegationContext();
+  const { pools, loading: loadingPools, loansLoading, loans } = useCreditDelegationContext();
+  const { getExternalReserve } = useExternalDataProvider();
+  const [poolReserve, setPoolReserve] = React.useState<ComputedReserveData>(reserve);
 
   const pool = pools.find((pool) => pool.id === poolId) as AtomicaDelegationPool;
 
+  useEffect(() => {
+    if (reserve) {
+      (async () => {
+        const poolReserve = await getPoolReserve();
+        setPoolReserve(poolReserve);
+        setSelectedAsset(poolReserve.symbol);
+      })();
+    }
+  }, []);
+
+  const getPoolReserve = async () => {
+    if (reserve.symbol === 'GHST') {
+      return getExternalReserve('0x9f86ba35a016ace27bd4c37e42a1940a5b2508ef');
+    }
+    return reserve;
+  };
+
+  const { balances } = pool || {};
+
   const { baseAssetSymbol } = currentNetworkConfig;
-  let balance = walletBalances[reserve.underlyingAsset];
-  if (reserve.isWrappedBaseAsset && selectedAsset === baseAssetSymbol) {
+  let balance = walletBalances[poolReserve.underlyingAsset];
+  if (poolReserve.isWrappedBaseAsset && selectedAsset === baseAssetSymbol) {
     balance = walletBalances[API_ETH_MOCK_ADDRESS.toLowerCase()];
   }
 
@@ -74,39 +95,71 @@ export const ReserveActions = ({ reserve, poolId }: ReserveActionsProps) => {
 
   const maxAmountToBorrowUsd = amountToUsd(
     maxAmountToBorrow,
-    reserve.formattedPriceInMarketReferenceCurrency,
+    poolReserve.formattedPriceInMarketReferenceCurrency,
     marketReferencePriceInUsd
   ).toString();
 
   const maxAmountToSupply = getMaxAmountAvailableToSupply(
     balance?.amount || '0',
     reserve,
-    reserve.underlyingAsset,
+    poolReserve.underlyingAsset,
     minRemainingBaseTokenBalance
   );
 
-  const maxAmountToSupplyUsd = amountToUsd(
-    maxAmountToSupply,
-    reserve.formattedPriceInMarketReferenceCurrency,
-    marketReferencePriceInUsd
-  ).toString();
-
   const normalizedAvailableWithdrawUSD = valueToBigNumber(
     pool?.balances?.capital ?? 0
-  ).multipliedBy(reserve.priceInUSD);
+  ).multipliedBy(poolReserve.priceInUSD);
 
   const interestBalanceUSD = valueToBigNumber(pool?.balances?.totalInterest ?? 0).multipliedBy(
-    reserve.priceInUSD
+    poolReserve.priceInUSD
   );
 
-  const rewardsBalanceUsd = normalize(
-    pool?.balances?.currentylEarnedUsd ?? 0,
-    pool?.balances?.earningDecimals ?? 18
+  const rewardsSumUSD =
+    pool?.balances?.rewardCurrentEarnings.reduce((acc, earning) => {
+      return acc + earning.usdValue;
+    }, 0) || 0;
+
+  // const normalizedDepositedBalanceUSD = valueToBigNumber(
+  //   normalize(pool?.vault?.loanAmount || '0', pool?.asset?.decimals || 18)
+  // ).multipliedBy(poolReserve.priceInUSD);
+
+  const nowTimestamp = Math.floor(Date.now() / 1000);
+
+  const { interestRemainingUsd, requiredRepayAmountUsd } = useMemo(() => {
+    let interestRemainingUsd = new BigNumber(0);
+    let requiredRepayAmountUsd = 0;
+
+    loans.forEach((loan) => {
+      const interestAccrued = calcAccruedInterest(loan.chunks, nowTimestamp).decimalPlaces(
+        loan.premiumAsset?.decimals ?? WEI_DECIMALS
+      );
+
+      const interestAccruedUsd = interestAccrued.times(loan.usdRate);
+
+      interestRemainingUsd = interestRemainingUsd.plus(
+        BigNumber.max(Number(interestAccruedUsd) - Number(loan.interestRepaidUsd), 0)
+      );
+
+      requiredRepayAmountUsd += Number(loan.requiredRepayAmountUsd);
+    });
+
+    return { interestRemainingUsd, requiredRepayAmountUsd };
+  }, [loans, nowTimestamp]);
+
+  const rewardsSum =
+    balances?.rewardCurrentEarnings?.reduce((acc, earning) => {
+      return acc + earning.usdValue;
+    }, 0) || 0;
+
+  const unclaimedEarnings = useMemo(
+    () => (rewardsSum + (balances?.totalInterest || 0)).toFixed(2),
+    [balances?.totalInterest, rewardsSum]
   );
 
-  const normalizedDepositedBalanceUSD = valueToBigNumber(
-    normalize(pool?.vault?.loanAmount || '0', pool?.asset?.decimals || 18)
-  ).multipliedBy(reserve.priceInUSD);
+  const myBalance = useMemo(
+    () => Number(interestRemainingUsd) + requiredRepayAmountUsd + Number(unclaimedEarnings),
+    [interestRemainingUsd, requiredRepayAmountUsd, unclaimedEarnings]
+  );
 
   const { disableSupplyButton, disableBorrowButton } = useReserveActionState({
     balance: balance?.amount || '0',
@@ -119,41 +172,46 @@ export const ReserveActions = ({ reserve, poolId }: ReserveActionsProps) => {
     return <ConnectWallet loading={loadingWeb3Context} />;
   }
 
-  if (loadingReserves || loadingWalletBalance || loadingPools) {
+  if (loadingReserves || loadingWalletBalance || loadingPools || loansLoading) {
     return <ActionsSkeleton />;
   }
-
-  const { market } = getMarketInfoById(currentMarket);
 
   return (
     <>
       <PaperWrapper>
-        {reserve.isWrappedBaseAsset && (
+        {poolReserve.isWrappedBaseAsset && (
           <Box>
             <WrappedBaseAssetSelector
-              assetSymbol={reserve.symbol}
+              assetSymbol={poolReserve.symbol}
               baseAssetSymbol={baseAssetSymbol}
               selectedAsset={selectedAsset}
               setSelectedAsset={setSelectedAsset}
             />
           </Box>
         )}
-        <WalletBalance
-          balance={balance.amount}
-          symbol={selectedAsset}
-          marketTitle={market.marketTitle}
-        />
-        <DepositedAmount
-          value={normalize(pool?.vault?.loanAmount || '0', pool?.asset?.decimals || 18)}
-          usdValue={normalizedDepositedBalanceUSD.toString(10)}
-          symbol={pool?.asset?.symbol || ''}
-        />
+        <Stack gap={3} direction="row" justifyContent="space-between" alignItems="center">
+          <DepositedAmount
+            // value={normalize(pool?.vault?.loanAmount || '0', pool?.asset?.decimals || 18)}
+            value={pool?.balances?.capital || '0'}
+            // usdValue={normalizedDepositedBalanceUSD.toString(10)}
+            usdValue={normalizedAvailableWithdrawUSD.toString(10)}
+            symbol={pool?.asset?.symbol === 'GHST' ? 'GHO' : pool?.asset?.symbol || ''}
+            type="deposit"
+          />
+          <DepositedAmount
+            value={myBalance.toFixed(2)}
+            usdValue={myBalance.toFixed(2)}
+            symbol={pool?.asset?.symbol || ''}
+            type="balance"
+          />
+        </Stack>
+
         <>
           <Divider sx={{ my: 6 }} />
           <Stack gap={3}>
             <SupplyAction
               value={pool?.availableBalance.toString()}
-              usdValue={maxAmountToSupplyUsd}
+              usdValue={pool?.availableBalanceUsd.toString()}
               symbol={selectedAsset}
               disable={disableSupplyButton}
               onActionClicked={() => openCreditDelegation(poolId, pool?.underlyingAsset)}
@@ -167,7 +225,7 @@ export const ReserveActions = ({ reserve, poolId }: ReserveActionsProps) => {
               onActionClicked={() => openManageVault(pool)}
               capitalUsd={normalizedAvailableWithdrawUSD.toString(10)}
               interestBalanceUSD={interestBalanceUSD.toString(10)}
-              rewardsUsd={rewardsBalanceUsd}
+              rewardsUsd={rewardsSumUSD}
             />
           </Stack>
         </>
@@ -219,7 +277,7 @@ const ActionsSkeleton = () => {
 
 const PaperWrapper = ({ children }: { children: ReactNode }) => {
   return (
-    <Paper sx={{ pt: 4, pb: { xs: 4, xsm: 6 }, px: { xs: 4, xsm: 6 } }}>
+    <Paper sx={{ pt: 4, pb: { xs: 4, xsm: 6 }, px: { xs: 4, xsm: 6 }, height: '100%' }}>
       <Typography variant="h3" sx={{ mb: 6 }}>
         <Trans>Your info</Trans>
       </Typography>
@@ -257,14 +315,14 @@ interface ActionProps {
   onActionClicked: () => void;
   capitalUsd?: string;
   interestBalanceUSD?: string;
-  rewardsUsd?: string;
+  rewardsUsd?: number;
 }
 
 const SupplyAction = ({ value, usdValue, symbol, disable, onActionClicked }: ActionProps) => {
   return (
     <Stack>
       <AvailableTooltip
-        variant="description"
+        variant="h3"
         text={<Trans>Available to lend</Trans>}
         capType={CapType.supplyCap}
       />
@@ -275,9 +333,9 @@ const SupplyAction = ({ value, usdValue, symbol, disable, onActionClicked }: Act
         alignItems="center"
       >
         <Box>
-          <ValueWithSymbol value={value} symbol={symbol} />
+          <ValueWithSymbol value={value || '0'} symbol={symbol} />
           <FormattedNumber
-            value={usdValue}
+            value={usdValue || '0.0'}
             variant="subheader2"
             color="text.muted"
             symbolsColor="text.muted"
@@ -307,9 +365,9 @@ const BorrowAction = ({
   rewardsUsd,
 }: ActionProps) => {
   return (
-    <Stack alignItems="center">
+    <Stack>
       <AvailableTooltip
-        variant="description"
+        variant="h3"
         text={<Trans>Available to withdraw</Trans>}
         capType={CapType.borrowCap}
       />
@@ -317,16 +375,24 @@ const BorrowAction = ({
         marginTop={5}
         sx={{ height: '44px' }}
         direction="row"
-        justifyContent="space-evenly"
+        justifyContent="space-between"
         alignItems="center"
       >
-        <PanelItem
-          title={
-            <Box display="flex" alignItems="center">
-              <Trans>Capital</Trans>
-            </Box>
-          }
-        >
+        <Stack direction="column" justifyContent="space-evenly" alignItems="flex-start">
+          <Box>
+            <Trans>Remaining initial deposit</Trans>
+          </Box>
+
+          <Box>
+            <Trans>Interest</Trans>
+          </Box>
+
+          <Box>
+            <Trans>Rewards</Trans>
+          </Box>
+        </Stack>
+
+        <Stack direction="column" justifyContent="center" alignItems="flex-end">
           <FormattedNumber
             value={capitalUsd || '0'}
             variant="subheader2"
@@ -334,15 +400,6 @@ const BorrowAction = ({
             symbolsColor="text.muted"
             symbol="USD"
           />
-        </PanelItem>
-
-        <PanelItem
-          title={
-            <Box display="flex" alignItems="center">
-              <Trans>Interest</Trans>
-            </Box>
-          }
-        >
           <FormattedNumber
             value={interestBalanceUSD || '0'}
             variant="subheader2"
@@ -350,15 +407,6 @@ const BorrowAction = ({
             symbolsColor="text.muted"
             symbol="USD"
           />
-        </PanelItem>
-
-        <PanelItem
-          title={
-            <Box display="flex" alignItems="center">
-              <Trans>Rewards</Trans>
-            </Box>
-          }
-        >
           <FormattedNumber
             value={rewardsUsd || '0'}
             variant="subheader2"
@@ -366,18 +414,19 @@ const BorrowAction = ({
             symbolsColor="text.muted"
             symbol="USD"
           />
-        </PanelItem>
+        </Stack>
+
+        <Button
+          sx={{ height: '36px', width: '96px' }}
+          onClick={onActionClicked}
+          disabled={disable}
+          fullWidth={false}
+          variant="contained"
+          data-cy="borrowButton"
+        >
+          <Trans>Withdraw</Trans>
+        </Button>
       </Stack>
-      <Button
-        sx={{ height: '36px', width: '96px', marginTop: 5 }}
-        onClick={onActionClicked}
-        disabled={disable}
-        fullWidth={false}
-        variant="contained"
-        data-cy="borrowButton"
-      >
-        <Trans>Withdraw</Trans>
-      </Button>
     </Stack>
   );
 };
@@ -418,7 +467,7 @@ interface ValueWithSymbolProps {
   children?: ReactNode;
 }
 
-const ValueWithSymbol = ({ value, symbol, children }: ValueWithSymbolProps) => {
+export const ValueWithSymbol = ({ value, symbol, children }: ValueWithSymbolProps) => {
   return (
     <Stack direction="row" alignItems="center" gap={1}>
       <FormattedNumber value={value} variant="h4" color="text.primary" />
@@ -430,12 +479,13 @@ const ValueWithSymbol = ({ value, symbol, children }: ValueWithSymbolProps) => {
   );
 };
 
-interface WalletBalanceProps {
-  balance: string;
+interface DepositedAmountProps {
+  value: string;
   symbol: string;
-  marketTitle: string;
+  usdValue: string;
+  type: string;
 }
-const WalletBalance = ({ balance, symbol, marketTitle }: WalletBalanceProps) => {
+const DepositedAmount = ({ value, symbol, usdValue, type }: DepositedAmountProps) => {
   const theme = useTheme();
 
   return (
@@ -452,49 +502,21 @@ const WalletBalance = ({ balance, symbol, marketTitle }: WalletBalanceProps) => 
           justifyContent: 'center',
         })}
       >
-        <WalletIcon sx={{ stroke: `${theme.palette.text.secondary}` }} />
+        <ChartPieIcon sx={{ stroke: `${theme.palette.text.secondary}` }} />
       </Box>
       <Box>
         <Typography variant="description" color="text.secondary">
-          Wallet balance
+          {type === 'balance' ? 'My asset balance' : 'Initial deposited amount'}
         </Typography>
-        <ValueWithSymbol value={balance} symbol={symbol}>
-          <Box sx={{ ml: 2 }}>
-            <BuyWithFiat cryptoSymbol={symbol} networkMarketName={marketTitle} />
-          </Box>
-        </ValueWithSymbol>
+        {type === 'deposit' && <ValueWithSymbol value={value || '0'} symbol={symbol} />}
+        <FormattedNumber
+          value={usdValue || '0.0'}
+          variant={type === 'deposit' ? 'subheader2' : 'h4'}
+          color={type === 'deposit' ? 'text.muted' : 'text.primary'}
+          symbolsColor="text.muted"
+          symbol="USD"
+        />
       </Box>
-    </Stack>
-  );
-};
-
-interface DepositedAmountProps {
-  value: string;
-  symbol: string;
-  usdValue: string;
-}
-
-const DepositedAmount = ({ value, symbol, usdValue }: DepositedAmountProps) => {
-  return (
-    <Stack sx={{ paddingTop: 3 }}>
-      <Trans>Deposited amount</Trans>
-      <Stack
-        sx={{ height: '44px' }}
-        direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-      >
-        <Box>
-          <ValueWithSymbol value={value} symbol={symbol} />
-          <FormattedNumber
-            value={usdValue}
-            variant="subheader2"
-            color="text.muted"
-            symbolsColor="text.muted"
-            symbol="USD"
-          />
-        </Box>
-      </Stack>
     </Stack>
   );
 };

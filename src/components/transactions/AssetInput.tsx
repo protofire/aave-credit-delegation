@@ -60,6 +60,7 @@ export interface Asset {
   aToken?: boolean;
   priceInUsd?: string;
   decimals?: number;
+  iconUrl?: string;
 }
 
 export interface AssetInputProps<T extends Asset = Asset> {
@@ -184,6 +185,7 @@ export const AssetInput = <T extends Asset = Asset>({
                 aToken={asset?.aToken}
                 symbol={asset?.iconSymbol ?? asset?.symbol ?? 'default'}
                 sx={{ mr: 2, ml: 4 }}
+                // iconUrl={asset.iconUrl}
               />
               <Typography variant="h3" sx={{ lineHeight: '28px' }} data-cy={'inputAsset'}>
                 {symbol}
@@ -244,6 +246,7 @@ export const AssetInput = <T extends Asset = Asset>({
                         aToken={asset.aToken}
                         symbol={asset.iconSymbol || asset.symbol}
                         sx={{ fontSize: '22px', mr: 1 }}
+                        iconUrl={asset.iconUrl}
                       />
                       <ListItemText sx={{ mr: 6 }}>{asset.symbol}</ListItemText>
                       {asset.balance && <FormattedNumber value={asset.balance} compact />}

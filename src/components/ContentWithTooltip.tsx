@@ -20,7 +20,8 @@ const PopperComponent = styled(Popper)(
       p: 0,
       borderRadius: '6px',
       boxShadow: '0px 0px 2px rgba(0, 0, 0, 0.2), 0px 2px 10px rgba(0, 0, 0, 0.1)',
-      maxWidth: '280px',
+      // maxWidth: '500px',
+      maxWidth: 'fit-content',
     },
     '.MuiTooltip-arrow': {
       color: 'background.paper',

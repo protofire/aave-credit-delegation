@@ -1,12 +1,13 @@
-query main($managerIds: [String]!) {
-  pools(where: { manager_in: $managerIds }) {
+query main($operatorIds: [String]!) {
+  pools(where: { owner_in: $operatorIds }) {
     id
     name
     capitalTokenSymbol
     capitalTokenAddress
     capitalTokenDecimals
-    manager
-    managerFee
+    operator
+    operatorFee
+    owner
     capitalRequirement
     capitalTokenBalance
     data
@@ -16,6 +17,7 @@ query main($managerIds: [String]!) {
       title
       details
       wording
+      premiumToken
       product {
         id
         title

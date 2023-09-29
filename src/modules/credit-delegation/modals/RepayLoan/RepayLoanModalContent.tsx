@@ -2,11 +2,11 @@ import { USD_DECIMALS, valueToBigNumber, WEI_DECIMALS } from '@aave/math-utils';
 import { Trans } from '@lingui/macro';
 import { Box, Typography } from '@mui/material';
 import BigNumber from 'bignumber.js';
-import { memo, useCallback, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Row } from 'src/components/primitives/Row';
 import { StyledTxModalToggleButton } from 'src/components/StyledToggleButton';
 import { StyledTxModalToggleGroup } from 'src/components/StyledToggleButtonGroup';
-import { AssetInput } from 'src/components/transactions/AssetInput';
+import { Asset, AssetInput } from 'src/components/transactions/AssetInput';
 import { GasEstimationError } from 'src/components/transactions/FlowCommons/GasEstimationError';
 import { ModalWrapperProps } from 'src/components/transactions/FlowCommons/ModalWrapper';
 import {
@@ -16,6 +16,7 @@ import {
 import { useAppDataContext } from 'src/hooks/app-data-provider/useAppDataProvider';
 import { useWalletBalances } from 'src/hooks/app-data-provider/useWalletBalances';
 import { useModalContext } from 'src/hooks/useModal';
+import { amountToUsd } from 'src/utils/utils';
 
 import { AtomicaLoan } from '../../types';
 import { calcAccruedInterest } from '../../utils';
@@ -25,6 +26,12 @@ import { RepayTypeTooltip } from './RepayTypeTooltip';
 export enum RepayType {
   INTEREST = 'Interest',
   PRINCIPAL = 'Principal',
+}
+
+export interface RepayAsset extends Asset {
+  balance: string;
+  priceInUSD: string;
+  decimals: number;
 }
 
 interface RepayLoanModalContentProps extends ModalWrapperProps, AtomicaLoan {}
@@ -80,29 +87,32 @@ const RepayTypeSwitch = ({ setRepayType, repayType }: RepayTypeSwitchProps) => {
 
 export const RepayLoanModalContent = memo(
   ({
-    asset,
     requiredRepayAmount,
-    requiredRepayAmountUsd,
-    userReserve,
     isWrongNetwork,
     loanId,
     poolReserve,
     interestRepaid,
     chunks,
+    premiumAsset,
   }: RepayLoanModalContentProps) => {
     const { mainTxState: supplyTxState, gasLimit, txError, setTxError } = useModalContext();
-    const { walletBalances } = useWalletBalances();
+    const { getExternalBalance } = useWalletBalances();
     const { marketReferencePriceInUsd } = useAppDataContext();
+    const [walletBalance, setWalletBalance] = useState<string>('0');
 
     const [_amount, setAmount] = useState('');
     const amountRef = useRef<string>();
 
-    const { reserve } = userReserve;
+    // const { reserve } = userReserve;
 
-    const walletBalance = useMemo(
-      () => walletBalances[asset?.address || '']?.amount,
-      [walletBalances, asset]
-    );
+    useEffect(() => {
+      if (premiumAsset) {
+        (async () => {
+          const balance = await getExternalBalance(premiumAsset);
+          setWalletBalance(balance.amount);
+        })();
+      }
+    }, []);
 
     const nowTimestamp = Math.floor(Date.now() / 1000);
 
@@ -112,7 +122,7 @@ export const RepayLoanModalContent = memo(
     );
 
     const interestRemaining = BigNumber.max(
-      interestAccrued.minus(interestRepaid).decimalPlaces(asset?.decimals ?? WEI_DECIMALS),
+      interestAccrued.minus(interestRepaid).decimalPlaces(premiumAsset?.decimals ?? WEI_DECIMALS),
       0
     ).toString();
 
@@ -134,18 +144,24 @@ export const RepayLoanModalContent = memo(
       .minus(amount || '0')
       .toString();
 
-    const usdValue = valueToBigNumber(amount).multipliedBy(reserve.priceInUSD);
+    const usdValue = valueToBigNumber(amount).multipliedBy(poolReserve.priceInUSD);
 
     const amountAfterRepayInUsd = new BigNumber(amountAfterRepay)
       .multipliedBy(poolReserve.formattedPriceInMarketReferenceCurrency)
       .multipliedBy(marketReferencePriceInUsd)
       .shiftedBy(-USD_DECIMALS);
 
+    const requiredRepayAmountUsd = amountToUsd(
+      requiredRepayAmount,
+      poolReserve.formattedPriceInMarketReferenceCurrency,
+      marketReferencePriceInUsd
+    );
+
     const actionProps = {
       loanId: loanId ?? '',
       amount,
       isWrongNetwork,
-      asset,
+      asset: premiumAsset,
       repayType,
     };
 
@@ -166,12 +182,12 @@ export const RepayLoanModalContent = memo(
             value={amount}
             onChange={handleChange}
             usdValue={usdValue.toString(10)}
-            symbol={asset?.symbol || ''}
+            symbol={premiumAsset?.symbol || ''}
             assets={[
               {
                 balance: walletBalance,
-                symbol: asset?.symbol || '',
-                iconSymbol: asset?.symbol || '',
+                symbol: premiumAsset?.symbol || '',
+                iconSymbol: premiumAsset?.symbol || '',
               },
             ]}
             disabled={supplyTxState.loading}
@@ -187,8 +203,8 @@ export const RepayLoanModalContent = memo(
             futureValue={amountAfterRepay}
             futureValueUSD={amountAfterRepayInUsd.toString(10)}
             value={requiredRepayAmount}
-            valueUSD={requiredRepayAmountUsd}
-            symbol={asset?.symbol || ''}
+            valueUSD={requiredRepayAmountUsd.toString()}
+            symbol={premiumAsset?.symbol || ''}
           />
         </TxModalDetails>
 

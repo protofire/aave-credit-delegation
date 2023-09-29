@@ -1,4 +1,5 @@
 import { TokenMetadataType } from '@aave/contract-helpers';
+import { ReserveIncentiveResponse } from '@aave/math-utils/dist/esm/formatters/incentive/calculate-reserve-incentives';
 import { BigNumber } from 'bignumber.js';
 
 import { PoolMetadata } from './hooks/usePoolsMetadata';
@@ -51,8 +52,8 @@ export interface AtomicaSubgraphPool {
   capitalTokenSymbol: string;
   capitalTokenAddress: string;
   capitalTokenDecimals: number;
-  manager: string;
-  managerFee: string;
+  operator: string;
+  operatorFee: string;
   capitalRequirement: string;
   capitalTokenBalance: string;
   markets: {
@@ -60,6 +61,7 @@ export interface AtomicaSubgraphPool {
     title: string;
     wording: string;
     details: string;
+    premiumToken: string;
     product: {
       id: string;
       title: string;
@@ -285,6 +287,7 @@ export interface AtomicaLoan {
   ratePerSec: string;
   usdRate: string;
   createdAt?: string;
+  premiumAsset?: TokenMetadataType;
 }
 
 export interface AtomicaLendingPosition {
@@ -416,7 +419,7 @@ export interface EarnedToken {
 
 export interface PoolEarnings {
   poolId: string;
-  apy: BigNumber;
+  apys: { apy?: BigNumber; rewardId?: string }[];
   lastReward?: Reward;
   earnings: EarnedToken[];
 }
@@ -426,12 +429,17 @@ export interface PoolBalances {
   availableWithdraw: number;
   lpBalance: string;
   capital: string;
-  settlement: number;
-  premium: number;
-  currentlyEarned: BigNumber;
-  currentylEarnedUsd: number;
+  premiumsAndSettlements: {
+    premium: string;
+    settlement: string;
+    decimals: number;
+    symbol: string;
+    address: string;
+    usdValue: number;
+    totalInterest: number;
+  }[];
+  rewardCurrentEarnings: RewardCurrentEarnings[];
   totalInterest: number;
-  earningDecimals: number;
 }
 
 export interface PoolRewardEarnings {
@@ -439,6 +447,26 @@ export interface PoolRewardEarnings {
   rewards?: AtomicaSubgraphRewards[];
 }
 
+export interface RewardCurrentEarnings {
+  value: BigNumber;
+  rewardId: string;
+  usdValue: number;
+  decimals: number;
+  symbol: string;
+  endedAt: string;
+  apy?: BigNumber;
+}
+
+export interface RewardIncentive extends ReserveIncentiveResponse {
+  endedAt: string;
+  usdValue: number;
+}
+
+export interface AtomicaLoanPool {
+  loan: AtomicaLoan;
+  market?: AtomicaBorrowMarket;
+  pools?: (AtomicaDelegationPool | undefined)[];
+}
 export interface AssetToLend {
   key: string;
   symbol: string;

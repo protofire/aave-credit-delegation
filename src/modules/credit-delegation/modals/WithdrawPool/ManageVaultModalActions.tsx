@@ -33,8 +33,7 @@ interface ManageVaultActionProps extends BoxProps {
   }>;
   earnedRewardIds: string[];
   lastReward?: Reward;
-  settlementAmount: string;
-  premiumAmount: string;
+  totalInterest: number;
 }
 
 export const ManageVaultModalActions = memo(
@@ -48,8 +47,7 @@ export const ManageVaultModalActions = memo(
     earnedRewardIds,
     lastReward,
     asset,
-    settlementAmount,
-    premiumAmount,
+    totalInterest,
     generateClaimInterestTxs,
     sx,
     ...props
@@ -226,7 +224,7 @@ export const ManageVaultModalActions = memo(
             requiresApproval={false}
             sx={sx}
             requiresAmount={true}
-            amount={Number(settlementAmount) > 0 || Number(premiumAmount) > 0 ? '1' : '0'}
+            amount={totalInterest > 0 ? '1' : '0'}
             {...props}
           />
         )}

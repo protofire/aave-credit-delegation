@@ -11,6 +11,7 @@ import { CREDIT_DELEGATION_LIST_COLUMN_WIDTHS } from 'src/utils/creditDelegation
 
 import { CreditDelegationContentNoData } from '../../CreditDelegationContentNoData';
 import { useCreditDelegationContext } from '../../CreditDelegationContext';
+import { AtomicaLoanPool } from '../../types';
 import { handleStandardSort } from '../../utils';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListLoader } from '../ListLoader';
@@ -18,12 +19,11 @@ import { LendingPositionsListItem } from './LendingPositionsListItem';
 
 const head = [
   { title: <Trans key="assets">Assets</Trans>, sortKey: 'symbol' },
-  { title: <Trans key="title">Pool Description</Trans>, sortKey: 'title' },
-  { title: <Trans key="manager">Pool Manager</Trans>, sortKey: 'manager' },
+  { title: <Trans key="title">Description</Trans>, sortKey: 'title' },
+  { title: <Trans key="manager">Manager</Trans>, sortKey: 'manager' },
   { title: <Trans key="borrowers">Borrowers</Trans>, sortKey: 'borrowers' },
-  // { title: <Trans key="deposited">Deposited Amount</Trans>, sortKey: 'deposited' },
-  { title: <Trans key="balance">My Balance</Trans>, sortKey: 'balance' },
-  { title: <Trans key="rewards">My Rewards</Trans>, sortKey: 'rewards' },
+  { title: <Trans key="balance">My Asset Balance</Trans>, sortKey: 'balance' },
+  { title: <Trans key="rewards">Unclaimed Earnings</Trans>, sortKey: 'rewards' },
   { title: <Trans key="APY">APY</Trans>, sortKey: 'supplyAPY' },
 ];
 
@@ -53,14 +53,14 @@ const Header: React.FC<HeaderProps> = ({
             col.sortKey === 'symbol'
               ? CREDIT_DELEGATION_LIST_COLUMN_WIDTHS.ASSET
               : col.sortKey === 'title'
-              ? 360
+              ? 280
               : undefined
           }
           minWidth={
             col.sortKey === 'symbol'
               ? CREDIT_DELEGATION_LIST_COLUMN_WIDTHS.ASSET
               : col.sortKey === 'title'
-              ? 360
+              ? 280
               : undefined
           }
           key={col.sortKey}
@@ -86,7 +86,7 @@ export const LendingPositionsList = ({ type }: LendingPositionsListProps) => {
   const [sortName, setSortName] = useState('');
   const [sortDesc, setSortDesc] = useState(false);
 
-  const { loading: loadingPools, pools } = useCreditDelegationContext();
+  const { loading: loadingPools, pools, loans, markets } = useCreditDelegationContext();
   const { account } = useRootStore();
 
   const earningPools = pools.filter(
@@ -101,6 +101,26 @@ export const LendingPositionsList = ({ type }: LendingPositionsListProps) => {
       Number(pool.rewardAPY) <= 0 &&
       Number(pool.userAvailableWithdraw) > 0
   );
+
+  const loanPositions: AtomicaLoanPool[] = useMemo(() => {
+    return loans.map((loan) => {
+      const market = markets.find(
+        (market) => market.marketId.toLowerCase() === loan.policy?.marketId.toLowerCase()
+      );
+
+      const loanPools = loan.chunks.map((chunk) =>
+        (type === 'earning' ? earningPools : deficitPools).find(
+          (pool) => pool.id.toLowerCase() === chunk.poolId.toLowerCase()
+        )
+      );
+
+      return {
+        loan,
+        pools: loanPools,
+        market: market,
+      };
+    });
+  }, [deficitPools, earningPools, loans, markets, type]);
 
   const sortedPools = useMemo(
     () =>
@@ -147,7 +167,13 @@ export const LendingPositionsList = ({ type }: LendingPositionsListProps) => {
         />
       )}
       {sortedPools.map((item) => (
-        <LendingPositionsListItem key={item.id} {...item} />
+        <LendingPositionsListItem
+          key={item.id}
+          poolVault={item}
+          loanPositions={loanPositions.filter((loan) =>
+            loan?.pools?.find((pool) => pool?.id === item.id)
+          )}
+        />
       ))}
     </ListWrapper>
   );

@@ -81,6 +81,10 @@ export const useUserLoans = (
 
       const asset = tokenData?.find((token) => token.address === policy?.market.capitalToken);
 
+      const premiumAsset = tokenData?.find(
+        (token) => token.address === policy?.market.premiumToken
+      );
+
       const reserve = reserves.find((reserve) => {
         if (asset?.symbol.toLowerCase() === 'eth') return reserve.isWrappedBaseAsset;
 
@@ -187,6 +191,7 @@ export const useUserLoans = (
         lastUpdateTs: loan?.lastUpdateTs ?? undefined,
         loanId: loan?.id ?? undefined,
         createdAt: loan?.createdAt ?? '0',
+        premiumAsset,
       };
     });
 
