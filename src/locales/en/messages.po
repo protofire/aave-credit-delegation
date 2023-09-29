@@ -375,7 +375,6 @@ msgstr "Before supplying"
 msgid "Blocked Address"
 msgstr "Blocked Address"
 
-#: pages/credit-delegation.page.tsx
 #: pages/index.page.tsx
 #: src/components/transactions/Borrow/BorrowModal.tsx
 #: src/modules/dashboard/lists/BorrowAssetsList/BorrowAssetsListItem.tsx
@@ -1020,7 +1019,6 @@ msgstr "Learn more about risks involved"
 msgid "Learn more in our <0>FAQ guide</0>"
 msgstr "Learn more in our <0>FAQ guide</0>"
 
-#: pages/credit-delegation.page.tsx
 #: pages/index.page.tsx
 #: src/modules/credit-delegation/lists/PoolsList/PoolListItem.tsx
 #: src/modules/reserve-overview/ReserveActions.tsx
