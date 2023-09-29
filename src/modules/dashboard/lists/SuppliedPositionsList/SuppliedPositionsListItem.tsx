@@ -22,7 +22,7 @@ export const SuppliedPositionsListItem = ({
   underlyingAsset,
 }: DashboardReserve) => {
   const { user } = useAppDataContext();
-  const { isIsolated, aIncentivesData, isFrozen, isActive } = reserve;
+  const { isIsolated, isFrozen, isActive } = reserve;
   const { currentMarketData, currentMarket } = useProtocolDataContext();
   const { openSupply, openWithdraw, openCollateralChange, openSwap } = useModalContext();
   const { debtCeiling } = useAssetCaps();
@@ -60,7 +60,7 @@ export const SuppliedPositionsListItem = ({
 
       <ListAPRColumn
         value={Number(reserve.supplyAPY)}
-        incentives={aIncentivesData}
+        // incentives={aIncentivesData}
         symbol={reserve.symbol}
       />
 

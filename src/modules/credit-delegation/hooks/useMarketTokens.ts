@@ -5,7 +5,6 @@ import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
 import ERC20ABI from 'src/modules/credit-delegation/abi/ERC20.json';
 import { useRootStore } from 'src/store/root';
 
-import { NEXT_PUBLIC_ATOMICA_MARKET_SHEET_ID } from '../consts';
 import { GoogleSheetsApiService } from '../google-sheet-service';
 import useAsyncMemo from './useAsyncMemo';
 import { useCoinRate } from './useCoinRate';
@@ -53,7 +52,7 @@ export const useMarketTokens = (marketId?: string) => {
 
   const getMarketTokens = useCallback(async () => {
     if (!marketId) return;
-    const service = new GoogleSheetsApiService(NEXT_PUBLIC_ATOMICA_MARKET_SHEET_ID);
+    const service = new GoogleSheetsApiService('NEXT_PUBLIC_ATOMICA_MARKET_SHEET_ID');
 
     const conn = await service.getSheet('Markets');
 

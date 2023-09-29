@@ -245,7 +245,6 @@ interface DetailsIncentivesLineProps {
 
 export const DetailsIncentivesLine = ({
   incentives,
-  symbol,
   futureIncentives,
   futureSymbol,
   loading = false,
@@ -258,11 +257,11 @@ export const DetailsIncentivesLine = ({
           <Skeleton variant="rectangular" height={20} width={100} sx={{ borderRadius: '4px' }} />
         ) : (
           <>
-            <IncentivesButton incentives={incentives} symbol={symbol} />
+            <IncentivesButton incentives={undefined} />
             {futureSymbol && (
               <>
                 {ArrowRightIcon}
-                <IncentivesButton incentives={futureIncentives} symbol={futureSymbol} />
+                <IncentivesButton incentives={undefined} />
                 {futureIncentives && futureIncentives.length === 0 && (
                   <Typography variant="secondary14">
                     <Trans>None</Trans>

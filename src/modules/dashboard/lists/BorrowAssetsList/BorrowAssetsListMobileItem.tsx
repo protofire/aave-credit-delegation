@@ -23,8 +23,6 @@ export const BorrowAssetsListMobileItem = ({
   totalBorrows,
   variableBorrowRate,
   stableBorrowRate,
-  sIncentivesData,
-  vIncentivesData,
   underlyingAsset,
   isFreezed,
 }: DashboardReserve) => {
@@ -69,7 +67,7 @@ export const BorrowAssetsListMobileItem = ({
       >
         <IncentivesCard
           value={Number(variableBorrowRate)}
-          incentives={vIncentivesData}
+          incentives={undefined}
           symbol={symbol}
           variant="secondary14"
         />
@@ -89,7 +87,7 @@ export const BorrowAssetsListMobileItem = ({
       >
         <IncentivesCard
           value={Number(stableBorrowRate)}
-          incentives={sIncentivesData}
+          incentives={undefined}
           symbol={symbol}
           variant="secondary14"
         />

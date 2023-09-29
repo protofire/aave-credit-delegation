@@ -19,7 +19,7 @@ export const BorrowerListItem = ({
   };
   wording: string;
   details: string;
-  creditLine?: string;
+  creditLine?: number;
 }) => {
   return (
     <ListItem>

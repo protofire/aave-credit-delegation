@@ -1,5 +1,4 @@
 import { Box } from '@mui/material';
-// import { IncentivesButton } from 'src/components/incentives/IncentivesButton';
 import { IncentivesRewardButton } from 'src/components/incentives/IncentivesRewardButton';
 import { ListColumn } from 'src/components/lists/ListColumn';
 import { FormattedNumber } from 'src/components/primitives/FormattedNumber';

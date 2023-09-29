@@ -30,8 +30,8 @@ export const BorrowedPositionsListItem = ({
     isFrozen,
     borrowingEnabled,
     stableBorrowRateEnabled,
-    sIncentivesData,
-    vIncentivesData,
+    // sIncentivesData,
+    // vIncentivesData,
     variableBorrowAPY,
   } = reserve;
 
@@ -59,7 +59,7 @@ export const BorrowedPositionsListItem = ({
         value={Number(
           borrowRateMode === InterestRate.Variable ? variableBorrowAPY : stableBorrowAPY
         )}
-        incentives={borrowRateMode === InterestRate.Variable ? vIncentivesData : sIncentivesData}
+        // incentives={borrowRateMode === InterestRate.Variable ? vIncentivesData : sIncentivesData}
         symbol={reserve.symbol}
       />
 

@@ -24,7 +24,6 @@ export const SupplyAssetsListItem = ({
   supplyCap,
   totalLiquidity,
   supplyAPY,
-  aIncentivesData,
   underlyingAsset,
   isActive,
   isFreezed,
@@ -65,7 +64,7 @@ export const SupplyAssetsListItem = ({
         }
       />
 
-      <ListAPRColumn value={Number(supplyAPY)} incentives={aIncentivesData} symbol={symbol} />
+      <ListAPRColumn value={Number(supplyAPY)} symbol={symbol} />
 
       <ListColumn>
         {debtCeiling.isMaxed ? (

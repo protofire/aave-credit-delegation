@@ -25,8 +25,7 @@ export const SuppliedPositionsListMobileItem = ({
   const { openSupply, openSwap, openWithdraw, openCollateralChange } = useModalContext();
   const { debtCeiling } = useAssetCaps();
   const isSwapButton = isFeatureEnabled.liquiditySwap(currentMarketData);
-  const { symbol, iconSymbol, name, supplyAPY, isIsolated, aIncentivesData, isFrozen, isActive } =
-    reserve;
+  const { symbol, iconSymbol, name, supplyAPY, isIsolated, isFrozen, isActive } = reserve;
 
   const canBeEnabledAsCollateral =
     !debtCeiling.isMaxed &&
@@ -63,7 +62,7 @@ export const SuppliedPositionsListMobileItem = ({
       >
         <IncentivesCard
           value={Number(supplyAPY)}
-          incentives={aIncentivesData}
+          // incentives={aIncentivesData}
           symbol={symbol}
           variant="secondary14"
         />

@@ -15,7 +15,7 @@ interface IncentivesButtonProps {
   incentives?: RewardIncentive[];
   displayBlank?: boolean;
   value?: string | number;
-  supplyAPY: string;
+  supplyAPY?: string;
 }
 
 const BlankIncentives = () => {
@@ -110,7 +110,7 @@ export const IncentivesButton = ({
           incentives={incentives}
           incentivesNetAPR={incentivesNetAPR}
           value={value || 0}
-          supplyAPY={supplyAPY}
+          supplyAPY={supplyAPY || '0'}
         />
       }
       withoutHover

@@ -9,10 +9,10 @@ interface ListAPRColumnProps {
   minApr: string;
 }
 
-export const ListAPRRangeColumn = ({ symbol, endDate, minApr, maxApr }: ListAPRColumnProps) => {
+export const ListAPRRangeColumn = ({ symbol, minApr, maxApr }: ListAPRColumnProps) => {
   return (
     <ListColumn isRow align="center" justify="center">
-      <IncentivesCard value={minApr} symbol={symbol} data-cy={`apyType`} endDate={endDate} />
+      <IncentivesCard value={minApr} symbol={symbol} data-cy={`apyType`} />
       <Typography
         sx={{
           whiteSpace: 'break-spaces',
@@ -20,7 +20,7 @@ export const ListAPRRangeColumn = ({ symbol, endDate, minApr, maxApr }: ListAPRC
       >
         {'  '}-{'  '}
       </Typography>
-      <IncentivesCard value={maxApr} symbol={symbol} data-cy={`apyType`} endDate={endDate} />
+      <IncentivesCard value={maxApr} symbol={symbol} data-cy={`apyType`} />
     </ListColumn>
   );
 };

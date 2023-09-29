@@ -144,8 +144,8 @@ export const BorrowInfo = ({
         >
           <FormattedNumber value={reserve.variableBorrowAPY} percent variant="main16" />
           <IncentivesButton
-            symbol={reserve.symbol}
-            incentives={reserve.vIncentivesData}
+            // symbol={reserve.symbol}
+            // incentives={reserve.vIncentivesData}
             displayBlank={true}
           />
         </PanelItem>
@@ -161,8 +161,8 @@ export const BorrowInfo = ({
           >
             <FormattedNumber value={reserve.stableBorrowAPY} percent variant="main16" />
             <IncentivesButton
-              symbol={reserve.symbol}
-              incentives={reserve.sIncentivesData}
+              // symbol={reserve.symbol}
+              // incentives={reserve.sIncentivesData}
               displayBlank={true}
             />
           </PanelItem>

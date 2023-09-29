@@ -1,11 +1,12 @@
-import { ReserveIncentiveResponse } from '@aave/math-utils/dist/esm/formatters/incentive/calculate-reserve-incentives';
+// import { ReserveIncentiveResponse } from '@aave/math-utils/dist/esm/formatters/incentive/calculate-reserve-incentives';
+import { RewardIncentive } from 'src/modules/credit-delegation/types';
 
 import { IncentivesCard } from '../../../components/incentives/IncentivesCard';
 import { ListColumn } from '../../../components/lists/ListColumn';
 
 interface ListAPRColumnProps {
   value: number;
-  incentives?: ReserveIncentiveResponse[];
+  incentives?: RewardIncentive[];
   symbol: string;
 }
 

@@ -22,7 +22,6 @@ export const SupplyAssetsListMobileItem = ({
   supplyCap,
   totalLiquidity,
   supplyAPY,
-  aIncentivesData,
   isIsolated,
   usageAsCollateralEnabledOnUser,
   isActive,
@@ -68,7 +67,7 @@ export const SupplyAssetsListMobileItem = ({
       >
         <IncentivesCard
           value={Number(supplyAPY)}
-          incentives={aIncentivesData}
+          // incentives={aIncentivesData}
           symbol={symbol}
           variant="secondary14"
         />

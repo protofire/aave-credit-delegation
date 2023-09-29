@@ -14,7 +14,7 @@ interface IncentivesCardProps {
   symbolsVariant?: 'secondary14' | 'secondary16';
   align?: 'center' | 'flex-end';
   color?: string;
-  supplyAPY: string;
+  supplyAPY?: string;
 }
 
 export const IncentivesCard = ({
