@@ -19,8 +19,8 @@ import { LendingPositionsListItem } from './LendingPositionsListItem';
 
 const head = [
   { title: <Trans key="assets">Assets</Trans>, sortKey: 'symbol' },
-  { title: <Trans key="title">Description</Trans>, sortKey: 'title' },
-  { title: <Trans key="manager">Manager</Trans>, sortKey: 'manager' },
+  { title: <Trans key="title">Pool Description</Trans>, sortKey: 'title' },
+  { title: <Trans key="operator">Pool Operator</Trans>, sortKey: 'owner' },
   { title: <Trans key="borrowers">Borrowers</Trans>, sortKey: 'borrowers' },
   { title: <Trans key="balance">My Asset Balance</Trans>, sortKey: 'balance' },
   { title: <Trans key="rewards">Unclaimed Earnings</Trans>, sortKey: 'rewards' },

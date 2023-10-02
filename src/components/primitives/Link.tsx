@@ -9,11 +9,17 @@ import * as React from 'react';
 const Anchor = styled('a')({});
 
 interface NextLinkComposedProps
-  extends Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'href'>,
+  extends Omit<
+      React.AnchorHTMLAttributes<HTMLAnchorElement>,
+      'href' | 'onClick' | 'onMouseEnter' | 'onTouchStart'
+    >,
     Omit<NextLinkProps, 'href' | 'as'> {
   to: NextLinkProps['href'];
   linkAs?: NextLinkProps['as'];
   href?: NextLinkProps['href'];
+  onClick?: React.MouseEventHandler<HTMLAnchorElement>;
+  onMouseEnter?: React.MouseEventHandler<HTMLAnchorElement>;
+  onTouchStart?: React.TouchEventHandler<HTMLAnchorElement>;
 }
 
 export const NextLinkComposed = React.forwardRef<HTMLAnchorElement, NextLinkComposedProps>(

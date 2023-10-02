@@ -53,6 +53,7 @@ export interface AtomicaSubgraphPool {
   capitalTokenAddress: string;
   capitalTokenDecimals: number;
   operator: string;
+  owner: string;
   operatorFee: string;
   capitalRequirement: string;
   capitalTokenBalance: string;
@@ -76,7 +77,7 @@ export interface AtomicaSubgraphMarket {
   id: string;
   marketId: string;
   title: string;
-  author: string;
+  operator: string;
   aggregatedPools: {
     id: string;
     poolList: string;
@@ -204,7 +205,8 @@ export interface AtomicaDelegationPool {
   approvedCreditUsd: string;
   approvedCreditUsdBig: BigNumber;
   vault?: SubgraphVault;
-  manager: string;
+  owner: string;
+  operator: string;
   markets: {
     id: string;
     title: string;
@@ -220,7 +222,7 @@ export interface AtomicaDelegationPool {
   variableDebtTokenAddress: string;
   rewards?: PoolRewardEarnings;
   userAvailableWithdraw: number;
-  managerFee: string;
+  operatorFee: string;
   poolCap: string;
   poolBalance: string;
   poolCapUsd: string;

@@ -38,6 +38,7 @@ declare module '@mui/material/styles/createPalette' {
     gradients: {
       aaveGradient: string;
       newGradient: string;
+      protofireGradient: string;
     };
     other: {
       standardInputLine: string;
@@ -48,6 +49,7 @@ declare module '@mui/material/styles/createPalette' {
     gradients: {
       aaveGradient: string;
       newGradient: string;
+      protofireGradient: string;
     };
   }
 }
@@ -199,6 +201,7 @@ export const getDesignTokens = (mode: 'light' | 'dark') => {
       gradients: {
         aaveGradient: 'linear-gradient(248.86deg, #B6509E 10.51%, #2EBAC6 93.41%)',
         newGradient: 'linear-gradient(79.67deg, #8C3EBC 0%, #007782 95.82%)',
+        protofireGradient: 'linear-gradient(45deg, #F54703 0%, #FAC902 95.82%)',
       },
     },
     spacing: 4,

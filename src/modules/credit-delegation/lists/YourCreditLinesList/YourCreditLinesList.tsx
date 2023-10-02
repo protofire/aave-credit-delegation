@@ -26,22 +26,27 @@ const head = [
   {
     title: <Trans>Requested Amount</Trans>,
     sortKey: 'requestedAmountUsd',
+    tooltip: 'Requested Amount',
   },
   {
     title: <Trans>Approved Amount</Trans>,
     sortKey: 'amountUsd',
+    tooltip: 'Approved Amount',
   },
   {
     title: <Trans>Balance of Pre-paid Promotional Budget</Trans>,
     sortKey: 'topUpUsd',
+    tooltip: 'Balance of Pre-paid Promotional Budget',
   },
   {
     title: <Trans>Max APR</Trans>,
     sortKey: 'maxApr',
+    tooltip: 'Max APR',
   },
   {
     title: <Trans>Actual APR</Trans>,
     sortKey: 'apr',
+    tooltip: 'Actual APR',
   },
 ];
 
@@ -67,7 +72,7 @@ const Header: React.FC<HeaderProps> = ({
             col.sortKey === 'symbol' ? CREDIT_DELEGATION_LIST_COLUMN_WIDTHS.ASSET : undefined
           }
           key={col.sortKey}
-          overFlow={'visible'}
+          overFlow="visible"
         >
           <ListHeaderTitle
             sortName={sortName}
@@ -75,6 +80,7 @@ const Header: React.FC<HeaderProps> = ({
             setSortName={setSortName}
             setSortDesc={setSortDesc}
             sortKey={col.sortKey}
+            title={col.tooltip}
           >
             {col.title}
           </ListHeaderTitle>

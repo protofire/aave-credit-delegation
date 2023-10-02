@@ -1,5 +1,5 @@
 query main($operatorIds: [String]!) {
-  pools(where: { owner_in: $operatorIds }) {
+  pools(where: { operator_in: $operatorIds }) {
     id
     name
     capitalTokenSymbol

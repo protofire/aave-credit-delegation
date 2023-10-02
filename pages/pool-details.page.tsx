@@ -66,7 +66,7 @@ export default function PoolDetails() {
             display: 'flex',
             flexDirection: 'row',
             flex: 1,
-            mt: { xs: '-32px', lg: '-46px', xl: '-44px', xxl: '-48px' },
+            mt: { xs: '-32px', lg: '-40px', xl: '-44px', xxl: '-48px' },
           }}
         >
           <Container>

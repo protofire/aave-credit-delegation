@@ -142,6 +142,17 @@ export const LoanApplicationModalContentContent = React.memo(
               />
               <span className="error">{getErrorMessage(validationErrors, 'state')}</span>
             </Box>
+            <Box sx={{ pt: 5 }}>
+              <Input
+                value={maxApr}
+                onChange={setMaxApr}
+                label="Max APR"
+                fullWidth
+                error={hasError(validationErrors, 'maxApr')}
+                disabled={mainTxState.loading}
+              />
+              <span className="error">{getErrorMessage(validationErrors, 'maxApr')}</span>
+            </Box>
           </Box>
           <Box sx={{ pt: 5, width: '50%' }}>
             <Box sx={{ pt: 5 }}>
@@ -210,20 +221,41 @@ export const LoanApplicationModalContentContent = React.memo(
                 balanceText={<Trans>Balance</Trans>}
                 inputTitle="Balance of Pre-paid Promotional Budget (optional)"
               />
-
               <span className="error">{getErrorMessage(validationErrors, 'topUp')}</span>
-            </Box>
-
-            <Box sx={{ pt: 5 }}>
-              <Input
-                value={maxApr}
-                onChange={setMaxApr}
-                label="Max APR"
-                fullWidth
-                error={hasError(validationErrors, 'maxApr')}
-                disabled={mainTxState.loading}
-              />
-              <span className="error">{getErrorMessage(validationErrors, 'maxApr')}</span>
+              <Typography
+                sx={{
+                  paddingRight: '16px',
+                }}
+              >
+                <ol>
+                  <li>
+                    100% refundable if your Credit Line is not approved by at least one lending
+                    syndicate.
+                  </li>
+                  <li>
+                    Its recommended to deposit ~1-2% of the credit line size. For example, if you
+                    want a credit line for $100, deposit $1-$2.
+                  </li>
+                  <li>
+                    After the first lending syndicate, your promotional budget will be spent to
+                    <ol type="a">
+                      <li>attract more syndicates</li>
+                      <li>
+                        keep syndicate&#39;s capital available for you to withdraw from your credit
+                        line.
+                      </li>
+                    </ol>
+                  </li>
+                  <li>
+                    This way while you can decide whether to borrow or not at this rate, and to
+                    create competition between lenders.
+                  </li>
+                  <li>
+                    You can withdraw 100% of the unspent balance, pause/unpause your promotional at
+                    any time.
+                  </li>
+                </ol>
+              </Typography>
             </Box>
           </Box>
         </Box>

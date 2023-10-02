@@ -12,7 +12,7 @@ import { ComputedReserveData } from 'src/hooks/app-data-provider/useAppDataProvi
 import { AssetCapHookData } from 'src/hooks/useAssetCaps';
 import { MarketDataType } from 'src/utils/marketsAndNetworksConfig';
 
-import { useManagerDetails } from '../credit-delegation/hooks/useManagerDetails';
+import { useOperatorDetails } from '../credit-delegation/hooks/useOperatorDetails';
 import { AtomicaDelegationPool } from '../credit-delegation/types';
 import { PanelItem } from './ReservePanels';
 
@@ -27,8 +27,8 @@ interface SupplyInfoProps {
 }
 
 export const SupplyInfo = ({ reserve, pool }: SupplyInfoProps) => {
-  const { balances, manager } = pool || {};
-  const { managerDetails } = useManagerDetails(manager);
+  const { balances, operator } = pool || {};
+  const { operatorDetails } = useOperatorDetails(operator);
 
   const incentives = balances?.rewardCurrentEarnings?.map((earning) => {
     return {
@@ -165,20 +165,20 @@ export const SupplyInfo = ({ reserve, pool }: SupplyInfoProps) => {
               display: 'inline-flex',
             }}
           >
-            {managerDetails?.logo && (
+            {operatorDetails?.logo && (
               <img
-                src={managerDetails?.logo}
-                alt={managerDetails?.title}
+                src={operatorDetails?.logo}
+                alt={operatorDetails?.title}
                 style={{ width: 20, height: 20, marginRight: 2 }}
               />
             )}
-            <Trans>{managerDetails?.title}</Trans>
+            <Trans>{operatorDetails?.title}</Trans>
           </Box>
         </ReserveOverviewBox>
 
         <ReserveOverviewBox title={<Trans>Website</Trans>}>
           <Link
-            href={managerDetails?.website ?? ''}
+            href={operatorDetails?.website ?? ''}
             sx={{
               display: 'inline-flex',
               textDecoration: 'underline',
@@ -187,20 +187,20 @@ export const SupplyInfo = ({ reserve, pool }: SupplyInfoProps) => {
               textOverflow: 'ellipsis',
             }}
           >
-            {managerDetails?.website}
+            {operatorDetails?.website}
           </Link>
         </ReserveOverviewBox>
 
-        <ReserveOverviewBox title={<Trans>Pool Manager Fee</Trans>}>
+        <ReserveOverviewBox title={<Trans>Pool Operator Fee</Trans>}>
           <FormattedNumber
-            value={pool?.managerFee || '0'}
+            value={pool?.operatorFee || '0'}
             percent
             variant="secondary14"
             visibleDecimals={2}
           />
         </ReserveOverviewBox>
         <ReserveOverviewBox title={<Trans>Description</Trans>} fullWidth>
-          <Trans>{managerDetails?.description || '-'}</Trans>
+          <Trans>{operatorDetails?.description || '-'}</Trans>
         </ReserveOverviewBox>
       </Box>
     </Box>
