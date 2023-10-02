@@ -6,7 +6,7 @@ import useAsyncMemo from './useAsyncMemo';
 
 const columns = ['Address', 'Type', 'Title', 'Logo', 'Website', 'Description'];
 
-interface ManagerDetails {
+interface OperatorDetails {
   address: string;
   type: string;
   title: string;
@@ -15,9 +15,9 @@ interface ManagerDetails {
   description: string;
 }
 
-export const useManagerDetails = (managerAddress?: string) => {
-  const getManagerDetails = useCallback(async () => {
-    if (!managerAddress) return {} as ManagerDetails;
+export const useOperatorDetails = (operatorAddress?: string) => {
+  const getOwnerDetails = useCallback(async () => {
+    if (!operatorAddress) return {} as OperatorDetails;
 
     const service = new GoogleSheetsApiService(CREDIT_DELEGATION_ATOMICA_GOOGLE_SHEET_ID);
 
@@ -27,18 +27,18 @@ export const useManagerDetails = (managerAddress?: string) => {
       throw new Error('data source config error');
     }
 
-    const managerDetails = conn.rows.find(
+    const operatorDetails = conn.rows.find(
       (row) =>
-        row.Address?.toLowerCase() === managerAddress?.toLowerCase() && row.Type === 'PoolManager'
+        row.Address?.toLowerCase() === operatorAddress?.toLowerCase() && row.Type === 'PoolManager'
     );
 
-    if (managerDetails) {
+    if (operatorDetails) {
       return columns.reduce(
         (p, c) => ({
           ...p,
-          [c.toLowerCase()]: managerDetails[c],
+          [c.toLowerCase()]: operatorDetails[c],
         }),
-        {} as ManagerDetails
+        {} as OperatorDetails
       );
     } else {
       return columns.reduce(
@@ -46,20 +46,20 @@ export const useManagerDetails = (managerAddress?: string) => {
           ...p,
           [c.toLowerCase()]: '',
         }),
-        {} as ManagerDetails
+        {} as OperatorDetails
       );
     }
-  }, [managerAddress]);
+  }, [operatorAddress]);
 
-  const [managerDetails, { loading, error }] = useAsyncMemo(
-    getManagerDetails,
+  const [operatorDetails, { loading, error }] = useAsyncMemo(
+    getOwnerDetails,
     undefined,
-    [getManagerDetails],
+    [getOwnerDetails],
     { persist: true }
   );
 
   return {
-    managerDetails,
+    operatorDetails,
     loading,
     error,
   };

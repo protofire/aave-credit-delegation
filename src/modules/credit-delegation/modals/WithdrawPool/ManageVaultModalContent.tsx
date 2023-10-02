@@ -3,7 +3,7 @@ import { Trans } from '@lingui/macro';
 import { Box, Stack, Typography } from '@mui/material';
 import BigNumber from 'bignumber.js';
 import { parseUnits } from 'ethers/lib/utils';
-import { memo, useRef, useState } from 'react';
+import { memo, useMemo, useRef, useState } from 'react';
 import { FormattedNumber } from 'src/components/primitives/FormattedNumber';
 import { Row } from 'src/components/primitives/Row';
 import { TokenIcon } from 'src/components/primitives/TokenIcon';
@@ -21,6 +21,7 @@ import { useModalContext } from 'src/hooks/useModal';
 import { ValueWithSymbol } from 'src/modules/reserve-overview/ReserveActions';
 
 import { useRiskPool } from '../../hooks/useRiskPool';
+import { useTokensData } from '../../hooks/useTokensData';
 import { AtomicaDelegationPool } from '../../types';
 import { ManageVaultModalActions } from './ManageVaultModalActions';
 
@@ -103,7 +104,6 @@ const RewardsNumber = ({ usdValue }: { usdValue: 'Infinity' | number | string })
 export const ManageVaultModalContent = memo(
   ({
     userReserve,
-    asset,
     id,
     poolReserve,
     isWrongNetwork,
@@ -113,6 +113,10 @@ export const ManageVaultModalContent = memo(
     const { mainTxState: supplyTxState, gasLimit, txError } = useModalContext();
     const { marketReferencePriceInUsd } = useAppDataContext();
     const { generateWithdrawTx, generateClaimRewardsTx, generateClaimInterestTxs } = useRiskPool();
+
+    const { data: assets } = useTokensData(
+      useMemo(() => [poolReserve.underlyingAsset], [poolReserve.underlyingAsset])
+    );
 
     const { earnings } = rewards || {};
 
@@ -124,7 +128,7 @@ export const ManageVaultModalContent = memo(
     const [manageType, setManageType] = useState<ManageType>(ManageType.LIQUIDITY);
     const [receiveAmount, setReceiveAmount] = useState<string>('0');
 
-    const totalAmount = normalize(balances?.lpBalance || '0', asset?.decimals || 18);
+    const totalAmount = normalize(balances?.lpBalance || '0', assets[0]?.decimals || 18);
     const normalizedBalance = normalize(balances?.lpBalance || '0', 18);
 
     const isMaxSelected = _amount === '-1';
@@ -137,7 +141,7 @@ export const ManageVaultModalContent = memo(
       setReceiveAmount(
         normalize(
           parseUnits(currentValue || '0', WEI_DECIMALS).toString(),
-          asset?.decimals ?? WEI_DECIMALS
+          assets[0]?.decimals ?? WEI_DECIMALS
         )
       );
 
@@ -175,7 +179,7 @@ export const ManageVaultModalContent = memo(
 
     const actionProps = {
       poolId: id,
-      asset,
+      asset: assets[0],
       isWrongNetwork,
       amount,
       manageType,
@@ -303,12 +307,12 @@ export const ManageVaultModalContent = memo(
               {/* <AssetInput
                 value={balances?.totalInterest.toString() || '0'}
                 usdValue={interestBalanceUSD.toString(10)}
-                symbol={asset?.symbol || ''}
+                symbol={assets[0]?.symbol || ''}
                 assets={[
                   {
                     balance: balances?.totalInterest.toString(),
-                    symbol: asset?.symbol || '',
-                    iconSymbol: asset?.symbol || 'default',
+                    symbol: assets[0]?.symbol || '',
+                    iconSymbol: assets[0]?.symbol || 'default',
                   },
                 ]}
                 disabled={true}
@@ -327,7 +331,7 @@ export const ManageVaultModalContent = memo(
               futureValueUSD={amountAfterRemovedInUsd.toString(10)}
               value={totalAmount}
               valueUSD={normalizedBalanceUSD.toString(10)}
-              symbol={asset?.symbol || ''}
+              symbol={assets[0]?.symbol || ''}
             />
           </TxModalDetails>
         ) : (

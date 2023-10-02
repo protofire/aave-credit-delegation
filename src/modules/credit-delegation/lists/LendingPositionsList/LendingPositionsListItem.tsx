@@ -14,7 +14,7 @@ import { TextWithTooltip } from 'src/components/TextWithTooltip';
 // } from 'src/hooks/app-data-provider/useAppDataProvider';
 import { useModalContext } from 'src/hooks/useModal';
 
-import { useManagerDetails } from '../../hooks/useManagerDetails';
+import { useOperatorDetails } from '../../hooks/useOperatorDetails';
 import { AtomicaDelegationPool, AtomicaLoanPool } from '../../types';
 import { calcAccruedInterest } from '../../utils';
 import { ListAPRColumn } from '../ListAPRColumn';
@@ -44,15 +44,15 @@ export const LendingPositionsListItem = ({
     availableBalance,
     metadata,
     id,
-    manager,
+    operator,
     rewardAPY,
     balances,
     markets,
     asset,
   } = poolVault;
 
-  const { managerDetails } = useManagerDetails(manager);
-  // const { user } = useAppDataContext();
+  const { operatorDetails } = useOperatorDetails(operator);
+
   const router = useRouter();
 
   // const { reserve } = user?.userReservesData.find((userReserve) => {
@@ -119,7 +119,7 @@ export const LendingPositionsListItem = ({
 
       <ListColumn>
         <Link
-          href={managerDetails?.website ?? ''}
+          href={operatorDetails?.website ?? ''}
           sx={{
             display: 'inline-flex',
             justifyContent: 'center',
@@ -127,14 +127,14 @@ export const LendingPositionsListItem = ({
             textDecoration: 'underline',
           }}
         >
-          {managerDetails?.logo && (
+          {operatorDetails?.logo && (
             <img
-              src={managerDetails?.logo}
-              alt={managerDetails?.title}
+              src={operatorDetails?.logo}
+              alt={operatorDetails?.title}
               style={{ width: 20, height: 20, marginRight: 2 }}
             />
           )}
-          {managerDetails?.title}
+          {operatorDetails?.title}
         </Link>
       </ListColumn>
 

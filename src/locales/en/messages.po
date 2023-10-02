@@ -371,10 +371,6 @@ msgstr "Be careful - You are very close to liquidation. Consider depositing more
 msgid "Before supplying"
 msgstr "Before supplying"
 
-#: src/components/AddressBlockedModal.tsx
-msgid "Blocked Address"
-msgstr "Blocked Address"
-
 #: pages/index.page.tsx
 #: src/components/transactions/Borrow/BorrowModal.tsx
 #: src/modules/dashboard/lists/BorrowAssetsList/BorrowAssetsListItem.tsx
@@ -680,7 +676,6 @@ msgstr "Debt ceiling limits the amount possible to borrow against this asset by 
 msgid "Debt to pay"
 msgstr "Debt to pay"
 
-#: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
 #: src/modules/reserve-overview/SupplyInfo.tsx
 msgid "Description"
 msgstr "Description"
@@ -715,10 +710,6 @@ msgstr "Disabling E-Mode"
 #: src/components/transactions/CollateralChange/CollateralChangeModalContent.tsx
 msgid "Disabling this asset as collateral affects your borrowing power and Health Factor."
 msgstr "Disabling this asset as collateral affects your borrowing power and Health Factor."
-
-#: src/components/AddressBlockedModal.tsx
-msgid "Disconnect Wallet"
-msgstr "Disconnect Wallet"
 
 #: pages/500.page.tsx
 msgid "Discord channel"
@@ -1094,12 +1085,8 @@ msgid "Manage"
 msgstr "Manage"
 
 #: src/modules/credit-delegation/modals/ManageCreditLine/ManageCreditLineModal.tsx
-msgid "Manage the desired size of your Credit Line"
-msgstr "Manage the desired size of your Credit Line"
-
-#: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
-msgid "Manager"
-msgstr "Manager"
+msgid "Manage the desired Credit Line"
+msgstr "Manage the desired Credit Line"
 
 #: src/modules/reserve-overview/ReserveTopDetails.tsx
 msgid "Market"
@@ -1366,18 +1353,23 @@ msgstr "Pool APY"
 msgid "Pool Capacity"
 msgstr "Pool Capacity"
 
+#: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
 #: src/modules/credit-delegation/lists/PoolsList/PoolsList.tsx
 msgid "Pool Description"
 msgstr "Pool Description"
 
-#: src/modules/credit-delegation/lists/PoolsList/PoolsList.tsx
 #: src/modules/reserve-overview/SupplyInfo.tsx
 msgid "Pool Manager"
 msgstr "Pool Manager"
 
+#: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
+#: src/modules/credit-delegation/lists/PoolsList/PoolsList.tsx
+msgid "Pool Operator"
+msgstr "Pool Operator"
+
 #: src/modules/reserve-overview/SupplyInfo.tsx
-msgid "Pool Manager Fee"
-msgstr "Pool Manager Fee"
+msgid "Pool Operator Fee"
+msgstr "Pool Operator Fee"
 
 #: src/modules/reserve-overview/ReserveConfiguration.tsx
 msgid "Pool Overview: {0}"
@@ -1997,10 +1989,6 @@ msgstr "These funds have been borrowed and are not available for withdrawal at t
 msgid "This action will reduce your health factor. Please be mindful of the increased risk of collateral liquidation."
 msgstr "This action will reduce your health factor. Please be mindful of the increased risk of collateral liquidation."
 
-#: src/components/AddressBlockedModal.tsx
-msgid "This address is blocked on app.aave.com because it is associated with one or more"
-msgstr "This address is blocked on app.aave.com because it is associated with one or more"
-
 #: src/components/caps/CapsTooltip.tsx
 msgid "This asset has almost reached its borrow cap. There is only {messageValue} available to be borrowed from this market."
 msgstr "This asset has almost reached its borrow cap. There is only {messageValue} available to be borrowed from this market."
@@ -2523,10 +2511,6 @@ msgstr "Zero address not valid"
 #: src/modules/markets/MarketAssetsListContainer.tsx
 msgid "assets"
 msgstr "assets"
-
-#: src/components/AddressBlockedModal.tsx
-msgid "blocked activities"
-msgstr "blocked activities"
 
 #: src/components/transactions/FlowCommons/GasEstimationError.tsx
 msgid "copy the error"

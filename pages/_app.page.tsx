@@ -7,7 +7,6 @@ import { NextPage } from 'next';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import * as React from 'react';
-import { AddressBlocked } from 'src/components/AddressBlocked';
 import { Meta } from 'src/components/Meta';
 import { BorrowModal } from 'src/components/transactions/Borrow/BorrowModal';
 import { CollateralChangeModal } from 'src/components/transactions/CollateralChange/CollateralChangeModal';
@@ -65,27 +64,25 @@ export default function MyApp(props: MyAppProps) {
         <Web3ReactProvider getLibrary={getWeb3Library}>
           <Web3ContextProvider>
             <AppGlobalStyles>
-              <AddressBlocked>
-                <PermissionProvider>
-                  <ModalContextProvider>
-                    <BackgroundDataProvider>
-                      <AppDataProvider>
-                        <GasStationProvider>
-                          {getLayout(<Component {...pageProps} />)}
-                          <SupplyModal />
-                          <WithdrawModal />
-                          <BorrowModal />
-                          <CollateralChangeModal />
-                          <RateSwitchModal />
-                          <EmodeModal />
-                          <FaucetModal />
-                          <MigrateV3Modal />
-                        </GasStationProvider>
-                      </AppDataProvider>
-                    </BackgroundDataProvider>
-                  </ModalContextProvider>
-                </PermissionProvider>
-              </AddressBlocked>
+              <PermissionProvider>
+                <ModalContextProvider>
+                  <BackgroundDataProvider>
+                    <AppDataProvider>
+                      <GasStationProvider>
+                        {getLayout(<Component {...pageProps} />)}
+                        <SupplyModal />
+                        <WithdrawModal />
+                        <BorrowModal />
+                        <CollateralChangeModal />
+                        <RateSwitchModal />
+                        <EmodeModal />
+                        <FaucetModal />
+                        <MigrateV3Modal />
+                      </GasStationProvider>
+                    </AppDataProvider>
+                  </BackgroundDataProvider>
+                </ModalContextProvider>
+              </PermissionProvider>
             </AppGlobalStyles>
           </Web3ContextProvider>
         </Web3ReactProvider>

@@ -9,6 +9,7 @@ interface ListHeaderTitleProps {
   setSortDesc?: (value: boolean) => void;
   onClick?: () => void;
   children: ReactNode;
+  title?: string;
 }
 
 export const ListHeaderTitle = ({
@@ -19,6 +20,7 @@ export const ListHeaderTitle = ({
   setSortDesc,
   onClick,
   children,
+  title,
 }: ListHeaderTitleProps) => {
   const handleSorting = (name: string) => {
     setSortDesc && setSortDesc(false);
@@ -34,14 +36,27 @@ export const ListHeaderTitle = ({
       variant="subheader2"
       color="text.secondary"
       noWrap
+      title={title}
       onClick={() => (!!onClick ? onClick() : !!sortKey && handleSorting(sortKey))}
       sx={{
         cursor: !!onClick || !!sortKey ? 'pointer' : 'default',
         display: 'inline-flex',
         alignItems: 'center',
+        maxWidth: '100%',
+        overflow: 'hidden',
       }}
     >
-      {children}
+      <Typography
+        component="span"
+        variant="subheader2"
+        color="text.secondary"
+        noWrap
+        sx={{
+          textOverflow: 'ellipsis',
+        }}
+      >
+        {children}
+      </Typography>
 
       {!!sortKey && (
         <Box sx={{ display: 'inline-flex', flexDirection: 'column', ml: 1 }}>
