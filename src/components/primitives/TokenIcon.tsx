@@ -1,5 +1,12 @@
 import { Badge, Box, Icon, IconProps } from '@mui/material';
-import { forwardRef, useEffect, useRef, useState } from 'react';
+import {
+  DetailedHTMLProps,
+  forwardRef,
+  ImgHTMLAttributes,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
 interface ATokenIconProps {
   symbol?: string;
@@ -135,6 +142,48 @@ export const ATokenIcon = forwardRef<SVGSVGElement, ATokenIconProps>(({ symbol }
 });
 ATokenIcon.displayName = 'ATokenIcon';
 
+interface ImgIconProps
+  extends DetailedHTMLProps<ImgHTMLAttributes<HTMLImageElement>, HTMLImageElement> {
+  iconUrl?: string;
+  symbol: string;
+}
+
+const ImgIcon = ({ iconUrl, symbol }: ImgIconProps) => {
+  const [url, setUrl] = useState<string | undefined>(iconUrl);
+
+  useEffect(() => {
+    let isNotCancelled = true;
+
+    const urlExists = (url: string) => {
+      const http = new XMLHttpRequest();
+      http.open('HEAD', url, false);
+
+      http.onreadystatechange = function () {
+        if (isNotCancelled) {
+          setUrl(http.status === 200 ? url : '/icons/tokens/default.svg');
+        }
+      };
+
+      http.send();
+    };
+
+    urlExists(iconUrl ?? `/icons/tokens/${symbol.toLowerCase()}.svg`);
+
+    return () => {
+      isNotCancelled = false;
+    };
+  }, [iconUrl, symbol]);
+
+  return (
+    <img
+      src={url ?? '/icons/tokens/default.svg'}
+      width="100%"
+      height="100%"
+      alt={`${symbol} icon`}
+    />
+  );
+};
+
 interface TokenIconProps extends IconProps {
   symbol: string;
   aToken?: boolean;
@@ -154,8 +203,9 @@ function SingleTokenIcon({ symbol, aToken, iconUrl, ...rest }: TokenIconProps) {
         <ATokenIcon symbol={symbol} />
       ) : (
         // eslint-disable-next-line
-        <img
-          src={iconUrl ? iconUrl : `/icons/tokens/${symbol.toLowerCase()}.svg`}
+        <ImgIcon
+          symbol={symbol}
+          iconUrl={iconUrl}
           width="100%"
           height="100%"
           alt={`${symbol} icon`}

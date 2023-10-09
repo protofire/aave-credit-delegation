@@ -2,7 +2,7 @@ import { V3FaucetService } from '@aave/contract-helpers';
 import { enableMapSet } from 'immer';
 import { CustomMarket } from 'src/ui-config/marketsConfig';
 import { ENABLE_TESTNET, STAGING_ENV } from 'src/utils/marketsAndNetworksConfig';
-import create from 'zustand';
+import { create } from 'zustand';
 import { devtools, subscribeWithSelector } from 'zustand/middleware';
 
 import { createGovernanceSlice, GovernanceSlice } from './governanceSlice';

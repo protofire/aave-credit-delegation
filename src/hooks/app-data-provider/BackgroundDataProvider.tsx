@@ -20,7 +20,7 @@ const BackgroundDataProviderContext = React.createContext<BackgroundDataProvider
  * @param param0
  * @returns
  */
-export const BackgroundDataProvider: React.FC = ({ children }) => {
+export const BackgroundDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const refetchWalletBalances = useWalletBalancesSubscription();
   const refetchPoolData = usePoolDataSubscription();
   const refetchIncentiveData = useIncentiveDataSubscription();

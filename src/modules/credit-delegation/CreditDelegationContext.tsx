@@ -46,7 +46,7 @@ export interface CreditDelgationData {
   fetchBorrowAllowance: (poolId: string, forceApprovalCheck?: boolean | undefined) => Promise<void>;
   refetchVaults: (blockNumber?: number) => Promise<unknown>;
   generateDeployVault: (args: {
-    manager: string;
+    operator: string;
     atomicaPool: string;
     debtToken: string;
     value: string;
@@ -207,7 +207,7 @@ const CreditDelegationDataProvider = ({
         const jsonInterface = new Interface(FACTORY_ABI);
 
         const txData = jsonInterface.encodeFunctionData('deployVault', [
-          pool.manager,
+          pool.operator,
           atomicaPool,
           variableDebtTokenAddress,
           value,

@@ -541,7 +541,7 @@
                 "type": "address"
             }
         ],
-        "name": "LogRepayed",
+        "name": "LogRepaid",
         "type": "event"
     },
     {

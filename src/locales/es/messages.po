@@ -356,10 +356,6 @@ msgstr "Ten en cuenta la congestión de la red y los precios del gas."
 msgid "Before supplying"
 msgstr "Antes de suministrar"
 
-#: src/components/AddressBlockedModal.tsx
-msgid "Blocked Address"
-msgstr "Dirección bloqueada"
-
 #: pages/index.page.tsx
 #: src/components/transactions/Borrow/BorrowModal.tsx
 #: src/modules/dashboard/lists/BorrowAssetsList/BorrowAssetsListItem.tsx
@@ -747,10 +743,6 @@ msgstr "Desactivando E-Mode"
 #: src/components/transactions/CollateralChange/CollateralChangeModalContent.tsx
 msgid "Disabling this asset as collateral affects your borrowing power and Health Factor."
 msgstr "Deshabilitar este activo como garantía afecta tu poder de préstamo y Factor de Salud."
-
-#: src/components/AddressBlockedModal.tsx
-msgid "Disconnect Wallet"
-msgstr "Desconectar cartera"
 
 #: src/ui-config/menu-items/index.tsx
 msgid "Discord"
@@ -2069,10 +2061,6 @@ msgstr "Esta acción reducirá el factor de salud de V3 por debajo del umbral de
 msgid "This action will reduce your health factor. Please be mindful of the increased risk of collateral liquidation."
 msgstr "Esta acción reducirá tu factor de salud. Por favor ten en cuenta el riesgo incrementado de liquidación de la garantía."
 
-#: src/components/AddressBlockedModal.tsx
-msgid "This address is blocked on app.aave.com because it is associated with one or more"
-msgstr "Esta dirección está bloqueada en app.aave.com porque está asociada con una o más"
-
 #: src/components/caps/CapsTooltip.tsx
 msgid "This asset has almost reached its borrow cap. There is only {messageValue} available to be borrowed from this market."
 msgstr "Este activo casi ha alcanzado su límite de préstamo. Solo hay {messageValue} disponibles para ser prestado de este mercado."
@@ -2606,10 +2594,6 @@ msgstr "Dirección cero no válida"
 #: src/modules/markets/MarketAssetsListContainer.tsx
 msgid "assets"
 msgstr "activos"
-
-#: src/components/AddressBlockedModal.tsx
-msgid "blocked activities"
-msgstr "actividades bloqueadas"
 
 #: src/components/transactions/FlowCommons/GasEstimationError.tsx
 msgid "copy the error"

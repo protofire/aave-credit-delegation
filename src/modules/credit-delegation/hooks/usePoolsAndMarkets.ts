@@ -24,7 +24,7 @@ import {
 } from 'src/utils/getMaxAmountAvailableToBorrow';
 import { amountToUsd } from 'src/utils/utils';
 
-import { POOL_MANAGER_IDS, PRODUCT_IDS } from '../consts';
+import { GHO_TOKEN, POOL_OPERATOR_IDS, PRODUCT_IDS } from '../consts';
 import {
   AtomicaBorrowMarket,
   AtomicaDelegationPool,
@@ -158,7 +158,7 @@ export const usePoolsAndMarkets = () => {
     pools: AtomicaSubgraphPool[];
   }>(POOLS_QUERY, {
     variables: {
-      operatorIds: POOL_MANAGER_IDS,
+      operatorIds: POOL_OPERATOR_IDS,
     },
   });
 
@@ -301,9 +301,13 @@ export const usePoolsAndMarkets = () => {
     return (poolsData?.pools ?? []).map((pool: AtomicaSubgraphPool) => {
       const userReserve = reserves.find((reserve) => reserve.symbol === pool.capitalTokenSymbol);
 
-      const tokenToBorrow = tokensToBorrow.find(
-        (token) => token.symbol === pool.capitalTokenSymbol
-      );
+      const tokenToBorrow = tokensToBorrow.find((token) => {
+        if (token.symbol === 'GHST') {
+          return GHO_TOKEN;
+        }
+
+        return token.symbol === pool.capitalTokenSymbol;
+      });
 
       const poolMetadata = metadata?.find(
         (data) => data.EntityId.toLowerCase() === pool.id.toLowerCase()
@@ -351,7 +355,8 @@ export const usePoolsAndMarkets = () => {
         symbol: pool.capitalTokenSymbol === 'GHST' ? 'GHO' : pool.capitalTokenSymbol,
         iconSymbol: pool.capitalTokenSymbol === 'GHST' ? 'GHO' : pool.capitalTokenSymbol,
         name: pool.name,
-        manager: pool.operator,
+        operator: pool.operator,
+        owner: pool.owner,
         markets: pool.markets,
         walletBalance:
           (userReserve?.underlyingAsset && walletBalances[userReserve?.underlyingAsset]?.amount) ??
@@ -386,7 +391,7 @@ export const usePoolsAndMarkets = () => {
           earnings: rewardEarnings,
         },
         userAvailableWithdraw: balances?.availableWithdraw ?? 0,
-        managerFee: normalize(pool.operatorFee, 18),
+        operatorFee: normalize(pool.operatorFee, 18),
         poolCap: normalize(pool.capitalRequirement, pool.capitalTokenDecimals),
         poolBalance: normalize(pool.capitalTokenBalance, pool.capitalTokenDecimals),
         poolCapUsd,

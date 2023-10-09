@@ -7,7 +7,7 @@ import { Row } from 'src/components/primitives/Row';
 import { TextWithTooltip } from 'src/components/TextWithTooltip';
 import { useModalContext } from 'src/hooks/useModal';
 
-import { useManagerDetails } from '../../hooks/useManagerDetails';
+import { useOperatorDetails } from '../../hooks/useOperatorDetails';
 import { AtomicaDelegationPool } from '../../types';
 import { ListAPRColumn } from '../ListAPRColumn';
 import { ListButtonsColumn } from '../ListButtonsColumn';
@@ -25,7 +25,7 @@ export const PoolListItem = ({
   availableBalanceUsd,
   metadata,
   id,
-  manager,
+  operator,
   markets,
   rewardAPY,
   balances,
@@ -33,7 +33,7 @@ export const PoolListItem = ({
   const { openCreditDelegation } = useModalContext();
   const router = useRouter();
 
-  const { managerDetails } = useManagerDetails(manager);
+  const { operatorDetails } = useOperatorDetails(operator);
 
   const incentives = balances?.rewardCurrentEarnings?.map((earning) => {
     return {
@@ -53,7 +53,7 @@ export const PoolListItem = ({
 
       <ListColumn>
         <Link
-          href={managerDetails?.website ?? ''}
+          href={operatorDetails?.website ?? ''}
           sx={{
             display: 'inline-flex',
             justifyContent: 'center',
@@ -61,14 +61,14 @@ export const PoolListItem = ({
             textDecoration: 'underline',
           }}
         >
-          {managerDetails?.logo && (
+          {operatorDetails?.logo && (
             <img
-              src={managerDetails?.logo}
-              alt={managerDetails?.title}
+              src={operatorDetails?.logo}
+              alt={operatorDetails?.title}
               style={{ width: 20, height: 20, marginRight: 2 }}
             />
           )}
-          {managerDetails?.title}
+          {operatorDetails?.title}
         </Link>
       </ListColumn>
 

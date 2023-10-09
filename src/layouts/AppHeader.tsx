@@ -105,18 +105,36 @@ export function AppHeader() {
         })}
       >
         <Box
-          component={Link}
-          href="/"
-          aria-label="Go to homepage"
           sx={{
-            lineHeight: 0,
-            mr: 3,
-            transition: '0.3s ease all',
-            '&:hover': { opacity: 0.7 },
+            display: 'flex',
+            background: (theme) => theme.palette.gradients.aaveGradient,
+            backgroundClip: 'text',
+            textFillColor: 'transparent',
           }}
-          onClick={() => setMobileMenuOpen(false)}
         >
-          <img src={uiConfig.appLogo} alt="An SVG of an eye" height={20} />
+          <Typography
+            sx={{
+              fontSize: '14px',
+              fontWeight: 400,
+              lineHeight: '20px',
+              mr: 2,
+            }}
+          >
+            Powered by
+          </Typography>
+          <Link
+            onClick={() => setMobileMenuOpen(false)}
+            href="https://app.aave.com/"
+            aria-label="Go to homepage"
+            sx={{
+              lineHeight: 0,
+              mr: 3,
+              transition: '0.3s ease all',
+              '&:hover': { opacity: 0.7 },
+            }}
+          >
+            <img src={uiConfig.appLogo} alt="An SVG of an eye" height={20} />
+          </Link>
         </Box>
         <Box sx={{ mr: sm ? 1 : 3 }}>
           {ENABLE_TESTNET && (

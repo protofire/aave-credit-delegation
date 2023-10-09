@@ -18,7 +18,7 @@ import { PoolListItem } from './PoolListItem';
 const head = [
   { title: <Trans key="assets">Assets</Trans>, sortKey: 'symbol' },
   { title: <Trans key="title">Pool Description</Trans>, sortKey: 'title' },
-  { title: <Trans key="manager">Pool Manager</Trans>, sortKey: 'manager' },
+  { title: <Trans key="operator">Pool Operator</Trans>, sortKey: 'operator' },
   { title: <Trans key="borrowers">Borrowers</Trans>, sortKey: 'borrowers' },
   { title: <Trans key="capacity">My lending Capacity</Trans>, sortKey: 'capacity' },
   { title: <Trans key="APY">APY</Trans>, sortKey: 'supplyAPY' },

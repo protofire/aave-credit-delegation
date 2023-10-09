@@ -20,7 +20,9 @@ const Context = React.createContext<WalletBalanceProviderContext>(
 /**
  * This is required for token delegation, as we need to know the users balance.
  */
-export const AaveTokensBalanceProvider: React.FC = ({ children }) => {
+export const AaveTokensBalanceProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const { currentNetworkConfig, jsonRpcProvider, currentChainId } = useProtocolDataContext();
   const { currentAccount: walletAddress } = useWeb3Context();
   const [aaveTokens, setAaveTokens] = React.useState({

@@ -356,10 +356,6 @@ msgstr ""
 msgid "Before supplying"
 msgstr "Πριν από την προμήθεια"
 
-#: src/components/AddressBlockedModal.tsx
-msgid "Blocked Address"
-msgstr ""
-
 #: pages/index.page.tsx
 #: src/components/transactions/Borrow/BorrowModal.tsx
 #: src/modules/dashboard/lists/BorrowAssetsList/BorrowAssetsListItem.tsx
@@ -747,10 +743,6 @@ msgstr "Απενεργοποίηση E-Mode"
 #: src/components/transactions/CollateralChange/CollateralChangeModalContent.tsx
 msgid "Disabling this asset as collateral affects your borrowing power and Health Factor."
 msgstr "Η απενεργοποίηση αυτού του περιουσιακού στοιχείου ως εγγύηση επηρεάζει τη δανειοληπτική σας ικανότητα και τον Συντελεστή Υγείας."
-
-#: src/components/AddressBlockedModal.tsx
-msgid "Disconnect Wallet"
-msgstr "Αποσυνδέστε το πορτοφόλι"
 
 #: src/ui-config/menu-items/index.tsx
 msgid "Discord"
@@ -2070,10 +2062,6 @@ msgstr ""
 msgid "This action will reduce your health factor. Please be mindful of the increased risk of collateral liquidation."
 msgstr ""
 
-#: src/components/AddressBlockedModal.tsx
-msgid "This address is blocked on app.aave.com because it is associated with one or more"
-msgstr ""
-
 #: src/components/caps/CapsTooltip.tsx
 msgid "This asset has almost reached its borrow cap. There is only {messageValue} available to be borrowed from this market."
 msgstr "Αυτό το περιουσιακό στοιχείο έχει σχεδόν φτάσει στο όριο δανεισμού του. Υπάρχει μόνο {messageValue} διαθέσιμο για δανεισμό από αυτή την αγορά."
@@ -2607,10 +2595,6 @@ msgstr "Η μηδενική διεύθυνση δεν είναι έγκυρη"
 #: src/modules/markets/MarketAssetsListContainer.tsx
 msgid "assets"
 msgstr "περιουσιακά στοιχεία"
-
-#: src/components/AddressBlockedModal.tsx
-msgid "blocked activities"
-msgstr ""
 
 #: src/components/transactions/FlowCommons/GasEstimationError.tsx
 msgid "copy the error"

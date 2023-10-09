@@ -17,7 +17,7 @@ export const ManageCreditLineModal = () => {
     <BasicModal open={type === ModalType.ManageCreditLine} setOpen={close}>
       {/* TODO: PASS THE CORRECT UNDERLYING ASSET, ATOMICA USDC THROWS ERROR */}
       <ModalWrapper
-        title={<Trans> Manage the desired size of your Credit Line</Trans>}
+        title={<Trans> Manage the desired Credit Line</Trans>}
         hideTitleSymbol
         // underlyingAsset={args.loanRequest?.asset?.address || API_ETH_MOCK_ADDRESS}
         underlyingAsset={API_ETH_MOCK_ADDRESS}

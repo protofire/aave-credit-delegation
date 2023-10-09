@@ -545,11 +545,17 @@
                 "internalType": "uint256",
                 "name": "premiumTokenAmount",
                 "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "chunkIndex",
+                "type": "uint256"
             }
         ],
         "name": "LogLoanInterestPaid",
         "type": "event",
-        "signature": "0x5d20a7245624d778431a55c04af4407b1766d32eb1fccfaa05e9663dd97d4ea1"
+        "signature": "0x8cb98260c3e7ee3d8d75963726dfcf1e52f7b4ab3db251055a97b2489295f626"
     },
     {
         "anonymous": false,
@@ -577,11 +583,17 @@
                 "internalType": "uint256",
                 "name": "repaidCapitalTokenAmount",
                 "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "chunkIndex",
+                "type": "uint256"
             }
         ],
         "name": "LogLoanPrincipalRepaid",
         "type": "event",
-        "signature": "0xf49262fbb9875ff470fc2a2a4176d5e2f574e134a2fb0b090b7c8a9fbb7bd113"
+        "signature": "0xbb01586332c1e5693874bc5838faf4b43b3ede96af13fc22e493748a96f551eb"
     },
     {
         "anonymous": false,
@@ -1637,13 +1649,13 @@
             {
                 "indexed": false,
                 "internalType": "address",
-                "name": "manager",
+                "name": "operator",
                 "type": "address"
             }
         ],
-        "name": "LogRiskPoolManagerChanged",
+        "name": "LogRiskPoolOperatorChanged",
         "type": "event",
-        "signature": "0x4f013e852b7dc5063d343d30e127099ac7f41edf55512734c741ef2d1ee8f8af"
+        "signature": "0xbe5e4cd4ae6f05194b2c88bb4f7881a1b44970f314551406cbd6226b4327552e"
     },
     {
         "anonymous": false,
@@ -1657,13 +1669,13 @@
             {
                 "indexed": false,
                 "internalType": "uint256",
-                "name": "managerFee",
+                "name": "fee",
                 "type": "uint256"
             }
         ],
-        "name": "LogRiskPoolManagerFeeChanged",
+        "name": "LogRiskPoolOperatorFeeChanged",
         "type": "event",
-        "signature": "0xa70e3d41935caf042596d814b6a9e2f0815ea48ec796653be9004e4a8685ceae"
+        "signature": "0x597c9df725dec3e6f6e11fa52ab6eef6e9400ec47b1728762d04fa536f39a4c4"
     },
     {
         "anonymous": false,
@@ -1677,13 +1689,13 @@
             {
                 "indexed": false,
                 "internalType": "address",
-                "name": "managerFeeRecipient",
+                "name": "owner",
                 "type": "address"
             }
         ],
-        "name": "LogRiskPoolManagerFeeRecipientChanged",
+        "name": "LogRiskPoolOwnerChanged",
         "type": "event",
-        "signature": "0x96df7a4e455701bdd366c150288177e1eb1f74fa36ce9d41d0a0a7087cd5804e"
+        "signature": "0x750f141d0f3556ed828bb5f65684d69c6b6e7fe1a0b68c55b373778c73233372"
     },
     {
         "anonymous": false,
@@ -2040,32 +2052,6 @@
     {
         "inputs": [
             {
-                "internalType": "address",
-                "name": "delegate",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "erc20",
-                "type": "address"
-            }
-        ],
-        "name": "accruedMarketFees",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function",
-        "constant": true,
-        "signature": "0x19183e68"
-    },
-    {
-        "inputs": [
-            {
                 "internalType": "uint256",
                 "name": "aggregatedPoolId",
                 "type": "uint256"
@@ -2085,7 +2071,7 @@
             },
             {
                 "internalType": "uint256",
-                "name": "managerFeeAmount",
+                "name": "operatorFeeAmount",
                 "type": "uint256"
             }
         ],
@@ -2193,6 +2179,44 @@
     {
         "inputs": [
             {
+                "components": [
+                    {
+                        "internalType": "address",
+                        "name": "target",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "bytes",
+                        "name": "callData",
+                        "type": "bytes"
+                    }
+                ],
+                "internalType": "struct IMulticall.Call[]",
+                "name": "calls",
+                "type": "tuple[]"
+            }
+        ],
+        "name": "aggregate",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "blockNumber",
+                "type": "uint256"
+            },
+            {
+                "internalType": "bytes[]",
+                "name": "returnData",
+                "type": "bytes[]"
+            }
+        ],
+        "stateMutability": "payable",
+        "type": "function",
+        "payable": true,
+        "signature": "0x252dba42"
+    },
+    {
+        "inputs": [
+            {
                 "internalType": "uint256",
                 "name": "aggregatedPoolId",
                 "type": "uint256"
@@ -2208,11 +2232,6 @@
             {
                 "internalType": "uint256",
                 "name": "totalCapacity",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "releasedCapacity",
                 "type": "uint256"
             },
             {
@@ -2315,20 +2334,6 @@
         "stateMutability": "nonpayable",
         "type": "function",
         "signature": "0xd765eeb3"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "forwardedPayoutRequestId",
-                "type": "uint256"
-            }
-        ],
-        "name": "approveForwardedPayoutRequest",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function",
-        "signature": "0x6041d831"
     },
     {
         "inputs": [
@@ -2640,15 +2645,15 @@
             },
             {
                 "internalType": "address",
-                "name": "manager",
+                "name": "newOperator",
                 "type": "address"
             }
         ],
-        "name": "changeRiskPoolManager",
+        "name": "changeRiskPoolOperator",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0x44451147"
+        "signature": "0x3da55525"
     },
     {
         "inputs": [
@@ -2659,15 +2664,15 @@
             },
             {
                 "internalType": "uint256",
-                "name": "managerFee",
+                "name": "fee",
                 "type": "uint256"
             }
         ],
-        "name": "changeRiskPoolManagerFee",
+        "name": "changeRiskPoolOperatorFee",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0xfcc71692"
+        "signature": "0x9c0e5f68"
     },
     {
         "inputs": [
@@ -2678,15 +2683,15 @@
             },
             {
                 "internalType": "address",
-                "name": "managerFeeRecipient",
+                "name": "newOwner",
                 "type": "address"
             }
         ],
-        "name": "changeRiskPoolManagerFeeRecipient",
+        "name": "changeRiskPoolOwner",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0x2415de8b"
+        "signature": "0xcc8bf188"
     },
     {
         "inputs": [
@@ -3302,17 +3307,17 @@
                     },
                     {
                         "internalType": "address",
-                        "name": "manager",
+                        "name": "operator",
                         "type": "address"
                     },
                     {
                         "internalType": "address",
-                        "name": "managerFeeRecipient",
+                        "name": "owner",
                         "type": "address"
                     },
                     {
                         "internalType": "uint256",
-                        "name": "managerFee",
+                        "name": "operatorFee",
                         "type": "uint256"
                     },
                     {
@@ -3441,20 +3446,6 @@
         "inputs": [
             {
                 "internalType": "uint256",
-                "name": "forwardedPayoutRequestId",
-                "type": "uint256"
-            }
-        ],
-        "name": "declineForwardedPayoutRequest",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function",
-        "signature": "0x3e93b184"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
                 "name": "loanRequestId",
                 "type": "uint256"
             }
@@ -3478,36 +3469,6 @@
         "stateMutability": "nonpayable",
         "type": "function",
         "signature": "0x3c4d545a"
-    },
-    {
-        "inputs": [],
-        "name": "defaultPayoutApprover",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function",
-        "constant": true,
-        "signature": "0x96f6865a"
-    },
-    {
-        "inputs": [],
-        "name": "defaultPayoutRequester",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function",
-        "constant": true,
-        "signature": "0x96dba6cc"
     },
     {
         "inputs": [
@@ -4697,12 +4658,12 @@
         "outputs": [
             {
                 "internalType": "address",
-                "name": "marketOperator",
+                "name": "operator",
                 "type": "address"
             },
             {
                 "internalType": "address",
-                "name": "marketFeeRecipient",
+                "name": "owner",
                 "type": "address"
             },
             {
@@ -4874,6 +4835,32 @@
         "signature": "0x0718f841"
     },
     {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "marketId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "riskPool",
+                "type": "address"
+            }
+        ],
+        "name": "maxAvailableCapacity",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0xcf22e6f6"
+    },
+    {
         "inputs": [],
         "name": "maxIterations",
         "outputs": [
@@ -4920,7 +4907,7 @@
     },
     {
         "inputs": [],
-        "name": "maxRiskPoolManagerFee",
+        "name": "maxRiskPoolOperatorFee",
         "outputs": [
             {
                 "internalType": "uint256",
@@ -4931,7 +4918,7 @@
         "stateMutability": "view",
         "type": "function",
         "constant": true,
-        "signature": "0x7b5e2b3b"
+        "signature": "0x053198cf"
     },
     {
         "inputs": [],
@@ -5017,6 +5004,68 @@
         "stateMutability": "nonpayable",
         "type": "function",
         "signature": "0xdbf32fae"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "a",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "b",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "c",
+                "type": "uint256"
+            }
+        ],
+        "name": "mulDivRoundDown",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0xd48c6dfe"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "a",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "b",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "c",
+                "type": "uint256"
+            }
+        ],
+        "name": "mulDivRoundUp",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0x2886a33f"
     },
     {
         "inputs": [],
@@ -5650,7 +5699,7 @@
             },
             {
                 "internalType": "address",
-                "name": "productOperatorFeeRecipient",
+                "name": "owner",
                 "type": "address"
             }
         ],
@@ -6449,12 +6498,12 @@
         "outputs": [
             {
                 "internalType": "address",
-                "name": "manager",
+                "name": "operator",
                 "type": "address"
             },
             {
                 "internalType": "address",
-                "name": "managerFeeRecipient",
+                "name": "owner",
                 "type": "address"
             },
             {
@@ -6464,7 +6513,7 @@
             },
             {
                 "internalType": "uint256",
-                "name": "managerFee",
+                "name": "operatorFee",
                 "type": "uint256"
             },
             {
@@ -6682,34 +6731,6 @@
     {
         "inputs": [
             {
-                "internalType": "address",
-                "name": "defaultPayoutApprover",
-                "type": "address"
-            }
-        ],
-        "name": "setDefaultPayoutApprover",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function",
-        "signature": "0x564f00b1"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "defaultPayoutRequester",
-                "type": "address"
-            }
-        ],
-        "name": "setDefaultPayoutRequester",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function",
-        "signature": "0x5a25aba1"
-    },
-    {
-        "inputs": [
-            {
                 "internalType": "uint256",
                 "name": "marketId",
                 "type": "uint256"
@@ -6843,25 +6864,6 @@
             },
             {
                 "internalType": "address",
-                "name": "marketFeeRecipient",
-                "type": "address"
-            }
-        ],
-        "name": "setMarketFeeRecipient",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function",
-        "signature": "0x1ebc7da8"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "marketId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "address",
                 "name": "marketOperator",
                 "type": "address"
             }
@@ -6890,6 +6892,25 @@
         "stateMutability": "nonpayable",
         "type": "function",
         "signature": "0x5016e42c"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "marketId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "newOwner",
+                "type": "address"
+            }
+        ],
+        "name": "setMarketOwner",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x1c8bbc39"
     },
     {
         "inputs": [
@@ -6980,15 +7001,15 @@
         "inputs": [
             {
                 "internalType": "uint256",
-                "name": "maxRiskPoolManagerFee",
+                "name": "maxRiskPoolOperatorFee",
                 "type": "uint256"
             }
         ],
-        "name": "setMaxRiskPoolManagerFee",
+        "name": "setMaxRiskPoolOperatorFee",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0x906dc56c"
+        "signature": "0x946d68b8"
     },
     {
         "inputs": [
@@ -7316,25 +7337,6 @@
                 "type": "uint256"
             },
             {
-                "internalType": "address",
-                "name": "productOperatorFeeRecipient",
-                "type": "address"
-            }
-        ],
-        "name": "setProductOperatorFeeRecipient",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function",
-        "signature": "0x5e5eb847"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "productId",
-                "type": "uint256"
-            },
-            {
                 "internalType": "uint256",
                 "name": "productOperatorIncentiveFee",
                 "type": "uint256"
@@ -7345,6 +7347,25 @@
         "stateMutability": "nonpayable",
         "type": "function",
         "signature": "0xae177e5d"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "productId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "newOwner",
+                "type": "address"
+            }
+        ],
+        "name": "setProductOwner",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x6d6ad09f"
     },
     {
         "inputs": [
@@ -8078,11 +8099,11 @@
                 "type": "address"
             }
         ],
-        "name": "withdrawAccruedRiskPoolManagerFee",
+        "name": "withdrawAccruedRiskPoolOperatorFee",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0x0d32837e"
+        "signature": "0xc56f1d58"
     },
     {
         "inputs": [

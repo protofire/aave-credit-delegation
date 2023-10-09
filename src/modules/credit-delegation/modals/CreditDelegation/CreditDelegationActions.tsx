@@ -54,7 +54,7 @@ export const CreditDelegationActions = React.memo(
       if (pool?.id) {
         try {
           const deployVaultTxData = await generateDeployVault({
-            manager: pool.manager,
+            operator: pool.operator,
             atomicaPool: pool?.id,
             debtToken: poolReserve.variableDebtTokenAddress,
             value: parseUnits(amount, decimals).toString(),
@@ -83,16 +83,16 @@ export const CreditDelegationActions = React.memo(
       }
     }, [
       pool?.id,
+      pool?.operator,
       generateDeployVault,
-      poolReserve.stableDebtTokenAddress,
+      poolReserve.variableDebtTokenAddress,
+      amount,
+      decimals,
       setMainTxState,
+      mainTxState,
       sendTx,
       refetchVaults,
       setTxError,
-      amount,
-      decimals,
-      mainTxState,
-      pool?.manager,
     ]);
 
     const borrowWithSig = useCallback(async () => {
