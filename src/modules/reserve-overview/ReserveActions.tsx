@@ -38,6 +38,7 @@ import { CapType } from '../../components/caps/helper';
 import { AvailableTooltip } from '../../components/infoTooltips/AvailableTooltip';
 import { useReserveActionState } from '../../hooks/useReserveActionState';
 import { useCreditDelegationContext } from '../credit-delegation/CreditDelegationContext';
+import { useTickingReward } from '../credit-delegation/hooks/useTickingReward';
 import { CreditDelegationModal } from '../credit-delegation/modals/CreditDelegation/CreditDelegationModal';
 import { ManageVaultModal } from '../credit-delegation/modals/WithdrawPool/ManageVaultModal';
 import { AtomicaDelegationPool } from '../credit-delegation/types';
@@ -65,6 +66,8 @@ export const ReserveActions = ({ reserve, poolId }: ReserveActionsProps) => {
   const [poolReserve, setPoolReserve] = React.useState<ComputedReserveData>(reserve);
 
   const pool = pools.find((pool) => pool.id === poolId) as AtomicaDelegationPool;
+
+  const { earnedRewards } = useTickingReward({ rewards: pool?.balances?.rewardCurrentEarnings });
 
   useEffect(() => {
     if (reserve) {
@@ -114,15 +117,6 @@ export const ReserveActions = ({ reserve, poolId }: ReserveActionsProps) => {
     poolReserve.priceInUSD
   );
 
-  const rewardsSumUSD =
-    pool?.balances?.rewardCurrentEarnings.reduce((acc, earning) => {
-      return acc + earning.usdValue;
-    }, 0) || 0;
-
-  // const normalizedDepositedBalanceUSD = valueToBigNumber(
-  //   normalize(pool?.vault?.loanAmount || '0', pool?.asset?.decimals || 18)
-  // ).multipliedBy(poolReserve.priceInUSD);
-
   const nowTimestamp = Math.floor(Date.now() / 1000);
 
   const { interestRemainingUsd, requiredRepayAmountUsd } = useMemo(() => {
@@ -146,10 +140,13 @@ export const ReserveActions = ({ reserve, poolId }: ReserveActionsProps) => {
     return { interestRemainingUsd, requiredRepayAmountUsd };
   }, [loans, nowTimestamp]);
 
-  const rewardsSum =
-    balances?.rewardCurrentEarnings?.reduce((acc, earning) => {
-      return acc + earning.usdValue;
-    }, 0) || 0;
+  const rewardsSum = useMemo(
+    () =>
+      [...earnedRewards.values()].reduce((acc, earning) => {
+        return acc + earning.valueUsd;
+      }, 0) || 0,
+    [earnedRewards]
+  );
 
   const unclaimedEarnings = useMemo(
     () => (rewardsSum + (balances?.totalInterest || 0)).toFixed(2),
@@ -225,7 +222,7 @@ export const ReserveActions = ({ reserve, poolId }: ReserveActionsProps) => {
               onActionClicked={() => openManageVault(pool)}
               capitalUsd={normalizedAvailableWithdrawUSD.toString(10)}
               interestBalanceUSD={interestBalanceUSD.toString(10)}
-              rewardsUsd={rewardsSumUSD}
+              rewardsUsd={rewardsSum}
             />
           </Stack>
         </>
