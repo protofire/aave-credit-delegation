@@ -17,6 +17,7 @@ import {
   EarnedToken,
   PoolEarnings,
   Reward,
+  RewardCurrentEarnings,
 } from '../types';
 import { convertTimestampToDate } from '../utils';
 import { Rate, useCoinRate } from './useCoinRate';
@@ -35,15 +36,27 @@ export const useRiskPool = () => {
 
   const jsonInterface = new Interface(RISK_POOL_ABI);
 
+  const addRewardEarningsState = (newRewardEarningsState: PoolEarnings) => {
+    if (
+      (!newRewardEarningsState.apys ||
+        !newRewardEarningsState.earnings ||
+        !newRewardEarningsState.lastReward) &&
+      rewardEarningsStates.some((r) => r.poolId === newRewardEarningsState.poolId)
+    ) {
+      return;
+    }
+    setRewardEarningsStates((prev) => [...prev, { ...newRewardEarningsState }]);
+  };
+
   const getCurrentlyEarned = (
     rewardRate: BigNumber,
     earned: BigNumber,
     updatedAt: number,
-    endedAt: number
+    endedAt: number,
+    currentTimestamp: number
   ) => {
     return rewardRate
-      .times(Math.min(new Date().getTime(), endedAt) - updatedAt)
-      .times(0)
+      .times(Math.min(currentTimestamp, endedAt) - updatedAt)
       .div(100)
       .plus(earned);
   };
@@ -68,17 +81,9 @@ export const useRiskPool = () => {
 
       const { apys, earnings, lastReward } = await calculatePoolRewards(rewards);
 
-      setRewardEarningsStates([
-        ...rewardEarningsStates,
-        {
-          apys,
-          earnings,
-          lastReward,
-          poolId: pool.id,
-        },
-      ]);
+      addRewardEarningsState({ apys, earnings, lastReward, poolId: pool.id });
 
-      const rewardCurrentEarnings = calculateCurrentlyEarned(earnings, apys);
+      const rewardCurrentEarnings = calculateCurrentlyEarned(earnings, apys, new Date().getTime());
       const userTotalBalance = normalize(balance.toString(), 18);
       const myPercentage =
         (Number(userTotalBalance) / Number(normalize(poolTokenTotalSupply.toString(), 18))) * 100;
@@ -146,23 +151,23 @@ export const useRiskPool = () => {
 
   const calculateCurrentlyEarned = (
     earnings: EarnedToken[],
-    apys: { apy?: BigNumber; rewardId?: string }[]
-  ) => {
+    apys: { apy?: BigNumber; rewardId?: string }[],
+    currentTimestamp: number
+  ): RewardCurrentEarnings[] => {
     return earnings.map((earning) => {
       const currentlyEarned = getCurrentlyEarned(
         earning.rewardRate || new BigNumber(0),
         earning.earned || new BigNumber(0),
         new BigNumber(Math.floor(earning?.updatedAt || 0 / 1000)).toNumber(),
-        earning.endedAt?.toNumber() || 0
+        earning.endedAt?.toNumber() || 0,
+        currentTimestamp
       );
 
       return {
+        ...earning,
         value: currentlyEarned,
-        rewardId: earning.id,
         usdValue: Number(normalize(currentlyEarned, earning.decimals)) * earning.price,
-        decimals: earning.decimals,
-        symbol: earning.symbol,
-        endedAt: convertTimestampToDate(earning.endedAt.toString()),
+        formattedEndedAt: convertTimestampToDate(earning.endedAt.toString()),
         apy: apys?.find((apy) => apy.rewardId === earning.id)?.apy,
       };
     });
@@ -411,5 +416,7 @@ export const useRiskPool = () => {
     generateClaimInterestTxs,
     getUserAvailablePoolBalance,
     rewardEarningsStates,
+    calculateCurrentlyEarned,
+    getCurrentlyEarned,
   };
 };

@@ -18,9 +18,9 @@ import {
 } from 'src/components/transactions/FlowCommons/TxModalDetails';
 import { useAppDataContext } from 'src/hooks/app-data-provider/useAppDataProvider';
 import { useModalContext } from 'src/hooks/useModal';
-import { ValueWithSymbol } from 'src/modules/reserve-overview/ReserveActions';
 
 import { useRiskPool } from '../../hooks/useRiskPool';
+import { useTickingReward } from '../../hooks/useTickingReward';
 import { useTokensData } from '../../hooks/useTokensData';
 import { AtomicaDelegationPool } from '../../types';
 import { ManageVaultModalActions } from './ManageVaultModalActions';
@@ -101,6 +101,24 @@ const RewardsNumber = ({ usdValue }: { usdValue: 'Infinity' | number | string })
   );
 };
 
+interface ValueWithSymbolProps {
+  value: string;
+  symbol: string;
+}
+
+export const ValueWithSymbol = ({ value, symbol }: ValueWithSymbolProps) => {
+  return (
+    <Stack direction="row" alignItems="center" gap={1}>
+      <Typography variant="h4" color="text.primary">
+        {value}
+      </Typography>
+      <Typography variant="buttonL" color="text.secondary">
+        {symbol}
+      </Typography>
+    </Stack>
+  );
+};
+
 export const ManageVaultModalContent = memo(
   ({
     userReserve,
@@ -127,6 +145,7 @@ export const ManageVaultModalContent = memo(
     const [_amount, setAmount] = useState('');
     const [manageType, setManageType] = useState<ManageType>(ManageType.LIQUIDITY);
     const [receiveAmount, setReceiveAmount] = useState<string>('0');
+    const { earnedRewards } = useTickingReward({ rewards: balances?.rewardCurrentEarnings });
 
     const totalAmount = normalize(balances?.lpBalance || '0', assets[0]?.decimals || 18);
     const normalizedBalance = normalize(balances?.lpBalance || '0', 18);
@@ -156,26 +175,27 @@ export const ManageVaultModalContent = memo(
 
     const normalizedBalanceUSD = valueToBigNumber(totalAmount).multipliedBy(reserve.priceInUSD);
 
-    // const interestBalanceUSD = valueToBigNumber(balances?.totalInterest ?? '0').multipliedBy(
-    //   reserve.priceInUSD
-    // );
-
     const amountAfterRemovedInUsd = new BigNumber(amountAfterRemoved)
       .multipliedBy(poolReserve.formattedPriceInMarketReferenceCurrency)
       .multipliedBy(marketReferencePriceInUsd)
       .shiftedBy(-USD_DECIMALS);
 
-    const incentives = balances?.rewardCurrentEarnings?.map((earning) => {
-      return {
-        incentiveAPR: earning.apy?.div(10000).toString(10) || '0',
-        rewardTokenSymbol: earning.symbol,
-        rewardTokenAddress: earning.rewardId,
-        endedAt: earning.endedAt,
-        usdValue: earning.usdValue,
-        value: earning.value,
-        decimals: earning.decimals,
-      };
-    });
+    const incentives = useMemo(
+      () =>
+        balances?.rewardCurrentEarnings?.map((earning) => {
+          const earnedReward = earnedRewards.get(earning.symbol);
+          return {
+            incentiveAPR: earning.apy?.div(10000).toString(10) || '0',
+            rewardTokenSymbol: earning.symbol,
+            rewardTokenAddress: earning.id,
+            endedAt: earning.formattedEndedAt,
+            usdValue: earnedReward?.valueUsd || 0,
+            value: earnedReward?.value || new BigNumber(0),
+            decimals: earning.decimals,
+          };
+        }),
+      [earnedRewards]
+    );
 
     const actionProps = {
       poolId: id,
@@ -245,7 +265,9 @@ export const ManageVaultModalContent = memo(
                     >
                       <Stack direction="column" justifyContent="center" alignItems="flex-end">
                         <ValueWithSymbol
-                          value={normalize(incentive.value, incentive.decimals) || '0'}
+                          value={Number(
+                            normalize(incentive.value, incentive.decimals) || '0'
+                          ).toFixed(8)}
                           symbol={incentive.rewardTokenSymbol}
                         />
                         <FormattedNumber
@@ -304,21 +326,6 @@ export const ManageVaultModalContent = memo(
                   </>
                 ))}
               </>
-              {/* <AssetInput
-                value={balances?.totalInterest.toString() || '0'}
-                usdValue={interestBalanceUSD.toString(10)}
-                symbol={assets[0]?.symbol || ''}
-                assets={[
-                  {
-                    balance: balances?.totalInterest.toString(),
-                    symbol: assets[0]?.symbol || '',
-                    iconSymbol: assets[0]?.symbol || 'default',
-                  },
-                ]}
-                disabled={true}
-                maxValue={balances?.totalInterest.toString()}
-                balanceText={<Trans>Interest balance</Trans>}
-              /> */}
             </Box>
           </>
         )}

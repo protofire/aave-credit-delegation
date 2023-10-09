@@ -39,8 +39,8 @@ export const PoolListItem = ({
     return {
       incentiveAPR: earning.apy?.div(10000).toString(10) || '0',
       rewardTokenSymbol: earning.symbol,
-      rewardTokenAddress: earning.rewardId,
-      endedAt: earning.endedAt,
+      rewardTokenAddress: earning.id,
+      endedAt: earning.formattedEndedAt,
       usdValue: earning.usdValue,
     };
   });

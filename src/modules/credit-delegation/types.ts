@@ -451,12 +451,20 @@ export interface PoolRewardEarnings {
 
 export interface RewardCurrentEarnings {
   value: BigNumber;
-  rewardId: string;
   usdValue: number;
   decimals: number;
   symbol: string;
-  endedAt: string;
+  formattedEndedAt: string;
+  endedAt: BigNumber;
   apy?: BigNumber;
+  id: string;
+  rewardRate: BigNumber;
+  earned: BigNumber;
+  earnedRewardIds: string[];
+  price: number;
+  logoUrl: string;
+  startedAt: BigNumber;
+  updatedAt?: number;
 }
 
 export interface RewardIncentive extends ReserveIncentiveResponse {

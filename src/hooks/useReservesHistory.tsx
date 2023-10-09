@@ -8,7 +8,7 @@ import { useProtocolDataContext } from 'src/hooks/useProtocolDataContext';
 import { makeCancelable } from 'src/utils/utils';
 
 export const reserveRateTimeRangeOptions = ['1m', '6m', '1y'] as const;
-export type ReserveRateTimeRange = (typeof reserveRateTimeRangeOptions)[number];
+export type ReserveRateTimeRange = typeof reserveRateTimeRangeOptions[number];
 
 type RatesHistoryParams = {
   from: number;

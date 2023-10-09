@@ -1,31 +1,30 @@
+import { useRef } from 'react';
+
 import { TokenMap } from './useRiskPool';
 
 export type Rate = { [key: string]: { usd: number } };
 
 export const useCoinRate = () => {
+  const cache = useRef<Rate>({});
+
   const getCoinPriceUrl = (coinIds: string[]) =>
     `https://api.coingecko.com/api/v3/simple/price?ids=${coinIds.join(',')}&vs_currencies=usd`;
 
   const getCoinId = (tokenName: string) =>
     tokenName === 'USDC' ? 'usd-coin' : tokenName.replace(' ', '-').toLowerCase();
 
-  const coinRates: Rate = {
-    filecoin: { usd: 3.33 },
-    usdc: { usd: 1 },
-    gho: { usd: 1 },
-    'usd-coin': { usd: 1 },
-  };
-
   const getPrice = async (coinIds: string[]) => {
     try {
-      if (!coinIds.length) return;
-      if (coinIds.every((coinId) => coinRates[coinId])) return coinRates;
+      if (coinIds.every((coinId) => cache.current[coinId])) return cache.current;
       const response = await fetch(getCoinPriceUrl(coinIds));
       if (response.ok) {
-        return response.json();
+        const rate: Rate = await response.json();
+        cache.current = { ...cache.current, ...rate };
       }
+      return cache.current;
     } catch (error) {
       console.log(error);
+      throw error;
     }
   };
 

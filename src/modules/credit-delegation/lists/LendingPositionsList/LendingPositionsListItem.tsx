@@ -8,20 +8,15 @@ import { ListColumn } from 'src/components/lists/ListColumn';
 import { Link, ROUTES } from 'src/components/primitives/Link';
 import { Row } from 'src/components/primitives/Row';
 import { TextWithTooltip } from 'src/components/TextWithTooltip';
-// import {
-//   ComputedUserReserveData,
-//   useAppDataContext,
-// } from 'src/hooks/app-data-provider/useAppDataProvider';
 import { useModalContext } from 'src/hooks/useModal';
 
 import { useOperatorDetails } from '../../hooks/useOperatorDetails';
+import { useTickingReward } from '../../hooks/useTickingReward';
 import { AtomicaDelegationPool, AtomicaLoanPool } from '../../types';
 import { calcAccruedInterest } from '../../utils';
 import { ListAPRColumn } from '../ListAPRColumn';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListItemWrapper } from '../ListItemWrapper';
-// import { ListRewardColumn } from '../ListRewardColumn';
-// import { ListValueColumn } from '../ListValueColumn';
 
 interface LendingPositionsListItemProps {
   poolVault: AtomicaDelegationPool;
@@ -54,6 +49,7 @@ export const LendingPositionsListItem = ({
   const { operatorDetails } = useOperatorDetails(operator);
 
   const router = useRouter();
+  const { earnedRewards } = useTickingReward({ rewards: balances?.rewardCurrentEarnings });
 
   // const { reserve } = user?.userReservesData.find((userReserve) => {
   //   return underlyingAsset === userReserve.underlyingAsset;
@@ -67,16 +63,11 @@ export const LendingPositionsListItem = ({
     return {
       incentiveAPR: earning.apy?.div(10000).toString(10) || '0',
       rewardTokenSymbol: earning.symbol,
-      rewardTokenAddress: earning.rewardId,
-      endedAt: earning.endedAt,
+      rewardTokenAddress: earning.id,
+      endedAt: earning.formattedEndedAt,
       usdValue: earning.usdValue,
     };
   });
-
-  const rewardsSum =
-    balances?.rewardCurrentEarnings?.reduce((acc, earning) => {
-      return acc + earning.usdValue;
-    }, 0) || 0;
 
   const nowTimestamp = Math.floor(Date.now() / 1000);
 
@@ -101,8 +92,16 @@ export const LendingPositionsListItem = ({
     return { interestRemainingUsd, requiredRepayAmountUsd };
   }, [asset?.decimals, loanPositions, nowTimestamp]);
 
+  const rewardsSum = useMemo(
+    () =>
+      [...earnedRewards.values()].reduce((acc, earning) => {
+        return acc + earning.valueUsd;
+      }, 0) || 0,
+    [earnedRewards]
+  );
+
   const unclaimedEarnings = useMemo(
-    () => (rewardsSum + (balances?.totalInterest || 0)).toFixed(2),
+    () => (rewardsSum + (balances?.totalInterest || 0)).toFixed(6),
     [balances?.totalInterest, rewardsSum]
   );
 
@@ -149,14 +148,6 @@ export const LendingPositionsListItem = ({
           </>
         </TextWithTooltip>
       </ListColumn>
-
-      {/* <ListValueColumn
-        symbol={symbol}
-        value={Number(userAvailableWithdraw)}
-        subValue={normalizedAvailableWithdrawUSD.toString(10)}
-        withTooltip
-        disabled={Number(vault?.loanAmount) === 0}
-      /> */}
 
       <ListColumn>${myBalance.toFixed(2)}</ListColumn>
 

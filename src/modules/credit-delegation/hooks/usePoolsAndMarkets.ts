@@ -330,7 +330,7 @@ export const usePoolsAndMarkets = () => {
       const balances = poolsAvailableBalances.find((balance) => pool.id === balance.id);
 
       const rewardEarnings = rewardEarningsStates.find((reward) => reward.poolId === pool.id);
-
+      // console.log({ rewardEarnings, rewardEarningsStates, pool: pool.id });
       const poolCapUsd = amountToUsd(
         normalize(pool.capitalRequirement, pool.capitalTokenDecimals),
         userReserve?.symbol === 'GHST'
