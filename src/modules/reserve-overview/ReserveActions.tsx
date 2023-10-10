@@ -149,7 +149,7 @@ export const ReserveActions = ({ reserve, poolId }: ReserveActionsProps) => {
   );
 
   const unclaimedEarnings = useMemo(
-    () => (rewardsSum + (balances?.totalInterest || 0)).toFixed(2),
+    () => (rewardsSum + (balances?.totalInterest || 0)).toFixed(6),
     [balances?.totalInterest, rewardsSum]
   );
 
@@ -410,6 +410,7 @@ const BorrowAction = ({
             color="text.muted"
             symbolsColor="text.muted"
             symbol="USD"
+            visibleDecimals={6}
           />
         </Stack>
 
