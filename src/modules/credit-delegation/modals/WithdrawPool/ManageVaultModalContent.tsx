@@ -83,24 +83,6 @@ const ManageTypeSwitch = ({ setManageType, manageType }: ManageTypeSwitchProps) 
   );
 };
 
-const RewardsNumber = ({ usdValue }: { usdValue: 'Infinity' | number | string }) => {
-  return (
-    <Box sx={{ display: 'inline-flex', alignItems: 'center' }}>
-      <>
-        {/* <FormattedNumber value={+usdValue} variant="h4" /> */}
-        <FormattedNumber
-          value={isNaN(Number(usdValue)) ? 0 : Number(usdValue)}
-          variant="h4"
-          compact
-        />
-        <Typography variant="h4" sx={{ ml: 1 }}>
-          <Trans>USD</Trans>
-        </Typography>
-      </>
-    </Box>
-  );
-};
-
 interface ValueWithSymbolProps {
   value: string;
   symbol: string;
@@ -185,7 +167,7 @@ export const ManageVaultModalContent = memo(
         balances?.rewardCurrentEarnings?.map((earning) => {
           const earnedReward = earnedRewards.get(earning.symbol);
           return {
-            incentiveAPR: earning.apy?.div(10000).toString(10) || '0',
+            incentiveAPR: earning.apy?.div(1000).toString(10) || '0',
             rewardTokenSymbol: earning.symbol,
             rewardTokenAddress: earning.id,
             endedAt: earning.formattedEndedAt,
@@ -291,40 +273,58 @@ export const ManageVaultModalContent = memo(
           <>
             <Box sx={{ pt: 5 }}>
               <>
-                {balances?.premiumsAndSettlements.map((token) => (
-                  <>
-                    <Row
-                      height={32}
-                      caption={
-                        <Box
-                          sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            mb: balances?.premiumsAndSettlements?.length
-                              ? balances?.premiumsAndSettlements.length > 1
-                                ? 2
-                                : 0
-                              : 0,
-                          }}
-                        >
-                          <TokenIcon
-                            symbol={token.symbol.toLowerCase()}
-                            sx={{ fontSize: '25px', mr: 1 }}
+                {balances?.premiumsAndSettlements.length ? (
+                  balances?.premiumsAndSettlements.map((token) => (
+                    <>
+                      <Row
+                        height={32}
+                        caption={
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              mb: balances?.premiumsAndSettlements?.length
+                                ? balances?.premiumsAndSettlements.length > 1
+                                  ? 2
+                                  : 0
+                                : 0,
+                            }}
+                          >
+                            <TokenIcon
+                              symbol={token.symbol.toLowerCase()}
+                              sx={{ fontSize: '25px', mr: 1 }}
+                            />
+                            <Typography variant="h4">{token.symbol}</Typography>
+                          </Box>
+                        }
+                        key={token.address}
+                        width="100%"
+                        sx={{
+                          marginBottom: 2,
+                        }}
+                      >
+                        <Stack direction="column" justifyContent="center" alignItems="flex-end">
+                          <ValueWithSymbol
+                            value={Number(
+                              normalize(token.totalInterest, token.decimals) || '0'
+                            ).toFixed(6)}
+                            symbol={token.symbol}
                           />
-                          <Typography variant="h4">{token.symbol}</Typography>
-                        </Box>
-                      }
-                      key={token.address}
-                      width="100%"
-                    >
-                      <RewardsNumber
-                        usdValue={valueToBigNumber(token.totalInterest)
-                          .multipliedBy(token.usdValue)
-                          .toString(10)}
-                      />
-                    </Row>
-                  </>
-                ))}
+                          <FormattedNumber
+                            value={token.usdValue || '0'}
+                            color="text.muted"
+                            variant="subheader2"
+                            symbol="USD"
+                          />
+                        </Stack>
+                      </Row>
+                    </>
+                  ))
+                ) : (
+                  <Typography sx={{ textAlign: 'center' }} variant="h3">
+                    <Trans>No interest to claim</Trans>
+                  </Typography>
+                )}
               </>
             </Box>
           </>

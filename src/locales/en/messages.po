@@ -1214,6 +1214,10 @@ msgstr "New amount"
 msgid "No borrowers yet"
 msgstr "No borrowers yet"
 
+#: src/modules/credit-delegation/modals/WithdrawPool/ManageVaultModalContent.tsx
+msgid "No interest to claim"
+msgstr "No interest to claim"
+
 #: src/components/transactions/StakeRewardClaim/StakeRewardClaimModalContent.tsx
 #: src/modules/credit-delegation/modals/WithdrawPool/ManageVaultModalContent.tsx
 msgid "No rewards to claim"
@@ -2139,7 +2143,6 @@ msgid "UNSTAKING {symbol}"
 msgstr "UNSTAKING {symbol}"
 
 #: src/components/incentives/IncentivesRewardTooltipContent.tsx
-#: src/modules/credit-delegation/modals/WithdrawPool/ManageVaultModalContent.tsx
 msgid "USD"
 msgstr "USD"
 

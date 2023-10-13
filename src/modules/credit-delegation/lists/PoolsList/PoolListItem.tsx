@@ -37,7 +37,7 @@ export const PoolListItem = ({
 
   const incentives = balances?.rewardCurrentEarnings?.map((earning) => {
     return {
-      incentiveAPR: earning.apy?.div(10000).toString(10) || '0',
+      incentiveAPR: earning.apy?.div(1000).toString(10) || '0',
       rewardTokenSymbol: earning.symbol,
       rewardTokenAddress: earning.id,
       endedAt: earning.formattedEndedAt,
