@@ -37,6 +37,7 @@ const head = [
     title: <Trans>Balance of Pre-paid Promotional Budget</Trans>,
     sortKey: 'topUpUsd',
     tooltip: 'Balance of Pre-paid Promotional Budget',
+    hasHint: true,
   },
   {
     title: <Trans>Max APR</Trans>,
@@ -81,6 +82,7 @@ const Header: React.FC<HeaderProps> = ({
             setSortDesc={setSortDesc}
             sortKey={col.sortKey}
             title={col.tooltip}
+            hasHint={col.hasHint}
           >
             {col.title}
           </ListHeaderTitle>

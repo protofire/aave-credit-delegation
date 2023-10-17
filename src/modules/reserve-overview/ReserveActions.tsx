@@ -34,11 +34,12 @@ import { getMaxAmountAvailableToBorrow } from 'src/utils/getMaxAmountAvailableTo
 import { getMaxAmountAvailableToSupply } from 'src/utils/getMaxAmountAvailableToSupply';
 import { amountToUsd } from 'src/utils/utils';
 
-import { CapType } from '../../components/caps/helper';
-import { AvailableTooltip } from '../../components/infoTooltips/AvailableTooltip';
+// import { CapType } from '../../components/caps/helper';
+// import { AvailableTooltip } from '../../components/infoTooltips/AvailableTooltip';
 import { useReserveActionState } from '../../hooks/useReserveActionState';
 import { useCreditDelegationContext } from '../credit-delegation/CreditDelegationContext';
 import { useTickingReward } from '../credit-delegation/hooks/useTickingReward';
+import { HintIcon } from '../credit-delegation/lists/HintIcon';
 import { CreditDelegationModal } from '../credit-delegation/modals/CreditDelegation/CreditDelegationModal';
 import { ManageVaultModal } from '../credit-delegation/modals/WithdrawPool/ManageVaultModal';
 import { AtomicaDelegationPool } from '../credit-delegation/types';
@@ -318,10 +319,15 @@ interface ActionProps {
 const SupplyAction = ({ value, usdValue, symbol, disable, onActionClicked }: ActionProps) => {
   return (
     <Stack>
-      <AvailableTooltip
+      {/* <AvailableTooltip
         variant="h3"
         text={<Trans>Available to lend</Trans>}
         capType={CapType.supplyCap}
+      /> */}
+      <HintIcon
+        key="availableLend"
+        hintText="Available to lend"
+        text={<Typography variant="h3">Available to lend</Typography>}
       />
       <Stack
         sx={{ height: '44px' }}
@@ -363,10 +369,10 @@ const BorrowAction = ({
 }: ActionProps) => {
   return (
     <Stack>
-      <AvailableTooltip
-        variant="h3"
-        text={<Trans>Available to withdraw</Trans>}
-        capType={CapType.borrowCap}
+      <HintIcon
+        key="availableWithdraw"
+        hintText="Available to withdraw"
+        text={<Typography variant="h3">Available to withdraw</Typography>}
       />
       <Stack
         marginTop={5}
@@ -486,6 +492,8 @@ interface DepositedAmountProps {
 const DepositedAmount = ({ value, symbol, usdValue, type }: DepositedAmountProps) => {
   const theme = useTheme();
 
+  const text = type === 'balance' ? 'My Asset Balance' : 'Initial deposited amount';
+
   return (
     <Stack direction="row" gap={3}>
       <Box
@@ -503,9 +511,12 @@ const DepositedAmount = ({ value, symbol, usdValue, type }: DepositedAmountProps
         <ChartPieIcon sx={{ stroke: `${theme.palette.text.secondary}` }} />
       </Box>
       <Box>
-        <Typography variant="description" color="text.secondary">
-          {type === 'balance' ? 'My asset balance' : 'Initial deposited amount'}
-        </Typography>
+        <Box display="flex" alignItems="center">
+          <Typography variant="description" color="text.secondary">
+            {text}
+          </Typography>
+          <HintIcon key={value} hintText={text} />
+        </Box>
         {type === 'deposit' && <ValueWithSymbol value={value || '0'} symbol={symbol} />}
         <FormattedNumber
           value={usdValue || '0.0'}

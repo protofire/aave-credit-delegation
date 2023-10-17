@@ -334,17 +334,9 @@ msgstr "Available rewards"
 msgid "Available to borrow"
 msgstr "Available to borrow"
 
-#: src/modules/reserve-overview/ReserveActions.tsx
-msgid "Available to lend"
-msgstr "Available to lend"
-
 #: src/components/caps/CapsHint.tsx
 msgid "Available to supply"
 msgstr "Available to supply"
-
-#: src/modules/reserve-overview/ReserveActions.tsx
-msgid "Available to withdraw"
-msgstr "Available to withdraw"
 
 #: pages/404.page.tsx
 msgid "Back to Dashboard"
@@ -2562,6 +2554,7 @@ msgstr "withdrew"
 #: src/components/transactions/StakeCooldown/StakeCooldownModalContent.tsx
 #: src/components/transactions/StakeCooldown/StakeCooldownModalContent.tsx
 #: src/components/transactions/TxActionsWrapper.tsx
+#: src/modules/credit-delegation/lists/HintIcon.tsx
 #: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationActions.tsx
 #: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationActions.tsx
 #: src/modules/dashboard/DashboardEModeButton.tsx

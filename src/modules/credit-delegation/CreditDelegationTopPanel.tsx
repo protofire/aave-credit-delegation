@@ -13,7 +13,8 @@ import { TopInfoPanel } from '../../components/TopInfoPanel/TopInfoPanel';
 import { TopInfoPanelItem } from '../../components/TopInfoPanel/TopInfoPanelItem';
 import { useAppDataContext } from '../../hooks/app-data-provider/useAppDataProvider';
 import { useCreditDelegationContext } from './CreditDelegationContext';
-import { LendingCapacityTooltip } from './LendingCapacityTooltip';
+// import { LendingCapacityTooltip } from './LendingCapacityTooltip';
+import { HintIcon } from './lists/HintIcon';
 
 export const CreditDelegationTopPanel = () => {
   const { currentNetworkConfig } = useProtocolDataContext();
@@ -47,7 +48,7 @@ export const CreditDelegationTopPanel = () => {
           title={
             <div style={{ display: 'flex' }}>
               <Trans>Your lending capacity</Trans>
-              <LendingCapacityTooltip />
+              <HintIcon key="lendingCapacity" hintText="Your lending capacity" />
             </div>
           }
           loading={loadingLendingCapacity}
@@ -72,6 +73,7 @@ export const CreditDelegationTopPanel = () => {
           title={
             <div style={{ display: 'flex' }}>
               <Trans>Lent</Trans>
+              <HintIcon key="lent" hintText="Lent" />
             </div>
           }
           loading={loadingLendingCapacity}
@@ -96,6 +98,7 @@ export const CreditDelegationTopPanel = () => {
           title={
             <div style={{ display: 'flex' }}>
               <Trans>Your average APY</Trans>
+              <HintIcon key="averageApy" hintText="Your average APY" />
             </div>
           }
           loading={loading}
