@@ -1,4 +1,5 @@
 export const uiConfig = {
-  appLogo: '/aaveLogo.svg',
+  aaveLogo: '/aaveLogo.svg',
   protofireLogo: '/protofireLogo.svg',
+  appLogo: '/logo.svg',
 };

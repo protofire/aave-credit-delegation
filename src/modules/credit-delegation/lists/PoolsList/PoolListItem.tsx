@@ -100,14 +100,14 @@ export const PoolListItem = ({
 
       <ListButtonsColumn>
         <Button
-          disabled={!isActive || Number(availableBalance) <= 0}
+          disabled={!isActive}
           variant="contained"
           onClick={() => openCreditDelegation(id, underlyingAsset)}
         >
           <Trans>Lend</Trans>
         </Button>
         <Button
-          disabled={!isActive || Number(availableBalance) <= 0}
+          disabled={!isActive}
           variant="outlined"
           onClick={() => router.push(ROUTES.poolDetails(id, underlyingAsset))}
         >

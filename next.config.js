@@ -43,5 +43,8 @@ module.exports = withBundleAnalyzer(
     reactStrictMode: true,
     trailingSlash: true,
     pageExtensions,
+    experimental: {
+      forceSwcTransforms: true,
+    },
   })
 );

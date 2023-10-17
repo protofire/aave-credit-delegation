@@ -188,7 +188,7 @@ export interface AtomicaDelegationPool {
   id: string;
   symbol: string;
   iconSymbol: string;
-  asset?: TokenMetadataType;
+  aaveAsset?: TokenMetadataType;
   name: string;
   walletBalance: string;
   walletBalanceUSD: string;

@@ -148,8 +148,14 @@ interface ImgIconProps
   symbol: string;
 }
 
+const NON_LISTED_TOKENS: string[] = ['defualt'];
+
+const DEFAULT_ICON_URL = '/icons/tokens/default.svg';
+
 const ImgIcon = ({ iconUrl, symbol }: ImgIconProps) => {
-  const [url, setUrl] = useState<string | undefined>(iconUrl);
+  const [url, setUrl] = useState<string | undefined>(
+    iconUrl ?? NON_LISTED_TOKENS.includes(symbol) ? DEFAULT_ICON_URL : undefined
+  );
 
   useEffect(() => {
     let isNotCancelled = true;
@@ -159,29 +165,30 @@ const ImgIcon = ({ iconUrl, symbol }: ImgIconProps) => {
       http.open('HEAD', url, false);
 
       http.onreadystatechange = function () {
+        if (http.status !== 200) {
+          NON_LISTED_TOKENS.push(symbol);
+        }
+
         if (isNotCancelled) {
-          setUrl(http.status === 200 ? url : '/icons/tokens/default.svg');
+          setUrl(http.status === 200 ? url : DEFAULT_ICON_URL);
         }
       };
 
       http.send();
     };
 
-    urlExists(iconUrl ?? `/icons/tokens/${symbol.toLowerCase()}.svg`);
+    if (!iconUrl && NON_LISTED_TOKENS.includes(symbol)) {
+      setUrl(DEFAULT_ICON_URL);
+    } else {
+      urlExists(iconUrl ?? `/icons/tokens/${symbol.toLowerCase()}.svg`);
+    }
 
     return () => {
       isNotCancelled = false;
     };
   }, [iconUrl, symbol]);
 
-  return (
-    <img
-      src={url ?? '/icons/tokens/default.svg'}
-      width="100%"
-      height="100%"
-      alt={`${symbol} icon`}
-    />
-  );
+  return <img src={url ?? DEFAULT_ICON_URL} width="100%" height="100%" alt={`${symbol} icon`} />;
 };
 
 interface TokenIconProps extends IconProps {

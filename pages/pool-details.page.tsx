@@ -32,49 +32,105 @@ export default function PoolDetails() {
     poolId,
   };
 
+  if (reserve) {
+    return (
+      <CreditDelegationProvider>
+        <AssetCapsProvider asset={reserve}>
+          <ReserveTopDetails {...reserveProps} />
+          <ContentContainer>
+            <Box sx={{ display: 'flex' }}>
+              <Box
+                sx={{
+                  display: { xs: 'block', lg: 'block' },
+                  // width: { xs: '100%', lg: 'calc(100% - 432px' },
+                  width: { xs: '100%', lg: '50%' },
+                  mr: { xs: 0, lg: 4 },
+                  height: '432px',
+                }}
+              >
+                {reserve && (
+                  <ReserveConfiguration
+                    poolId={poolId}
+                    underlyingAsset={underlyingAsset}
+                    reserveSupplyCap={reserve.supplyCap}
+                  />
+                )}
+              </Box>
+
+              <Box
+                sx={{
+                  display: { xs: 'block', lg: 'block' },
+                  width: { xs: '100%', lg: '50%' },
+                  height: '432px',
+                }}
+              >
+                <ReserveActions
+                  reserve={reserve}
+                  poolId={poolId}
+                  underlyingAsset={underlyingAsset}
+                />
+              </Box>
+            </Box>
+          </ContentContainer>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              flex: 1,
+              mt: { xs: '-32px', lg: '-40px', xl: '-44px', xxl: '-48px' },
+            }}
+          >
+            <Container>
+              <DetailsLoanPositionsList poolId={poolId} />
+              <BorrowerList poolId={poolId} />
+            </Container>
+          </Box>
+        </AssetCapsProvider>
+      </CreditDelegationProvider>
+    );
+  }
+
   return (
     <CreditDelegationProvider>
-      <AssetCapsProvider asset={reserve}>
-        <ReserveTopDetails {...reserveProps} />
-        <ContentContainer>
-          <Box sx={{ display: 'flex' }}>
-            <Box
-              sx={{
-                display: { xs: 'block', lg: 'block' },
-                // width: { xs: '100%', lg: 'calc(100% - 432px' },
-                width: { xs: '100%', lg: '50%' },
-                mr: { xs: 0, lg: 4 },
-                height: '432px',
-              }}
-            >
-              {reserve && <ReserveConfiguration poolId={poolId} reserve={reserve} />}
-            </Box>
-
-            <Box
-              sx={{
-                display: { xs: 'block', lg: 'block' },
-                width: { xs: '100%', lg: '50%' },
-                height: '432px',
-              }}
-            >
-              <ReserveActions reserve={reserve} poolId={poolId} />
-            </Box>
+      <ReserveTopDetails {...reserveProps} />
+      <ContentContainer>
+        <Box sx={{ display: 'flex' }}>
+          <Box
+            sx={{
+              display: { xs: 'block', lg: 'block' },
+              // width: { xs: '100%', lg: 'calc(100% - 432px' },
+              width: { xs: '100%', lg: '50%' },
+              mr: { xs: 0, lg: 4 },
+              height: '432px',
+            }}
+          >
+            <ReserveConfiguration poolId={poolId} underlyingAsset={underlyingAsset} />
           </Box>
-        </ContentContainer>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            flex: 1,
-            mt: { xs: '-32px', lg: '-40px', xl: '-44px', xxl: '-48px' },
-          }}
-        >
-          <Container>
-            <DetailsLoanPositionsList poolId={poolId} />
-            <BorrowerList poolId={poolId} />
-          </Container>
+
+          <Box
+            sx={{
+              display: { xs: 'block', lg: 'block' },
+              width: { xs: '100%', lg: '50%' },
+              height: '432px',
+            }}
+          >
+            <ReserveActions poolId={poolId} underlyingAsset={underlyingAsset} />
+          </Box>
         </Box>
-      </AssetCapsProvider>
+      </ContentContainer>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          flex: 1,
+          mt: { xs: '-32px', lg: '-40px', xl: '-44px', xxl: '-48px' },
+        }}
+      >
+        <Container>
+          <DetailsLoanPositionsList poolId={poolId} />
+          <BorrowerList poolId={poolId} />
+        </Container>
+      </Box>
     </CreditDelegationProvider>
   );
 }

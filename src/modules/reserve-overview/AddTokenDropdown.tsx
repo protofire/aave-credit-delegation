@@ -1,3 +1,4 @@
+import { TokenMetadataType } from '@aave/contract-helpers';
 import { Trans } from '@lingui/macro';
 import { Box, Menu, MenuItem, Typography } from '@mui/material';
 import * as React from 'react';
@@ -5,25 +6,26 @@ import { useEffect, useState } from 'react';
 import { CircleIcon } from 'src/components/CircleIcon';
 import { WalletIcon } from 'src/components/icons/WalletIcon';
 import { Base64Token, TokenIcon } from 'src/components/primitives/TokenIcon';
-import { ComputedReserveData } from 'src/hooks/app-data-provider/useAppDataProvider';
 import { ERC20TokenType } from 'src/libs/web3-data-provider/Web3Provider';
 
 interface AddTokenDropdownProps {
-  poolReserve: ComputedReserveData;
   downToSM: boolean;
   switchNetwork: (chainId: number) => Promise<void>;
   addERC20Token: (args: ERC20TokenType) => Promise<boolean>;
   currentChainId: number;
   connectedChainId: number;
+  asset?: TokenMetadataType;
+  aTokenAddress?: string;
 }
 
 export const AddTokenDropdown = ({
-  poolReserve,
   downToSM,
   switchNetwork,
   addERC20Token,
   currentChainId,
   connectedChainId,
+  asset,
+  aTokenAddress,
 }: AddTokenDropdownProps) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [changingNetwork, setChangingNetwork] = useState(false);
@@ -39,12 +41,12 @@ export const AddTokenDropdown = ({
 
   // The switchNetwork function has no return type, so to detect if a user successfully switched networks before adding token to wallet, check the selected vs connected chain id
   useEffect(() => {
-    if (changingNetwork && currentChainId === connectedChainId) {
+    if (changingNetwork && currentChainId === connectedChainId && asset) {
       addERC20Token({
-        address: poolReserve.underlyingAsset,
-        decimals: poolReserve.decimals,
-        symbol: poolReserve.symbol,
-        image: !/_/.test(poolReserve.iconSymbol) ? underlyingBase64 : undefined,
+        address: asset.address,
+        decimals: asset.decimals,
+        symbol: asset.symbol,
+        image: !/_/.test(asset.symbol) ? underlyingBase64 : undefined,
       });
       setChangingNetwork(false);
     }
@@ -53,28 +55,24 @@ export const AddTokenDropdown = ({
     connectedChainId,
     changingNetwork,
     addERC20Token,
-    poolReserve.underlyingAsset,
-    poolReserve.decimals,
-    poolReserve.symbol,
-    poolReserve.iconSymbol,
     underlyingBase64,
+    asset?.address,
+    asset?.decimals,
+    asset?.symbol,
+    asset,
   ]);
 
   return (
     <>
       {/* Load base64 token symbol for adding underlying and aTokens to wallet */}
-      {poolReserve?.symbol && !/_/.test(poolReserve.symbol) && (
+      {asset?.symbol && !/_/.test(asset.symbol) && (
         <>
           <Base64Token
-            symbol={poolReserve.iconSymbol}
+            symbol={asset.symbol}
             onImageGenerated={setUnderlyingBase64}
             aToken={false}
           />
-          <Base64Token
-            symbol={poolReserve.iconSymbol}
-            onImageGenerated={setATokenBase64}
-            aToken={true}
-          />
+          <Base64Token symbol={asset.symbol} onImageGenerated={setATokenBase64} aToken={true} />
         </>
       )}
       <Box onClick={handleClick}>
@@ -119,51 +117,60 @@ export const AddTokenDropdown = ({
               switchNetwork(currentChainId).then(() => {
                 setChangingNetwork(true);
               });
-            } else {
+            } else if (asset) {
               addERC20Token({
-                address: poolReserve.underlyingAsset,
-                decimals: poolReserve.decimals,
-                symbol: poolReserve.symbol,
-                image: !/_/.test(poolReserve.symbol) ? underlyingBase64 : undefined,
+                address: asset.address,
+                decimals: asset.decimals,
+                symbol: asset.symbol,
+                image: !/_/.test(asset.symbol) ? underlyingBase64 : undefined,
               });
             }
             handleClose();
           }}
         >
-          <TokenIcon symbol={poolReserve.iconSymbol} sx={{ fontSize: '20px' }} />
+          <TokenIcon symbol={asset?.symbol ?? 'default'} sx={{ fontSize: '20px' }} />
           <Typography variant="subheader1" sx={{ ml: 3 }} noWrap data-cy={`assetName`}>
-            {poolReserve.symbol}
+            {asset?.symbol}
           </Typography>
         </MenuItem>
-        <Box sx={{ px: 4, pt: 3, pb: 2 }}>
-          <Typography variant="secondary12" color="text.secondary">
-            <Trans>Aave aToken</Trans>
-          </Typography>
-        </Box>
-        <MenuItem
-          key="atoken"
-          value="atoken"
-          onClick={() => {
-            if (currentChainId !== connectedChainId) {
-              switchNetwork(currentChainId).then(() => {
-                setChangingNetwork(true);
-              });
-            } else {
-              addERC20Token({
-                address: poolReserve.aTokenAddress,
-                decimals: poolReserve.decimals,
-                symbol: `a${poolReserve.symbol}`,
-                image: !/_/.test(poolReserve.symbol) ? aTokenBase64 : undefined,
-              });
-            }
-            handleClose();
-          }}
-        >
-          <TokenIcon symbol={poolReserve.iconSymbol} sx={{ fontSize: '20px' }} aToken={true} />
-          <Typography variant="subheader1" sx={{ ml: 3 }} noWrap data-cy={`assetName`}>
-            {`a${poolReserve.symbol}`}
-          </Typography>
-        </MenuItem>
+        {!!aTokenAddress && (
+          <>
+            <Box sx={{ px: 4, pt: 3, pb: 2 }}>
+              <Typography variant="secondary12" color="text.secondary">
+                <Trans>Aave aToken</Trans>
+              </Typography>
+            </Box>
+            <MenuItem
+              key="atoken"
+              value="atoken"
+              onClick={() => {
+                if (currentChainId !== connectedChainId) {
+                  switchNetwork(currentChainId).then(() => {
+                    setChangingNetwork(true);
+                  });
+                } else if (asset) {
+                  addERC20Token({
+                    address: aTokenAddress,
+                    decimals: asset.decimals,
+                    symbol: `a${asset.symbol}`,
+                    image: !/_/.test(asset.symbol) ? aTokenBase64 : undefined,
+                  });
+                }
+
+                handleClose();
+              }}
+            >
+              <TokenIcon
+                symbol={asset?.symbol ?? 'default'}
+                sx={{ fontSize: '20px' }}
+                aToken={true}
+              />
+              <Typography variant="subheader1" sx={{ ml: 3 }} noWrap data-cy={`assetName`}>
+                {`a${asset?.symbol}`}
+              </Typography>
+            </MenuItem>
+          </>
+        )}
       </Menu>
     </>
   );
