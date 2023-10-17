@@ -117,6 +117,30 @@ export const ModalWrapper: React.FC<{
       ? currentNetworkConfig.baseAssetSymbol
       : poolReserve?.symbol;
 
+  if (!poolReserve) {
+    return (
+      <>
+        {!mainTxState.success && (
+          <TxModalTitle title={title} symbol={hideTitleSymbol ? undefined : symbol} />
+        )}
+        {isWrongNetwork && !readOnlyModeAddress && (
+          <ChangeNetworkWarning
+            networkName={getNetworkConfig(requiredChainId).name}
+            chainId={requiredChainId}
+          />
+        )}
+        {children({
+          isWrongNetwork,
+          nativeBalance: walletBalances[API_ETH_MOCK_ADDRESS.toLowerCase()]?.amount || '0',
+          tokenBalance: walletBalances[underlyingAsset.toLowerCase()]?.amount ?? '0',
+          symbol,
+          underlyingAsset,
+          userReserve,
+          poolReserve: {} as ComputedReserveData,
+        })}
+      </>
+    );
+  }
   return (
     <AssetCapsProvider asset={poolReserve}>
       {!mainTxState.success && (
@@ -131,7 +155,10 @@ export const ModalWrapper: React.FC<{
       {children({
         isWrongNetwork,
         nativeBalance: walletBalances[API_ETH_MOCK_ADDRESS.toLowerCase()]?.amount || '0',
-        tokenBalance: walletBalances[poolReserve.underlyingAsset.toLowerCase()]?.amount || '0',
+        tokenBalance:
+          (poolReserve?.underlyingAsset &&
+            walletBalances[poolReserve.underlyingAsset.toLowerCase()]?.amount) ??
+          '0',
         poolReserve,
         symbol,
         underlyingAsset,

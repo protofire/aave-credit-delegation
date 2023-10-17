@@ -16,7 +16,7 @@ export const ManageVaultModal = () => {
       <ModalWrapper
         title={<Trans>Withdraw</Trans>}
         hideTitleSymbol
-        underlyingAsset={args.poolVault?.asset?.address || ''}
+        underlyingAsset={args.poolVault?.aaveAsset?.address || ''}
       >
         {(params) => <ManageVaultModalContent {...args.poolVault} {...params} />}
       </ModalWrapper>

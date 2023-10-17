@@ -98,7 +98,7 @@ export const PoolsList = () => {
     return (
       <ListLoader
         head={head.map((col) => col.title)}
-        title={<Trans>Pools to lend to using your line of credit</Trans>}
+        title={<Trans>Pools to lend to using your line of credit and assets in your wallet</Trans>}
         withTopMargin
       />
     );
@@ -107,7 +107,7 @@ export const PoolsList = () => {
     <ListWrapper
       titleComponent={
         <Typography component="div" variant="h3" sx={{ mr: 4 }}>
-          <Trans>Pools to lend to using your line of credit</Trans>
+          <Trans>Pools to lend to using your line of credit and assets in your wallet</Trans>
         </Typography>
       }
       localStorageName="delegateAssetsTableCollapse"

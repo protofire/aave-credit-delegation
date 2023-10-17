@@ -8,6 +8,7 @@ import { useRootStore } from 'src/store/root';
 
 import VAULT_ABI from './abi/CreditDelegationVault.json';
 import FACTORY_ABI from './abi/CreditDelegationVaultFactory.json';
+import ATOMICA_POOL_ABI from './abi/RiskPool.json';
 import STABLE_DEBT_TOKEN_ABI from './abi/StabeDebtTokenABI.json';
 import { client } from './apollo';
 import {
@@ -57,6 +58,10 @@ export interface CreditDelgationData {
     amount: string;
     vaultAddress: string;
   }) => Promise<PopulatedTransaction>;
+  generateLendDirectlyToPool: (args: {
+    atomicaPool: string;
+    amount: string;
+  }) => Promise<PopulatedTransaction>;
   refetchLoans: (blockNumber?: number) => Promise<void>;
   refetchAll: (blockNumber?: number) => Promise<void>;
 }
@@ -86,6 +91,9 @@ export const CreditDelegationContext = createContext({
     throw new Error('Method not implemented');
   },
   generateBorrowWithSig: () => {
+    throw new Error('Method not implemented');
+  },
+  generateLendDirectlyToPool: () => {
     throw new Error('Method not implemented');
   },
   refetchLoans: () => Promise.reject(),
@@ -298,6 +306,28 @@ const CreditDelegationDataProvider = ({
     [account, generateDelegationSignatureRequest, getUserDebtTokenNonce, pools, signTxData]
   );
 
+  const generateLendDirectlyToPool = useCallback(
+    async ({ atomicaPool, amount }: { atomicaPool: string; amount: string }) => {
+      const pool = pools.find((pool) => pool.id.toLowerCase() === atomicaPool.toLowerCase());
+      if (pool && account) {
+        const jsonInterface = new Interface(ATOMICA_POOL_ABI);
+
+        const txData = jsonInterface.encodeFunctionData('deposit', [amount]);
+
+        const lendToPoolTx: PopulatedTransaction = {
+          data: txData,
+          to: pool.id,
+          from: account,
+        };
+
+        return lendToPoolTx;
+      }
+
+      throw new Error('Pool not found');
+    },
+    [account, pools]
+  );
+
   return (
     <CreditDelegationContext.Provider
       value={useMemo(
@@ -324,6 +354,7 @@ const CreditDelegationDataProvider = ({
           refetchLoans,
           refetchAll,
           generateBorrowWithSig,
+          generateLendDirectlyToPool,
         }),
         [
           activeTab,
@@ -333,6 +364,7 @@ const CreditDelegationDataProvider = ({
           fetchBorrowAllowance,
           generateBorrowWithSig,
           generateDeployVault,
+          generateLendDirectlyToPool,
           lendingCapacity,
           lendingPositions,
           lent,

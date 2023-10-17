@@ -2,7 +2,9 @@ import { Trans } from '@lingui/macro';
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackOutlined';
 import { Box, Button, Skeleton, SvgIcon, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { useRouter } from 'next/router';
+import { useMemo } from 'react';
 import { getMarketInfoById, MarketLogo } from 'src/components/MarketSwitcher';
+import { TokenIcon } from 'src/components/primitives/TokenIcon';
 import { useProtocolDataContext } from 'src/hooks/useProtocolDataContext';
 import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
 
@@ -12,6 +14,7 @@ import {
   ComputedReserveData,
   useAppDataContext,
 } from '../../hooks/app-data-provider/useAppDataProvider';
+import { useTokensData } from '../credit-delegation/hooks/useTokensData';
 // import { useCreditDelegationContext } from '../credit-delegation/CreditDelegationContext';
 import { AddTokenDropdown } from './AddTokenDropdown';
 import { TokenLinkDropdown } from './TokenLinkDropdown';
@@ -33,13 +36,22 @@ export const ReserveTopDetails = ({ underlyingAsset }: ReserveTopDetailsProps) =
   const theme = useTheme();
   const downToSM = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const poolReserve = reserves.find(
-    (reserve) => reserve.underlyingAsset === underlyingAsset
-  ) as ComputedReserveData;
+  const poolReserve = reserves.find((reserve) => reserve.underlyingAsset === underlyingAsset) as
+    | ComputedReserveData
+    | undefined;
 
-  const iconSymbol = poolReserve.symbol === 'GHST' ? 'gho' : poolReserve.iconSymbol;
-  const name = poolReserve.symbol === 'GHST' ? 'Gho token' : poolReserve.name;
-  const symbol = poolReserve.symbol === 'GHST' ? 'GHO' : poolReserve.symbol;
+  const { data: assets } = useTokensData(useMemo(() => [underlyingAsset], [underlyingAsset]));
+
+  const iconSymbol =
+    poolReserve?.symbol === 'GHST'
+      ? 'gho'
+      : poolReserve?.iconSymbol ?? assets[0]?.symbol ?? 'default';
+  const name =
+    poolReserve?.symbol === 'GHST'
+      ? 'Gho token'
+      : poolReserve?.name ?? assets[0]?.name ?? 'default';
+  const symbol =
+    poolReserve?.symbol === 'GHST' ? 'GHO' : poolReserve?.symbol ?? assets[0]?.symbol ?? 'default';
 
   const valueTypographyVariant = downToSM ? 'main16' : 'main21';
 
@@ -49,12 +61,7 @@ export const ReserveTopDetails = ({ underlyingAsset }: ReserveTopDetailsProps) =
         {loading ? (
           <Skeleton variant="circular" width={40} height={40} sx={{ background: '#383D51' }} />
         ) : (
-          <img
-            src={`/icons/tokens/${iconSymbol.toLowerCase()}.svg`}
-            width="40px"
-            height="40px"
-            alt=""
-          />
+          <TokenIcon symbol={iconSymbol} sx={{ width: '40px', height: '40px' }} />
         )}
       </Box>
     );
@@ -106,19 +113,6 @@ export const ReserveTopDetails = ({ underlyingAsset }: ReserveTopDetailsProps) =
               <Typography variant="subheader1" sx={{ color: 'common.white' }}>
                 {market.marketTitle} <Trans>Market</Trans>
               </Typography>
-              {market.v3 && (
-                <Box
-                  sx={{
-                    color: '#fff',
-                    px: 2,
-                    mx: 2,
-                    borderRadius: '12px',
-                    background: (theme) => theme.palette.gradients.aaveGradient,
-                  }}
-                >
-                  <Typography variant="subheader2">Version 3</Typography>
-                </Box>
-              )}
             </Box>
           </Box>
 
@@ -137,10 +131,19 @@ export const ReserveTopDetails = ({ underlyingAsset }: ReserveTopDetailsProps) =
                     <Skeleton width={16} height={16} sx={{ ml: 1, background: '#383D51' }} />
                   ) : (
                     <Box sx={{ display: 'flex' }}>
-                      <TokenLinkDropdown poolReserve={poolReserve} downToSM={downToSM} />
+                      <TokenLinkDropdown
+                        downToSM={downToSM}
+                        aTokenAddress={poolReserve?.aTokenAddress}
+                        asset={assets[0]}
+                        borrowingEnabled={poolReserve?.borrowingEnabled}
+                        stableBorrowRateEnabled={poolReserve?.stableBorrowRateEnabled}
+                        stableDebtTokenAddress={poolReserve?.stableDebtTokenAddress}
+                        variableDebtTokenAddress={poolReserve?.variableDebtTokenAddress}
+                      />
                       {connected && (
                         <AddTokenDropdown
-                          poolReserve={poolReserve}
+                          asset={assets[0]}
+                          aTokenAddress={poolReserve?.aTokenAddress}
                           downToSM={downToSM}
                           switchNetwork={switchNetwork}
                           addERC20Token={addERC20Token}
@@ -171,10 +174,19 @@ export const ReserveTopDetails = ({ underlyingAsset }: ReserveTopDetailsProps) =
                 <Skeleton width={16} height={16} sx={{ ml: 1, background: '#383D51' }} />
               ) : (
                 <Box sx={{ display: 'flex' }}>
-                  <TokenLinkDropdown poolReserve={poolReserve} downToSM={downToSM} />
+                  <TokenLinkDropdown
+                    downToSM={downToSM}
+                    aTokenAddress={poolReserve?.aTokenAddress}
+                    asset={assets[0]}
+                    borrowingEnabled={poolReserve?.borrowingEnabled}
+                    stableBorrowRateEnabled={poolReserve?.stableBorrowRateEnabled}
+                    stableDebtTokenAddress={poolReserve?.stableDebtTokenAddress}
+                    variableDebtTokenAddress={poolReserve?.variableDebtTokenAddress}
+                  />
                   {connected && (
                     <AddTokenDropdown
-                      poolReserve={poolReserve}
+                      asset={assets[0]}
+                      aTokenAddress={poolReserve?.aTokenAddress}
                       downToSM={downToSM}
                       switchNetwork={switchNetwork}
                       addERC20Token={addERC20Token}
