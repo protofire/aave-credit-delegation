@@ -1,5 +1,6 @@
 import { Box, Typography } from '@mui/material';
 import { ReactNode } from 'react';
+import { HintIcon } from 'src/modules/credit-delegation/lists/HintIcon';
 
 interface ListHeaderTitleProps {
   sortName?: string;
@@ -10,6 +11,7 @@ interface ListHeaderTitleProps {
   onClick?: () => void;
   children: ReactNode;
   title?: string;
+  hasHint?: boolean;
 }
 
 export const ListHeaderTitle = ({
@@ -21,6 +23,7 @@ export const ListHeaderTitle = ({
   onClick,
   children,
   title,
+  hasHint,
 }: ListHeaderTitleProps) => {
   const handleSorting = (name: string) => {
     setSortDesc && setSortDesc(false);
@@ -57,6 +60,8 @@ export const ListHeaderTitle = ({
       >
         {children}
       </Typography>
+
+      {hasHint && <HintIcon key={sortKey} hintId={title || ''} />}
 
       {!!sortKey && (
         <Box sx={{ display: 'inline-flex', flexDirection: 'column', ml: 1 }}>

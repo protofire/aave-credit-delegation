@@ -27,26 +27,31 @@ const head = [
     title: <Trans>Requested Amount</Trans>,
     sortKey: 'requestedAmountUsd',
     tooltip: 'Requested Amount',
+    hasHint: true,
   },
   {
     title: <Trans>Approved Amount</Trans>,
     sortKey: 'amountUsd',
     tooltip: 'Approved Amount',
+    hasHint: true,
   },
   {
     title: <Trans>Balance of Pre-paid Promotional Budget</Trans>,
     sortKey: 'topUpUsd',
     tooltip: 'Balance of Pre-paid Promotional Budget',
+    hasHint: true,
   },
   {
     title: <Trans>Max APR</Trans>,
     sortKey: 'maxApr',
     tooltip: 'Max APR',
+    hasHint: true,
   },
   {
     title: <Trans>Actual APR</Trans>,
     sortKey: 'apr',
     tooltip: 'Actual APR',
+    hasHint: true,
   },
 ];
 
@@ -81,6 +86,7 @@ const Header: React.FC<HeaderProps> = ({
             setSortDesc={setSortDesc}
             sortKey={col.sortKey}
             title={col.tooltip}
+            hasHint={col.hasHint}
           >
             {col.title}
           </ListHeaderTitle>

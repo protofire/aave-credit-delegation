@@ -27,10 +27,14 @@ const head = [
   {
     title: <Trans>Secured By</Trans>,
     sortKey: 'securedBy',
+    tooltip: 'Secured By',
+    hasHint: true,
   },
   {
     title: <Trans>My Lending Capacity</Trans>,
     sortKey: 'lendingCapacity',
+    tooltip: 'My Lending Capacity',
+    hasHint: true,
   },
 ];
 
@@ -62,6 +66,8 @@ export const AssetsToLendList = () => {
               setSortName={setSortName}
               setSortDesc={setSortDesc}
               sortKey={col.sortKey}
+              title={col.tooltip}
+              hasHint={col.hasHint}
             >
               {col.title}
             </ListHeaderTitle>

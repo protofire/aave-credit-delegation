@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2023-09-27 16:17-0300\n"
+"POT-Creation-Date: 2023-10-18 09:31-0300\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -326,17 +326,9 @@ msgstr "Available rewards"
 msgid "Available to borrow"
 msgstr "Available to borrow"
 
-#: src/modules/reserve-overview/ReserveActions.tsx
-msgid "Available to lend"
-msgstr "Available to lend"
-
 #: src/components/caps/CapsHint.tsx
 msgid "Available to supply"
 msgstr "Available to supply"
-
-#: src/modules/reserve-overview/ReserveActions.tsx
-msgid "Available to withdraw"
-msgstr "Available to withdraw"
 
 #: pages/404.page.tsx
 msgid "Back to Dashboard"
@@ -1149,16 +1141,13 @@ msgid "My Asset Balance"
 msgstr "My Asset Balance"
 
 #: src/modules/credit-delegation/lists/AssetsToLend/AssetsToLendList.tsx
+#: src/modules/credit-delegation/lists/PoolsList/PoolsList.tsx
 msgid "My Lending Capacity"
 msgstr "My Lending Capacity"
 
 #: src/modules/credit-delegation/modals/WithdrawPool/ManageVaultModalContent.tsx
 msgid "My Pool Balance"
 msgstr "My Pool Balance"
-
-#: src/modules/credit-delegation/lists/PoolsList/PoolsList.tsx
-msgid "My lending Capacity"
-msgstr "My lending Capacity"
 
 #: src/modules/credit-delegation/lists/AllMarketsList/AllMarketsList.tsx
 #: src/modules/credit-delegation/lists/MarketsList/MarketsList.tsx
@@ -2545,6 +2534,7 @@ msgstr "withdrew"
 #: src/components/transactions/StakeCooldown/StakeCooldownModalContent.tsx
 #: src/components/transactions/StakeCooldown/StakeCooldownModalContent.tsx
 #: src/components/transactions/TxActionsWrapper.tsx
+#: src/modules/credit-delegation/lists/HintIcon.tsx
 #: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationActions.tsx
 #: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationActions.tsx
 #: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationModalContent.tsx

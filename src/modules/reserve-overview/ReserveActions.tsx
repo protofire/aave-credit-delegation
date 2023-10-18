@@ -28,19 +28,15 @@ import { useWalletBalances } from 'src/hooks/app-data-provider/useWalletBalances
 import { useModalContext } from 'src/hooks/useModal';
 import { usePermissions } from 'src/hooks/usePermissions';
 import { useProtocolDataContext } from 'src/hooks/useProtocolDataContext';
-// import { useReserveActionState } from 'src/hooks/useReserveActionState';
 import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
-// import { useRootStore } from 'src/store/root';
 import { getMaxAmountAvailableToBorrow } from 'src/utils/getMaxAmountAvailableToBorrow';
-// import { getMaxAmountAvailableToSupply } from 'src/utils/getMaxAmountAvailableToSupply';
 import { amountToUsd } from 'src/utils/utils';
 
-import { CapType } from '../../components/caps/helper';
-import { AvailableTooltip } from '../../components/infoTooltips/AvailableTooltip';
 import { useCreditDelegationContext } from '../credit-delegation/CreditDelegationContext';
 import { useTickingReward } from '../credit-delegation/hooks/useTickingReward';
 import { useTokensData } from '../credit-delegation/hooks/useTokensData';
 import { useWalletBalance } from '../credit-delegation/hooks/useWalletBalance';
+import { HintIcon } from '../credit-delegation/lists/HintIcon';
 import { CreditDelegationModal } from '../credit-delegation/modals/CreditDelegation/CreditDelegationModal';
 import { ManageVaultModal } from '../credit-delegation/modals/WithdrawPool/ManageVaultModal';
 import { AtomicaDelegationPool } from '../credit-delegation/types';
@@ -341,10 +337,15 @@ interface ActionProps {
 const SupplyAction = ({ value, usdValue, symbol, disable, onActionClicked }: ActionProps) => {
   return (
     <Stack>
-      <AvailableTooltip
+      {/* <AvailableTooltip
         variant="h3"
         text={<Trans>Available to lend</Trans>}
         capType={CapType.supplyCap}
+      /> */}
+      <HintIcon
+        key="availableLend"
+        hintId="Available to lend"
+        text={<Typography variant="h3">Available to lend</Typography>}
       />
       <Stack
         sx={{ height: '44px' }}
@@ -386,10 +387,10 @@ const WithdrawAction = ({
 }: ActionProps) => {
   return (
     <Stack>
-      <AvailableTooltip
-        variant="h3"
-        text={<Trans>Available to withdraw</Trans>}
-        capType={CapType.borrowCap}
+      <HintIcon
+        key="availableWithdraw"
+        hintId="Available to withdraw"
+        text={<Typography variant="h3">Available to withdraw</Typography>}
       />
       <Stack
         marginTop={5}
@@ -400,15 +401,18 @@ const WithdrawAction = ({
       >
         <Stack direction="column" justifyContent="space-evenly" alignItems="flex-start">
           <Box>
-            <Trans>Remaining initial deposit</Trans>
+            <HintIcon
+              hintId="Remaining initial deposit"
+              text={<Trans>Remaining initial deposit</Trans>}
+            />
           </Box>
 
           <Box>
-            <Trans>Interest</Trans>
+            <HintIcon hintId="Interest" text={<Trans>Interest</Trans>} />
           </Box>
 
           <Box>
-            <Trans>Rewards</Trans>
+            <HintIcon hintId="Rewards" text={<Trans>Rewards</Trans>} />
           </Box>
         </Stack>
 
@@ -509,6 +513,8 @@ interface DepositedAmountProps {
 const DepositedAmount = ({ value, symbol, usdValue, type }: DepositedAmountProps) => {
   const theme = useTheme();
 
+  const text = type === 'balance' ? 'My Asset Balance' : 'Initial deposited amount';
+
   return (
     <Stack direction="row" gap={3}>
       <Box
@@ -526,9 +532,12 @@ const DepositedAmount = ({ value, symbol, usdValue, type }: DepositedAmountProps
         <ChartPieIcon sx={{ stroke: `${theme.palette.text.secondary}` }} />
       </Box>
       <Box>
-        <Typography variant="description" color="text.secondary">
-          {type === 'balance' ? 'My asset balance' : 'Initial deposited amount'}
-        </Typography>
+        <Box display="flex" alignItems="center">
+          <Typography variant="description" color="text.secondary">
+            {text}
+          </Typography>
+          <HintIcon key={value} hintId={text} />
+        </Box>
         {type === 'deposit' && <ValueWithSymbol value={value || '0'} symbol={symbol} />}
         <FormattedNumber
           value={usdValue || '0.0'}

@@ -19,9 +19,19 @@ const head = [
   { title: <Trans key="loan-id">Loan ID</Trans>, sortKey: 'loanid' },
   { title: <Trans key="date">Date</Trans>, sortKey: 'date' },
   { title: <Trans key="apy">APY</Trans>, sortKey: 'apy' },
-  { title: <Trans key="borrowed">Borrower</Trans>, sortKey: 'borrowed' },
-  { title: <Trans key="principal">Principal</Trans>, sortKey: 'principal' },
-  { title: <Trans key="interest">Interest</Trans>, sortKey: 'interest' },
+  { title: <Trans key="borrower">Borrower</Trans>, sortKey: 'borrower' },
+  {
+    title: <Trans key="principal">Principal</Trans>,
+    sortKey: 'principal',
+    tooltip: 'Principal',
+    hasHint: true,
+  },
+  {
+    title: <Trans key="interest">Interest</Trans>,
+    sortKey: 'interest',
+    tooltip: 'Interest',
+    hasHint: true,
+  },
 ];
 
 interface HeaderProps {

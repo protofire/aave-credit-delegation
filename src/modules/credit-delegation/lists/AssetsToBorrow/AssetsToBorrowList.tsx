@@ -36,6 +36,8 @@ const head = [
   {
     title: <Trans>Available</Trans>,
     sortKey: 'availableBorrows',
+    tooltip: 'Available',
+    hasHint: true,
   },
 
   {
@@ -134,6 +136,8 @@ export const AssetsToBorrowList = () => {
               setSortName={setSortName}
               setSortDesc={setSortDesc}
               sortKey={col.sortKey}
+              title={col.tooltip}
+              hasHint={col.hasHint}
             >
               {col.title}
             </ListHeaderTitle>

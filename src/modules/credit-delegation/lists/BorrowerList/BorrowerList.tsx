@@ -16,10 +16,19 @@ import { ListLoader } from '../ListLoader';
 import { BorrowerListItem } from './BorrowerListItem';
 
 const head = [
-  { title: <Trans key="product">Product</Trans>, sortKey: 'product' },
+  {
+    title: <Trans key="product">Product</Trans>,
+    sortKey: 'product',
+    hasHint: true,
+    tooltip: 'Product',
+  },
   { title: <Trans key="market">Borrower</Trans>, sortKey: 'market' },
-  // { title: <Trans key="market">Details</Trans>, sortKey: 'details' },
-  { title: <Trans key="market">Credit line size</Trans>, sortKey: 'creditLine' },
+  {
+    title: <Trans key="market">Credit line size</Trans>,
+    sortKey: 'creditLine',
+    tooltip: 'Credit line size',
+    hasHint: true,
+  },
 ];
 
 interface HeaderProps {
@@ -51,6 +60,8 @@ const Header: React.FC<HeaderProps> = ({
             setSortName={setSortName}
             setSortDesc={setSortDesc}
             sortKey={col.sortKey}
+            title={col.tooltip}
+            hasHint={col.hasHint}
           >
             {col.title}
           </ListHeaderTitle>

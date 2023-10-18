@@ -20,10 +20,30 @@ import { LendingPositionsListItem } from './LendingPositionsListItem';
 const head = [
   { title: <Trans key="assets">Assets</Trans>, sortKey: 'symbol' },
   { title: <Trans key="title">Pool Description</Trans>, sortKey: 'title' },
-  { title: <Trans key="operator">Pool Operator</Trans>, sortKey: 'owner' },
-  { title: <Trans key="borrowers">Borrowers</Trans>, sortKey: 'borrowers' },
-  { title: <Trans key="balance">My Asset Balance</Trans>, sortKey: 'balance' },
-  { title: <Trans key="rewards">Unclaimed Earnings</Trans>, sortKey: 'rewards' },
+  {
+    title: <Trans>Pool Operator</Trans>,
+    sortKey: 'operator',
+    tooltip: 'Pool Operator',
+    hasHint: true,
+  },
+  {
+    title: <Trans key="borrowers">Borrowers</Trans>,
+    sortKey: 'borrowers',
+    tooltip: 'Borrowers',
+    hasHint: true,
+  },
+  {
+    title: <Trans>My Asset Balance</Trans>,
+    sortKey: 'balance',
+    tooltip: 'My Asset Balance',
+    hasHint: true,
+  },
+  {
+    title: <Trans>Unclaimed Earnings</Trans>,
+    sortKey: 'earnings',
+    tooltip: 'Unclaimed Earnings',
+    hasHint: true,
+  },
   { title: <Trans key="APY">APY</Trans>, sortKey: 'supplyAPY' },
 ];
 
@@ -53,14 +73,14 @@ const Header: React.FC<HeaderProps> = ({
             col.sortKey === 'symbol'
               ? CREDIT_DELEGATION_LIST_COLUMN_WIDTHS.ASSET
               : col.sortKey === 'title'
-              ? 280
+              ? CREDIT_DELEGATION_LIST_COLUMN_WIDTHS.TITLE
               : undefined
           }
           minWidth={
             col.sortKey === 'symbol'
               ? CREDIT_DELEGATION_LIST_COLUMN_WIDTHS.ASSET
               : col.sortKey === 'title'
-              ? 280
+              ? CREDIT_DELEGATION_LIST_COLUMN_WIDTHS.TITLE
               : undefined
           }
           key={col.sortKey}
@@ -71,6 +91,8 @@ const Header: React.FC<HeaderProps> = ({
             setSortName={setSortName}
             setSortDesc={setSortDesc}
             sortKey={col.sortKey}
+            title={col.tooltip}
+            hasHint={col.hasHint}
           >
             {col.title}
           </ListHeaderTitle>
