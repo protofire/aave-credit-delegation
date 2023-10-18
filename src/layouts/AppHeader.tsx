@@ -13,11 +13,11 @@ import Box from '@mui/material/Box';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { ContentWithTooltip } from 'src/components/ContentWithTooltip';
+import { PoweredByAAVE } from 'src/modules/credit-delegation/PoweredByAAVE';
+import { uiConfig } from 'src/uiConfig';
 import { ENABLE_TESTNET } from 'src/utils/marketsAndNetworksConfig';
 
 import { Link } from '../components/primitives/Link';
-import { uiConfig } from '../uiConfig';
-import { NavItems } from './components/NavItems';
 import { SettingsMenu } from './SettingsMenu';
 import WalletWidget from './WalletWidget';
 
@@ -104,38 +104,18 @@ export function AppHeader() {
           boxShadow: 'inset 0px -1px 0px rgba(242, 243, 247, 0.16)',
         })}
       >
-        <Box
+        <img src={uiConfig.appLogo} alt="Protofire Credit" height={36} />
+        <Typography
           sx={{
-            display: 'flex',
-            background: (theme) => theme.palette.gradients.aaveGradient,
-            backgroundClip: 'text',
-            textFillColor: 'transparent',
+            fontSize: '16px',
+            fontWeight: 500,
+            lineHeight: '24px',
+            ml: 2,
+            color: '#FFE500',
           }}
         >
-          <Typography
-            sx={{
-              fontSize: '14px',
-              fontWeight: 400,
-              lineHeight: '20px',
-              mr: 2,
-            }}
-          >
-            Powered by
-          </Typography>
-          <Link
-            onClick={() => setMobileMenuOpen(false)}
-            href="https://app.aave.com/"
-            aria-label="Go to homepage"
-            sx={{
-              lineHeight: 0,
-              mr: 3,
-              transition: '0.3s ease all',
-              '&:hover': { opacity: 0.7 },
-            }}
-          >
-            <img src={uiConfig.appLogo} alt="An SVG of an eye" height={20} />
-          </Link>
-        </Box>
+          Protofire Credit
+        </Typography>
         <Box sx={{ mr: sm ? 1 : 3 }}>
           {ENABLE_TESTNET && (
             <ContentWithTooltip tooltipContent={testnetTooltip} offset={[0, -4]} withoutHover>
@@ -157,11 +137,9 @@ export function AppHeader() {
           )}
         </Box>
 
-        <Box sx={{ display: { xs: 'none', md: 'block' } }}>
-          <NavItems />
-        </Box>
-
         <Box sx={{ flexGrow: 1 }} />
+
+        <PoweredByAAVE />
 
         {!mobileMenuOpen && (
           <WalletWidget

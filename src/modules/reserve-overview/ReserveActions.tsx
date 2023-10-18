@@ -29,16 +29,13 @@ import { useModalContext } from 'src/hooks/useModal';
 import { usePermissions } from 'src/hooks/usePermissions';
 import { useProtocolDataContext } from 'src/hooks/useProtocolDataContext';
 import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
-import { useRootStore } from 'src/store/root';
 import { getMaxAmountAvailableToBorrow } from 'src/utils/getMaxAmountAvailableToBorrow';
-import { getMaxAmountAvailableToSupply } from 'src/utils/getMaxAmountAvailableToSupply';
 import { amountToUsd } from 'src/utils/utils';
 
-// import { CapType } from '../../components/caps/helper';
-// import { AvailableTooltip } from '../../components/infoTooltips/AvailableTooltip';
-import { useReserveActionState } from '../../hooks/useReserveActionState';
 import { useCreditDelegationContext } from '../credit-delegation/CreditDelegationContext';
 import { useTickingReward } from '../credit-delegation/hooks/useTickingReward';
+import { useTokensData } from '../credit-delegation/hooks/useTokensData';
+import { useWalletBalance } from '../credit-delegation/hooks/useWalletBalance';
 import { HintIcon } from '../credit-delegation/lists/HintIcon';
 import { CreditDelegationModal } from '../credit-delegation/modals/CreditDelegation/CreditDelegationModal';
 import { ManageVaultModal } from '../credit-delegation/modals/WithdrawPool/ManageVaultModal';
@@ -46,12 +43,15 @@ import { AtomicaDelegationPool } from '../credit-delegation/types';
 import { calcAccruedInterest } from '../credit-delegation/utils';
 
 interface ReserveActionsProps {
-  reserve: ComputedReserveData;
+  reserve?: ComputedReserveData;
   poolId: string;
+  underlyingAsset: string;
 }
 
-export const ReserveActions = ({ reserve, poolId }: ReserveActionsProps) => {
-  const [selectedAsset, setSelectedAsset] = useState<string>(reserve.symbol);
+export const ReserveActions = ({ reserve, poolId, underlyingAsset }: ReserveActionsProps) => {
+  const { data: assets } = useTokensData(useMemo(() => [underlyingAsset], [underlyingAsset]));
+
+  const [selectedAsset, setSelectedAsset] = useState<string>(assets[0]?.symbol);
 
   const { currentAccount, loading: loadingWeb3Context } = useWeb3Context();
   const { isPermissionsLoading } = usePermissions();
@@ -59,12 +59,12 @@ export const ReserveActions = ({ reserve, poolId }: ReserveActionsProps) => {
   const { currentNetworkConfig } = useProtocolDataContext();
   const { user, loading: loadingReserves, marketReferencePriceInUsd } = useAppDataContext();
   const { walletBalances, loading: loadingWalletBalance } = useWalletBalances();
-  const {
-    poolComputed: { minRemainingBaseTokenBalance },
-  } = useRootStore();
+  // const {
+  //   poolComputed: { minRemainingBaseTokenBalance },
+  // } = useRootStore();
   const { pools, loading: loadingPools, loansLoading, loans } = useCreditDelegationContext();
   const { getExternalReserve } = useExternalDataProvider();
-  const [poolReserve, setPoolReserve] = React.useState<ComputedReserveData>(reserve);
+  const [poolReserve, setPoolReserve] = React.useState<ComputedReserveData | undefined>(reserve);
 
   const pool = pools.find((pool) => pool.id === poolId) as AtomicaDelegationPool;
 
@@ -75,13 +75,15 @@ export const ReserveActions = ({ reserve, poolId }: ReserveActionsProps) => {
       (async () => {
         const poolReserve = await getPoolReserve();
         setPoolReserve(poolReserve);
-        setSelectedAsset(poolReserve.symbol);
+        if (poolReserve) {
+          setSelectedAsset(poolReserve.symbol);
+        }
       })();
     }
   }, []);
 
   const getPoolReserve = async () => {
-    if (reserve.symbol === 'GHST') {
+    if (assets[0]?.symbol === 'GHST') {
       return getExternalReserve('0x9f86ba35a016ace27bd4c37e42a1940a5b2508ef');
     }
     return reserve;
@@ -90,32 +92,55 @@ export const ReserveActions = ({ reserve, poolId }: ReserveActionsProps) => {
   const { balances } = pool || {};
 
   const { baseAssetSymbol } = currentNetworkConfig;
-  let balance = walletBalances[poolReserve.underlyingAsset];
-  if (poolReserve.isWrappedBaseAsset && selectedAsset === baseAssetSymbol) {
+
+  let balance = useWalletBalance(assets[0]?.address);
+
+  if (poolReserve?.isWrappedBaseAsset && selectedAsset === baseAssetSymbol) {
     balance = walletBalances[API_ETH_MOCK_ADDRESS.toLowerCase()];
   }
 
-  const maxAmountToBorrow = getMaxAmountAvailableToBorrow(reserve, user, InterestRate.Variable);
+  const maxAmountToBorrow = reserve
+    ? getMaxAmountAvailableToBorrow(reserve, user, InterestRate.Variable)
+    : balance.amount ?? '0';
 
-  const maxAmountToBorrowUsd = amountToUsd(
-    maxAmountToBorrow,
-    poolReserve.formattedPriceInMarketReferenceCurrency,
-    marketReferencePriceInUsd
-  ).toString();
+  const maxAmountToBorrowUsd =
+    reserve && poolReserve
+      ? amountToUsd(
+          maxAmountToBorrow ?? '0',
+          poolReserve?.formattedPriceInMarketReferenceCurrency,
+          marketReferencePriceInUsd
+        ).toString()
+      : balance.amountUSD ?? '0';
 
-  const maxAmountToSupply = getMaxAmountAvailableToSupply(
-    balance?.amount || '0',
-    reserve,
-    poolReserve.underlyingAsset,
-    minRemainingBaseTokenBalance
-  );
+  // const maxAmountToSupply =
+  //   reserve && poolReserve
+  //     ? getMaxAmountAvailableToSupply(
+  //         balance?.amount || '0',
+  //         reserve,
+  //         poolReserve.underlyingAsset,
+  //         minRemainingBaseTokenBalance
+  //       )
+  //     : balance.amount ?? '0';
+
+  // const { disableSupplyButton, disableBorrowButton } = useReserveActionState({
+  //   balance: balance?.amount || '0',
+  //   maxAmountToSupply: maxAmountToSupply.toString(),
+  //   maxAmountToBorrow: maxAmountToBorrow.toString(),
+  //   reserve,
+  // });
+
+  const priceInUSD =
+    poolReserve?.priceInUSD ??
+    BigNumber(balance.amountUSD ?? '0')
+      .div(balance.amount ?? '1')
+      .toString();
 
   const normalizedAvailableWithdrawUSD = valueToBigNumber(
     pool?.balances?.capital ?? 0
-  ).multipliedBy(poolReserve.priceInUSD);
+  ).multipliedBy(priceInUSD);
 
   const interestBalanceUSD = valueToBigNumber(pool?.balances?.totalInterest ?? 0).multipliedBy(
-    poolReserve.priceInUSD
+    priceInUSD
   );
 
   const nowTimestamp = Math.floor(Date.now() / 1000);
@@ -159,13 +184,6 @@ export const ReserveActions = ({ reserve, poolId }: ReserveActionsProps) => {
     [interestRemainingUsd, requiredRepayAmountUsd, unclaimedEarnings]
   );
 
-  const { disableSupplyButton, disableBorrowButton } = useReserveActionState({
-    balance: balance?.amount || '0',
-    maxAmountToSupply: maxAmountToSupply.toString(),
-    maxAmountToBorrow: maxAmountToBorrow.toString(),
-    reserve,
-  });
-
   if (!currentAccount && !isPermissionsLoading) {
     return <ConnectWallet loading={loadingWeb3Context} />;
   }
@@ -177,7 +195,7 @@ export const ReserveActions = ({ reserve, poolId }: ReserveActionsProps) => {
   return (
     <>
       <PaperWrapper>
-        {poolReserve.isWrappedBaseAsset && (
+        {poolReserve && poolReserve?.isWrappedBaseAsset && (
           <Box>
             <WrappedBaseAssetSelector
               assetSymbol={poolReserve.symbol}
@@ -193,13 +211,13 @@ export const ReserveActions = ({ reserve, poolId }: ReserveActionsProps) => {
             value={pool?.balances?.capital || '0'}
             // usdValue={normalizedDepositedBalanceUSD.toString(10)}
             usdValue={normalizedAvailableWithdrawUSD.toString(10)}
-            symbol={pool?.asset?.symbol === 'GHST' ? 'GHO' : pool?.asset?.symbol || ''}
+            symbol={assets[0]?.symbol === 'GHST' ? 'GHO' : assets[0]?.symbol || ''}
             type="deposit"
           />
           <DepositedAmount
             value={myBalance.toFixed(2)}
             usdValue={myBalance.toFixed(2)}
-            symbol={pool?.asset?.symbol || ''}
+            symbol={assets[0]?.symbol || ''}
             type="balance"
           />
         </Stack>
@@ -208,18 +226,18 @@ export const ReserveActions = ({ reserve, poolId }: ReserveActionsProps) => {
           <Divider sx={{ my: 6 }} />
           <Stack gap={3}>
             <SupplyAction
-              value={pool?.availableBalance.toString()}
-              usdValue={pool?.availableBalanceUsd.toString()}
+              value={reserve ? pool?.availableBalance.toString() : balance.amount ?? '0'}
+              usdValue={reserve ? pool?.availableBalanceUsd.toString() : balance.amountUSD ?? '0'}
               symbol={selectedAsset}
-              disable={disableSupplyButton}
+              disable={false}
               onActionClicked={() => openCreditDelegation(poolId, pool?.underlyingAsset)}
             />
 
-            <BorrowAction
+            <WithdrawAction
               value={maxAmountToBorrow.toString()}
               usdValue={maxAmountToBorrowUsd}
               symbol={selectedAsset}
-              disable={disableBorrowButton}
+              disable={false}
               onActionClicked={() => openManageVault(pool)}
               capitalUsd={normalizedAvailableWithdrawUSD.toString(10)}
               interestBalanceUSD={interestBalanceUSD.toString(10)}
@@ -360,7 +378,7 @@ const SupplyAction = ({ value, usdValue, symbol, disable, onActionClicked }: Act
   );
 };
 
-const BorrowAction = ({
+const WithdrawAction = ({
   disable,
   onActionClicked,
   capitalUsd,

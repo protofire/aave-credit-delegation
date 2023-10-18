@@ -101,7 +101,7 @@ export const usePoolsAndMarkets = () => {
 
       return {
         ...reserve,
-        address: reserve.underlyingAsset,
+        address: reserve?.underlyingAsset,
         reserve,
         totalBorrows: reserve.totalDebt,
         availableBorrows,
@@ -302,12 +302,24 @@ export const usePoolsAndMarkets = () => {
       const userReserve = reserves.find((reserve) => reserve.symbol === pool.capitalTokenSymbol);
 
       const tokenToBorrow = tokensToBorrow.find((token) => {
-        if (token.symbol === 'GHST') {
+        if (pool.capitalTokenSymbol === 'GHST') {
           return GHO_TOKEN;
         }
 
         return token.symbol === pool.capitalTokenSymbol;
-      });
+      }) ?? {
+        symbol: pool.capitalTokenSymbol,
+        decimals: pool.capitalTokenDecimals,
+        address: pool.capitalTokenAddress,
+        iconSymbol: pool.capitalTokenSymbol,
+        name: pool.capitalTokenSymbol,
+        underlyingAsset: pool.capitalTokenAddress,
+        totalBorrows: '0.0',
+        availableBorrows: '0.0',
+        availableBorrowsInUSD: '0.0',
+        stableBorrowRate: 0,
+        variableBorrowRate: 0,
+      };
 
       const poolMetadata = metadata?.find(
         (data) => data.EntityId.toLowerCase() === pool.id.toLowerCase()
@@ -349,8 +361,10 @@ export const usePoolsAndMarkets = () => {
 
       const vaultApprovedCredit = vault?.id ? approvedCredit[vault.id] : undefined;
 
+      const underlyingAsset = userReserve?.underlyingAsset ?? pool.capitalTokenAddress ?? '';
+
       return {
-        asset: tokenToBorrow,
+        aaveAsset: tokenToBorrow,
         id: pool.id,
         symbol: pool.capitalTokenSymbol === 'GHST' ? 'GHO' : pool.capitalTokenSymbol,
         iconSymbol: pool.capitalTokenSymbol === 'GHST' ? 'GHO' : pool.capitalTokenSymbol,
@@ -358,17 +372,12 @@ export const usePoolsAndMarkets = () => {
         operator: pool.operator,
         owner: pool.owner,
         markets: pool.markets,
-        walletBalance:
-          (userReserve?.underlyingAsset && walletBalances[userReserve?.underlyingAsset]?.amount) ??
-          '0.0',
-        walletBalanceUSD:
-          (userReserve?.underlyingAsset &&
-            walletBalances[userReserve?.underlyingAsset]?.amountUSD) ??
-          '0.0',
+        walletBalance: (underlyingAsset && walletBalances[underlyingAsset]?.amount) ?? '0.0',
+        walletBalanceUSD: (underlyingAsset && walletBalances[underlyingAsset]?.amountUSD) ?? '0.0',
         supplyCap: userReserve?.supplyCap ?? '0.0',
         totalLiquidity: userReserve?.totalLiquidity ?? '0.0',
         supplyAPY,
-        underlyingAsset: userReserve?.underlyingAsset ?? '',
+        underlyingAsset,
         isActive: true,
         availableBalance: tokenToBorrow?.availableBorrows ?? '0.0',
         availableBalanceUsd: tokenToBorrow?.availableBorrowsInUSD ?? '0.0',
@@ -501,15 +510,15 @@ export const usePoolsAndMarkets = () => {
 
         const borrowedAmount = normalize(
           chunk.borrowedAmount,
-          pool?.asset?.decimals ?? WEI_DECIMALS
+          pool?.aaveAsset?.decimals ?? WEI_DECIMALS
         );
         const rate = normalize(chunk.rate, WEI_DECIMALS);
         const apr = valueToBigNumber(rate).times(SECONDS_PER_YEAR).toNumber();
         const remainingPrincipal = normalize(
           BigNumber.max(new BigNumber(chunk.borrowedAmount).minus(chunk.repaidAmount)),
-          pool?.asset?.decimals ?? 18
+          pool?.aaveAsset?.decimals ?? 18
         );
-        const repaidAmount = normalize(chunk.repaidAmount, pool?.asset?.decimals ?? 18);
+        const repaidAmount = normalize(chunk.repaidAmount, pool?.aaveAsset?.decimals ?? 18);
 
         const market = markets.find(
           (market) => market.marketId.toLowerCase() === chunk.policy?.marketId.toLowerCase()

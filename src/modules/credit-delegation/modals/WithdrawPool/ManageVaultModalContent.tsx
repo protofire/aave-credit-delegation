@@ -1,4 +1,4 @@
-import { normalize, USD_DECIMALS, valueToBigNumber, WEI_DECIMALS } from '@aave/math-utils';
+import { normalize, valueToBigNumber, WEI_DECIMALS } from '@aave/math-utils';
 import { Trans } from '@lingui/macro';
 import { Box, Stack, Typography } from '@mui/material';
 import BigNumber from 'bignumber.js';
@@ -16,9 +16,9 @@ import {
   DetailsNumberLineWithSub,
   TxModalDetails,
 } from 'src/components/transactions/FlowCommons/TxModalDetails';
-import { useAppDataContext } from 'src/hooks/app-data-provider/useAppDataProvider';
 import { useModalContext } from 'src/hooks/useModal';
 
+import { usePollPrice } from '../../hooks/usePollPrice';
 import { useRiskPool } from '../../hooks/useRiskPool';
 import { useTickingReward } from '../../hooks/useTickingReward';
 import { useTokensData } from '../../hooks/useTokensData';
@@ -102,25 +102,15 @@ export const ValueWithSymbol = ({ value, symbol }: ValueWithSymbolProps) => {
 };
 
 export const ManageVaultModalContent = memo(
-  ({
-    userReserve,
-    id,
-    poolReserve,
-    isWrongNetwork,
-    balances,
-    rewards,
-  }: ManageVaultModalContentProps) => {
+  ({ id, isWrongNetwork, balances, rewards, underlyingAsset }: ManageVaultModalContentProps) => {
     const { mainTxState: supplyTxState, gasLimit, txError } = useModalContext();
-    const { marketReferencePriceInUsd } = useAppDataContext();
     const { generateWithdrawTx, generateClaimRewardsTx, generateClaimInterestTxs } = useRiskPool();
 
-    const { data: assets } = useTokensData(
-      useMemo(() => [poolReserve.underlyingAsset], [poolReserve.underlyingAsset])
-    );
+    const { data: assets } = useTokensData(useMemo(() => [underlyingAsset], [underlyingAsset]));
+
+    const price = usePollPrice(assets[0]?.symbol);
 
     const { earnings } = rewards || {};
-
-    const { reserve } = userReserve;
 
     const amountRef = useRef<string>();
 
@@ -153,14 +143,15 @@ export const ManageVaultModalContent = memo(
       .minus(receiveAmount || '0')
       .toString();
 
-    const usdValue = valueToBigNumber(receiveAmount).multipliedBy(reserve.priceInUSD);
+    const usdValue = valueToBigNumber(receiveAmount).multipliedBy(price ?? '0');
 
-    const normalizedBalanceUSD = valueToBigNumber(totalAmount).multipliedBy(reserve.priceInUSD);
+    const normalizedBalanceUSD = valueToBigNumber(totalAmount).multipliedBy(price ?? '0');
 
-    const amountAfterRemovedInUsd = new BigNumber(amountAfterRemoved)
-      .multipliedBy(poolReserve.formattedPriceInMarketReferenceCurrency)
-      .multipliedBy(marketReferencePriceInUsd)
-      .shiftedBy(-USD_DECIMALS);
+    // const interestBalanceUSD = valueToBigNumber(balances?.totalInterest ?? '0').multipliedBy(
+    //   reserve.priceInUSD
+    // );
+
+    const amountAfterRemovedInUsd = new BigNumber(amountAfterRemoved).multipliedBy(price ?? '0');
 
     const incentives = useMemo(
       () =>
@@ -176,7 +167,7 @@ export const ManageVaultModalContent = memo(
             decimals: earning.decimals,
           };
         }),
-      [earnedRewards]
+      [balances?.rewardCurrentEarnings, earnedRewards]
     );
 
     const actionProps = {

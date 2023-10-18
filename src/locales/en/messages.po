@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2023-09-27 16:17-0300\n"
+"POT-Creation-Date: 2023-10-18 09:31-0300\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -260,10 +260,6 @@ msgstr "Asset is not borrowable in isolation mode"
 msgid "Asset is not listed"
 msgstr "Asset is not listed"
 
-#: src/modules/reserve-overview/SupplyInfo.tsx
-msgid "Asset supply is limited to a certain amount to reduce protocol exposure to the asset and to help manage risks involved."
-msgstr "Asset supply is limited to a certain amount to reduce protocol exposure to the asset and to help manage risks involved."
-
 #: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
 #: src/modules/credit-delegation/lists/PoolsList/PoolsList.tsx
 #: src/modules/credit-delegation/modals/WithdrawPool/WithdrawList/ListWithdrawModal.tsx
@@ -304,10 +300,6 @@ msgstr "Assets with zero LTV ({assetsBlockingWithdraw}) must be withdrawn or dis
 #: src/modules/dashboard/lists/BorrowAssetsList/BorrowAssetsList.tsx
 msgid "Available"
 msgstr "Available"
-
-#: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationModalContent.tsx
-msgid "Available Aave credit"
-msgstr "Available Aave credit"
 
 #: src/components/transactions/Emode/EmodeModalContent.tsx
 msgid "Available assets"
@@ -990,7 +982,6 @@ msgstr "Language"
 #: src/components/transactions/Warnings/SupplyCapWarning.tsx
 #: src/modules/dashboard/LiquidationRiskParametresModal/LiquidationRiskParametresModal.tsx
 #: src/modules/reserve-overview/BorrowInfo.tsx
-#: src/modules/reserve-overview/SupplyInfo.tsx
 msgid "Learn more"
 msgstr "Learn more"
 
@@ -1374,8 +1365,8 @@ msgstr "Pool addresses provider is not registered"
 
 #: src/modules/credit-delegation/lists/PoolsList/PoolsList.tsx
 #: src/modules/credit-delegation/lists/PoolsList/PoolsList.tsx
-msgid "Pools to lend to using your line of credit"
-msgstr "Pools to lend to using your line of credit"
+msgid "Pools to lend to using your line of credit and assets in your wallet"
+msgstr "Pools to lend to using your line of credit and assets in your wallet"
 
 #: pages/index.page.tsx
 msgid "Portfolio"
@@ -2035,8 +2026,8 @@ msgid "This transaction will modify the credit line."
 msgstr "This transaction will modify the credit line."
 
 #: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationModalContent.tsx
-msgid "This transaction will use AAVE's credit delegation (variable rate) to deposit into the pool <0>({0})</0> and in exchange you will receive pool tokens."
-msgstr "This transaction will use AAVE's credit delegation (variable rate) to deposit into the pool <0>({0})</0> and in exchange you will receive pool tokens."
+msgid "This transaction will {0}deposit into the pool <0>({1})</0> and in exchange you will receive pool tokens."
+msgstr "This transaction will {0}deposit into the pool <0>({1})</0> and in exchange you will receive pool tokens."
 
 #: src/modules/staking/StakingPanel.tsx
 msgid "Time left to be able to withdraw your staked asset."
@@ -2060,8 +2051,8 @@ msgid "To borrow you need to supply any asset to be used as collateral."
 msgstr "To borrow you need to supply any asset to be used as collateral."
 
 #: src/components/infoTooltips/ApprovalTooltip.tsx
-msgid "To continue, you need to grant Aave smart contracts permission to move your funds from your wallet. Depending on the asset and wallet you use, it is done by signing the permission message (gas free), or by submitting an approval transaction (requires gas). <0>Learn more</0>"
-msgstr "To continue, you need to grant Aave smart contracts permission to move your funds from your wallet. Depending on the asset and wallet you use, it is done by signing the permission message (gas free), or by submitting an approval transaction (requires gas). <0>Learn more</0>"
+msgid "To continue, you need to grant our smart contracts permission to move your funds from your wallet. Depending on the asset and wallet you use, it is done by signing the permission message (gas free), or by submitting an approval transaction (requires gas). <0>Learn more</0>"
+msgstr "To continue, you need to grant our smart contracts permission to move your funds from your wallet. Depending on the asset and wallet you use, it is done by signing the permission message (gas free), or by submitting an approval transaction (requires gas). <0>Learn more</0>"
 
 #: src/components/transactions/Emode/EmodeModalContent.tsx
 msgid "To enable E-mode for the {0} category, all borrow positions outside of this category must be closed."
@@ -2228,14 +2219,6 @@ msgstr "Variable debt supply is not zero"
 #: src/components/infoTooltips/VariableAPYTooltip.tsx
 msgid "Variable interest rate will <0>fluctuate</0> based on the market conditions. Recommended for short-term positions."
 msgstr "Variable interest rate will <0>fluctuate</0> based on the market conditions. Recommended for short-term positions."
-
-#: src/components/MarketSwitcher.tsx
-msgid "Version 2"
-msgstr "Version 2"
-
-#: src/components/MarketSwitcher.tsx
-msgid "Version 3"
-msgstr "Version 3"
 
 #: src/modules/reserve-overview/ReserveFactorOverview.tsx
 msgid "View contract"
@@ -2554,6 +2537,7 @@ msgstr "withdrew"
 #: src/modules/credit-delegation/lists/HintIcon.tsx
 #: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationActions.tsx
 #: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationActions.tsx
+#: src/modules/credit-delegation/modals/CreditDelegation/CreditDelegationModalContent.tsx
 #: src/modules/dashboard/DashboardEModeButton.tsx
 #: src/modules/reserve-overview/SupplyInfo.tsx
 #: src/modules/reserve-overview/SupplyInfo.tsx

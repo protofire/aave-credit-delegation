@@ -1,6 +1,5 @@
 import { Trans } from '@lingui/macro';
 import { Box, Paper, Skeleton, Typography } from '@mui/material';
-import { ComputedReserveData } from 'src/hooks/app-data-provider/useAppDataProvider';
 import { useAssetCaps } from 'src/hooks/useAssetCaps';
 import { useProtocolDataContext } from 'src/hooks/useProtocolDataContext';
 import { BROKEN_ASSETS } from 'src/hooks/useReservesHistory';
@@ -11,24 +10,30 @@ import { PanelRow } from './ReservePanels';
 import { SupplyInfo } from './SupplyInfo';
 
 type ReserveConfigurationProps = {
-  reserve: ComputedReserveData;
   poolId: string;
+  underlyingAsset: string;
+  reserveSupplyCap?: string;
 };
 
-export const ReserveConfiguration: React.FC<ReserveConfigurationProps> = ({ reserve, poolId }) => {
+export const ReserveConfiguration: React.FC<ReserveConfigurationProps> = ({
+  underlyingAsset,
+  reserveSupplyCap,
+  poolId,
+}) => {
   const { currentNetworkConfig, currentMarketData } = useProtocolDataContext();
-  const reserveId =
-    reserve.underlyingAsset + currentMarketData.addresses.LENDING_POOL_ADDRESS_PROVIDER;
+  const reserveId = underlyingAsset + currentMarketData.addresses.LENDING_POOL_ADDRESS_PROVIDER;
   const renderCharts =
     !!currentNetworkConfig.ratesHistoryApiUrl &&
     !currentMarketData.disableCharts &&
     !BROKEN_ASSETS.includes(reserveId);
   const { supplyCap, debtCeiling } = useAssetCaps();
-  const showSupplyCapStatus: boolean = reserve.supplyCap !== '0';
+  const showSupplyCapStatus: boolean = reserveSupplyCap !== '0';
 
   const { pools, loading: loadingPools } = useCreditDelegationContext();
 
-  const pool = pools.find((pool) => pool.id === poolId) as AtomicaDelegationPool;
+  const pool = pools.find(
+    (pool) => pool.id.toLowerCase() === poolId.toLowerCase()
+  ) as AtomicaDelegationPool;
 
   return (
     <>
@@ -63,7 +68,7 @@ export const ReserveConfiguration: React.FC<ReserveConfigurationProps> = ({ rese
           >
             Details
           </Typography>
-          {loadingPools && !pool ? (
+          {loadingPools || !pool ? (
             <Skeleton
               variant="rectangular"
               width="100%"
@@ -72,7 +77,6 @@ export const ReserveConfiguration: React.FC<ReserveConfigurationProps> = ({ rese
             />
           ) : (
             <SupplyInfo
-              reserve={reserve}
               currentMarketData={currentMarketData}
               renderCharts={renderCharts}
               showSupplyCapStatus={showSupplyCapStatus}

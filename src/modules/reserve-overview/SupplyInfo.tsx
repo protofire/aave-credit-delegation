@@ -1,4 +1,3 @@
-import { valueToBigNumber } from '@aave/math-utils';
 import { Trans } from '@lingui/macro';
 import { Box, Typography } from '@mui/material';
 import { CapsCircularStatus } from 'src/components/caps/CapsCircularStatus';
@@ -7,8 +6,6 @@ import { FormattedNumber } from 'src/components/primitives/FormattedNumber';
 import { Link } from 'src/components/primitives/Link';
 import { ReserveOverviewBox } from 'src/components/ReserveOverviewBox';
 import { ReserveSubheader } from 'src/components/ReserveSubheader';
-import { TextWithTooltip } from 'src/components/TextWithTooltip';
-import { ComputedReserveData } from 'src/hooks/app-data-provider/useAppDataProvider';
 import { AssetCapHookData } from 'src/hooks/useAssetCaps';
 import { MarketDataType } from 'src/utils/marketsAndNetworksConfig';
 
@@ -17,7 +14,6 @@ import { AtomicaDelegationPool } from '../credit-delegation/types';
 import { PanelItem } from './ReservePanels';
 
 interface SupplyInfoProps {
-  reserve: ComputedReserveData;
   currentMarketData: MarketDataType;
   renderCharts: boolean;
   showSupplyCapStatus: boolean;
@@ -26,7 +22,7 @@ interface SupplyInfoProps {
   pool: AtomicaDelegationPool;
 }
 
-export const SupplyInfo = ({ reserve, pool }: SupplyInfoProps) => {
+export const SupplyInfo = ({ pool }: SupplyInfoProps) => {
   const { balances, operator } = pool || {};
   const { operatorDetails } = useOperatorDetails(operator);
 
@@ -55,22 +51,8 @@ export const SupplyInfo = ({ reserve, pool }: SupplyInfoProps) => {
             <>
               <Trans>
                 Maximum amount available to supply is{' '}
-                <FormattedNumber
-                  value={
-                    valueToBigNumber(reserve.supplyCap).toNumber() -
-                    valueToBigNumber(reserve.totalLiquidity).toNumber()
-                  }
-                  variant="secondary12"
-                />{' '}
-                {reserve.symbol} (
-                <FormattedNumber
-                  value={
-                    valueToBigNumber(reserve.supplyCapUSD).toNumber() -
-                    valueToBigNumber(reserve.totalLiquidityUSD).toNumber()
-                  }
-                  variant="secondary12"
-                  symbol="USD"
-                />
+                <FormattedNumber value={pool?.poolCap} variant="secondary12" /> {pool.symbol} (
+                <FormattedNumber value={pool?.poolCapUsd} variant="secondary12" symbol="USD" />
                 ).
               </Trans>
             </>
@@ -81,20 +63,6 @@ export const SupplyInfo = ({ reserve, pool }: SupplyInfoProps) => {
           title={
             <Box display="flex" alignItems="center">
               <Trans>Pool Capacity</Trans>
-              <TextWithTooltip>
-                <>
-                  <Trans>
-                    Asset supply is limited to a certain amount to reduce protocol exposure to the
-                    asset and to help manage risks involved.
-                  </Trans>{' '}
-                  <Link
-                    href="https://docs.aave.com/developers/whats-new/supply-borrow-caps"
-                    underline="always"
-                  >
-                    <Trans>Learn more</Trans>
-                  </Link>
-                </>
-              </TextWithTooltip>
             </Box>
           }
         >

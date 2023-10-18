@@ -43,7 +43,7 @@ export const LendingPositionsListItem = ({
     rewardAPY,
     balances,
     markets,
-    asset,
+    aaveAsset: asset,
   } = poolVault;
 
   const { operatorDetails } = useOperatorDetails(operator);
