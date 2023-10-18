@@ -61,7 +61,7 @@ export const ListHeaderTitle = ({
         {children}
       </Typography>
 
-      {hasHint && <HintIcon key={sortKey} hintText={title || ''} />}
+      {hasHint && <HintIcon key={sortKey} hintId={title || ''} />}
 
       {!!sortKey && (
         <Box sx={{ display: 'inline-flex', flexDirection: 'column', ml: 1 }}>

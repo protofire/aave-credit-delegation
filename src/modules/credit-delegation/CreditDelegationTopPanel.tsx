@@ -48,7 +48,7 @@ export const CreditDelegationTopPanel = () => {
           title={
             <div style={{ display: 'flex' }}>
               <Trans>Your lending capacity</Trans>
-              <HintIcon key="lendingCapacity" hintText="Your lending capacity" />
+              <HintIcon key="lendingCapacity" hintId="Your lending capacity" />
             </div>
           }
           loading={loadingLendingCapacity}
@@ -73,7 +73,7 @@ export const CreditDelegationTopPanel = () => {
           title={
             <div style={{ display: 'flex' }}>
               <Trans>Lent</Trans>
-              <HintIcon key="lent" hintText="Lent" />
+              <HintIcon key="lent" hintId="Lent" />
             </div>
           }
           loading={loadingLendingCapacity}
@@ -98,7 +98,7 @@ export const CreditDelegationTopPanel = () => {
           title={
             <div style={{ display: 'flex' }}>
               <Trans>Your average APY</Trans>
-              <HintIcon key="averageApy" hintText="Your average APY" />
+              <HintIcon key="averageApy" hintId="Your average APY" />
             </div>
           }
           loading={loading}

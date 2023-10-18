@@ -26,7 +26,12 @@ const head = [
     tooltip: 'Pool Operator',
     hasHint: true,
   },
-  { title: <Trans key="borrowers">Borrowers</Trans>, sortKey: 'borrowers' },
+  {
+    title: <Trans key="borrowers">Borrowers</Trans>,
+    sortKey: 'borrowers',
+    tooltip: 'Borrowers',
+    hasHint: true,
+  },
   {
     title: <Trans>My Asset Balance</Trans>,
     sortKey: 'balance',

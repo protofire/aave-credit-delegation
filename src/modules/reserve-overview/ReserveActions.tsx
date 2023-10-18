@@ -326,7 +326,7 @@ const SupplyAction = ({ value, usdValue, symbol, disable, onActionClicked }: Act
       /> */}
       <HintIcon
         key="availableLend"
-        hintText="Available to lend"
+        hintId="Available to lend"
         text={<Typography variant="h3">Available to lend</Typography>}
       />
       <Stack
@@ -371,7 +371,7 @@ const BorrowAction = ({
     <Stack>
       <HintIcon
         key="availableWithdraw"
-        hintText="Available to withdraw"
+        hintId="Available to withdraw"
         text={<Typography variant="h3">Available to withdraw</Typography>}
       />
       <Stack
@@ -383,15 +383,18 @@ const BorrowAction = ({
       >
         <Stack direction="column" justifyContent="space-evenly" alignItems="flex-start">
           <Box>
-            <Trans>Remaining initial deposit</Trans>
+            <HintIcon
+              hintId="Remaining initial deposit"
+              text={<Trans>Remaining initial deposit</Trans>}
+            />
           </Box>
 
           <Box>
-            <Trans>Interest</Trans>
+            <HintIcon hintId="Interest" text={<Trans>Interest</Trans>} />
           </Box>
 
           <Box>
-            <Trans>Rewards</Trans>
+            <HintIcon hintId="Rewards" text={<Trans>Rewards</Trans>} />
           </Box>
         </Stack>
 
@@ -515,7 +518,7 @@ const DepositedAmount = ({ value, symbol, usdValue, type }: DepositedAmountProps
           <Typography variant="description" color="text.secondary">
             {text}
           </Typography>
-          <HintIcon key={value} hintText={text} />
+          <HintIcon key={value} hintId={text} />
         </Box>
         {type === 'deposit' && <ValueWithSymbol value={value || '0'} symbol={symbol} />}
         <FormattedNumber

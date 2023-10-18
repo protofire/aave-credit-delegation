@@ -16,7 +16,12 @@ import { ListLoader } from '../ListLoader';
 import { BorrowerListItem } from './BorrowerListItem';
 
 const head = [
-  { title: <Trans key="product">Product</Trans>, sortKey: 'product' },
+  {
+    title: <Trans key="product">Product</Trans>,
+    sortKey: 'product',
+    hasHint: true,
+    tooltip: 'Product',
+  },
   { title: <Trans key="market">Borrower</Trans>, sortKey: 'market' },
   {
     title: <Trans key="market">Credit line size</Trans>,

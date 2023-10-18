@@ -1150,16 +1150,13 @@ msgid "My Asset Balance"
 msgstr "My Asset Balance"
 
 #: src/modules/credit-delegation/lists/AssetsToLend/AssetsToLendList.tsx
+#: src/modules/credit-delegation/lists/PoolsList/PoolsList.tsx
 msgid "My Lending Capacity"
 msgstr "My Lending Capacity"
 
 #: src/modules/credit-delegation/modals/WithdrawPool/ManageVaultModalContent.tsx
 msgid "My Pool Balance"
 msgstr "My Pool Balance"
-
-#: src/modules/credit-delegation/lists/PoolsList/PoolsList.tsx
-msgid "My lending Capacity"
-msgstr "My lending Capacity"
 
 #: src/modules/credit-delegation/lists/AllMarketsList/AllMarketsList.tsx
 #: src/modules/credit-delegation/lists/MarketsList/MarketsList.tsx

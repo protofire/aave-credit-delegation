@@ -34,6 +34,7 @@ const head = [
     title: <Trans>My Lending Capacity</Trans>,
     sortKey: 'lendingCapacity',
     tooltip: 'My Lending Capacity',
+    hasHint: true,
   },
 ];
 
