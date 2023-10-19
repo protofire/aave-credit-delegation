@@ -311,6 +311,15 @@ export interface AtomicaLendingPosition {
   remainingPrincipal: string;
 }
 
+export interface AssetToBorrow {
+  asset: TokenMetadataType;
+  markets: AtomicaBorrowMarket[];
+  minApr: number;
+  maxApr: number;
+  available: number;
+  availableUsd: number;
+}
+
 export interface LoanRequest {
   id: string;
   policyId: string;
