@@ -1,29 +1,15 @@
-import { API_ETH_MOCK_ADDRESS, InterestRate } from '@aave/contract-helpers';
-import { USD_DECIMALS, valueToBigNumber } from '@aave/math-utils';
 import { Trans } from '@lingui/macro';
 import { Typography, useMediaQuery, useTheme } from '@mui/material';
-import { Fragment, useState } from 'react';
+import { compact, uniqBy } from 'lodash';
+import { Fragment, useMemo, useState } from 'react';
 import { ListColumn } from 'src/components/lists/ListColumn';
 import { ListHeaderTitle } from 'src/components/lists/ListHeaderTitle';
 import { ListHeaderWrapper } from 'src/components/lists/ListHeaderWrapper';
-import { AssetCapsProvider } from 'src/hooks/useAssetCaps';
-import { fetchIconSymbolAndName } from 'src/ui-config/reservePatches';
 
 import { ListWrapper } from '../../../../components/lists/ListWrapper';
-import {
-  ComputedReserveData,
-  useAppDataContext,
-} from '../../../../hooks/app-data-provider/useAppDataProvider';
-import { useProtocolDataContext } from '../../../../hooks/useProtocolDataContext';
-import {
-  DASHBOARD_LIST_COLUMN_WIDTHS,
-  DashboardReserve,
-  handleSortDashboardReserves,
-} from '../../../../utils/dashboardSortUtils';
-import {
-  assetCanBeBorrowedByUser,
-  getMaxAmountAvailableToBorrow,
-} from '../../../../utils/getMaxAmountAvailableToBorrow';
+import { DASHBOARD_LIST_COLUMN_WIDTHS } from '../../../../utils/dashboardSortUtils';
+import { useCreditDelegationContext } from '../../CreditDelegationContext';
+import { AssetToBorrow } from '../../types';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListLoader } from '../ListLoader';
 import { AssetsToBorrowListItem } from './AssetsToBorrowListItem';
@@ -49,79 +35,39 @@ const head = [
 ];
 
 export const AssetsToBorrowList = () => {
-  const { currentNetworkConfig } = useProtocolDataContext();
-  const { user, reserves, marketReferencePriceInUsd, loading } = useAppDataContext();
+  const { markets, loading: marketsLoading } = useCreditDelegationContext();
+
+  const rows: AssetToBorrow[] = useMemo(() => {
+    if (marketsLoading) return [];
+    const tokens = compact(
+      uniqBy(
+        markets.map((market) => market.asset),
+        'address'
+      )
+    );
+
+    return tokens.map((token) => {
+      const rowMarkets = markets.filter((market) => market.asset?.address === token.address);
+      return {
+        asset: token,
+        markets: rowMarkets,
+        minApr: Math.min(...rowMarkets.map((market) => Number(market.apr))),
+        maxApr: Math.max(...rowMarkets.map((market) => Number(market.apr))),
+        available: rowMarkets.reduce((acc, market) => acc + Number(market.availableBorrows), 0),
+        availableUsd: rowMarkets.reduce(
+          (acc, market) => acc + Number(market.availableBorrowsInUSD),
+          0
+        ),
+      };
+    });
+  }, [markets, marketsLoading]);
+
   const theme = useTheme();
   const downToXSM = useMediaQuery(theme.breakpoints.down('xsm'));
   const [sortName, setSortName] = useState('');
   const [sortDesc, setSortDesc] = useState(false);
 
-  const { baseAssetSymbol } = currentNetworkConfig;
-
-  const tokensToBorrow = reserves
-    .filter((reserve) => ['usdc', 'ghst'].includes(reserve.symbol.toLowerCase()))
-    .filter((reserve) => assetCanBeBorrowedByUser(reserve, user))
-    .map((reserve: ComputedReserveData) => {
-      const availableBorrows = user
-        ? Number(getMaxAmountAvailableToBorrow(reserve, user, InterestRate.Variable))
-        : 0;
-
-      const availableBorrowsInUSD = valueToBigNumber(availableBorrows)
-        .multipliedBy(reserve.formattedPriceInMarketReferenceCurrency)
-        .multipliedBy(marketReferencePriceInUsd)
-        .shiftedBy(-USD_DECIMALS)
-        .toFixed(2);
-
-      return {
-        ...reserve,
-        reserve,
-        totalBorrows: reserve.totalDebt,
-        availableBorrows,
-        availableBorrowsInUSD,
-        stableBorrowRate:
-          reserve.stableBorrowRateEnabled && reserve.borrowingEnabled
-            ? Number(reserve.stableBorrowAPY)
-            : -1,
-        variableBorrowRate: reserve.borrowingEnabled ? Number(reserve.variableBorrowAPY) : -1,
-        iconSymbol: reserve.iconSymbol === 'GHST' ? 'GHO' : reserve.iconSymbol,
-        symbol: reserve.symbol === 'GHST' ? 'GHO' : reserve.symbol,
-
-        ...(reserve.isWrappedBaseAsset
-          ? fetchIconSymbolAndName({
-              symbol: baseAssetSymbol,
-              underlyingAsset: API_ETH_MOCK_ADDRESS.toLowerCase(),
-            })
-          : {}),
-      };
-    });
-
-  const maxBorrowAmount = valueToBigNumber(user?.totalBorrowsMarketReferenceCurrency || '0').plus(
-    user?.availableBorrowsMarketReferenceCurrency || '0'
-  );
-  const collateralUsagePercent = maxBorrowAmount.eq(0)
-    ? '0'
-    : valueToBigNumber(user?.totalBorrowsMarketReferenceCurrency || '0')
-        .div(maxBorrowAmount)
-        .toFixed();
-
-  // Filter out reserves with no liquidity or debt
-  const borrowReserves: unknown =
-    user?.totalCollateralMarketReferenceCurrency === '0' || +collateralUsagePercent >= 0.98
-      ? tokensToBorrow
-      : tokensToBorrow.filter(
-          ({ availableBorrowsInUSD, totalLiquidityUSD }) =>
-            availableBorrowsInUSD !== '0.00' && totalLiquidityUSD !== '0'
-        );
-
-  // Transform to the DashboardReserve schema so the sort utils can work with it
-  const preSortedReserves = borrowReserves as DashboardReserve[];
-  const sortedReserves = handleSortDashboardReserves(
-    sortDesc,
-    sortName,
-    'asset',
-    preSortedReserves
-  );
-  const borrowDisabled = !sortedReserves.length;
+  const borrowDisabled = !rows.length;
 
   const RenderHeader: React.FC = () => {
     return (
@@ -150,7 +96,7 @@ export const AssetsToBorrowList = () => {
     );
   };
 
-  if (loading)
+  if (marketsLoading)
     return (
       <ListLoader
         title={<Trans>Assets to borrow</Trans>}
@@ -175,12 +121,10 @@ export const AssetsToBorrowList = () => {
       }}
     >
       <>
-        {!downToXSM && !!sortedReserves.length && <RenderHeader />}
-        {sortedReserves?.map((item) => (
-          <Fragment key={item.underlyingAsset}>
-            <AssetCapsProvider asset={item.reserve}>
-              <AssetsToBorrowListItem {...item} />
-            </AssetCapsProvider>
+        {!downToXSM && !!rows.length && <RenderHeader />}
+        {rows?.map((item) => (
+          <Fragment key={item.asset.address}>
+            <AssetsToBorrowListItem {...item} />
           </Fragment>
         ))}
       </>
