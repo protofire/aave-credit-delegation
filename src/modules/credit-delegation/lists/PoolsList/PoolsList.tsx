@@ -36,7 +36,13 @@ const head = [
     tooltip: 'My Lending Capacity',
     hasHint: true,
   },
-  { title: <Trans key="APY">APY</Trans>, sortKey: 'supplyAPY' },
+  {
+    title: <Trans>My Wallet Capacity</Trans>,
+    sortKey: 'lendingCapacityWallet',
+    tooltip: 'My Wallet Capacity',
+    hasHint: true,
+  },
+  { title: <Trans key="APY">APY</Trans>, sortKey: 'supplyAPY', hasHint: true, tooltip: 'APY' },
 ];
 
 interface HeaderProps {

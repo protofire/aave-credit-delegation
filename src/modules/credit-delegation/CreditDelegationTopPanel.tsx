@@ -13,6 +13,7 @@ import { TopInfoPanel } from '../../components/TopInfoPanel/TopInfoPanel';
 import { TopInfoPanelItem } from '../../components/TopInfoPanel/TopInfoPanelItem';
 import { useAppDataContext } from '../../hooks/app-data-provider/useAppDataProvider';
 import { useCreditDelegationContext } from './CreditDelegationContext';
+import { useZapper } from './hooks/useZapper';
 // import { LendingCapacityTooltip } from './LendingCapacityTooltip';
 import { HintIcon } from './lists/HintIcon';
 
@@ -27,8 +28,19 @@ export const CreditDelegationTopPanel = () => {
   const { lendingCapacity, lent, loadingLendingCapacity, averageApy } =
     useCreditDelegationContext();
 
+  const balances = useZapper();
+
   const valueTypographyVariant = downToSM ? 'main16' : 'main21';
   const noDataTypographyVariant = downToSM ? 'secondary16' : 'secondary21';
+
+  const sumLendingCapacity = React.useMemo(() => {
+    if (!balances) return Number(lendingCapacity);
+    return (
+      balances.reduce((acc, item) => {
+        return acc + item.balanceUSD;
+      }, 0) + Number(lendingCapacity)
+    );
+  }, [lendingCapacity, balances]);
 
   return (
     <>
@@ -55,7 +67,7 @@ export const CreditDelegationTopPanel = () => {
         >
           {currentAccount ? (
             <FormattedNumber
-              value={Number(lendingCapacity || 0)}
+              value={sumLendingCapacity}
               symbol="USD"
               variant={valueTypographyVariant}
               visibleDecimals={2}

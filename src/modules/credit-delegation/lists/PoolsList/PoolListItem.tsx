@@ -8,6 +8,7 @@ import { TextWithTooltip } from 'src/components/TextWithTooltip';
 import { useModalContext } from 'src/hooks/useModal';
 
 import { useOperatorDetails } from '../../hooks/useOperatorDetails';
+import { useWalletBalance } from '../../hooks/useWalletBalance';
 import { AtomicaDelegationPool } from '../../types';
 import { ListAPRColumn } from '../ListAPRColumn';
 import { ListButtonsColumn } from '../ListButtonsColumn';
@@ -34,6 +35,7 @@ export const PoolListItem = ({
   const router = useRouter();
 
   const { operatorDetails } = useOperatorDetails(operator);
+  const balance = useWalletBalance(underlyingAsset);
 
   const incentives = balances?.rewardCurrentEarnings?.map((earning) => {
     return {
@@ -90,6 +92,14 @@ export const PoolListItem = ({
         subValue={Number(availableBalanceUsd)}
         withTooltip
         disabled={Number(availableBalance) === 0}
+      />
+
+      <ListValueColumn
+        symbol={symbol}
+        value={balance.amount || ''}
+        subValue={balance.amountUSD || ''}
+        withTooltip
+        disabled={balance.amount === '0'}
       />
 
       <ListAPRColumn

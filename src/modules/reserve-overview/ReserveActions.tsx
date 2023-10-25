@@ -59,9 +59,7 @@ export const ReserveActions = ({ reserve, poolId, underlyingAsset }: ReserveActi
   const { currentNetworkConfig } = useProtocolDataContext();
   const { user, loading: loadingReserves, marketReferencePriceInUsd } = useAppDataContext();
   const { walletBalances, loading: loadingWalletBalance } = useWalletBalances();
-  // const {
-  //   poolComputed: { minRemainingBaseTokenBalance },
-  // } = useRootStore();
+
   const { pools, loading: loadingPools, loansLoading, loans } = useCreditDelegationContext();
   const { getExternalReserve } = useExternalDataProvider();
   const [poolReserve, setPoolReserve] = React.useState<ComputedReserveData | undefined>(reserve);
@@ -96,7 +94,7 @@ export const ReserveActions = ({ reserve, poolId, underlyingAsset }: ReserveActi
   let balance = useWalletBalance(assets[0]?.address);
 
   if (poolReserve?.isWrappedBaseAsset && selectedAsset === baseAssetSymbol) {
-    balance = walletBalances[API_ETH_MOCK_ADDRESS.toLowerCase()];
+    balance = { ...walletBalances[API_ETH_MOCK_ADDRESS.toLowerCase()], price: 0 };
   }
 
   const maxAmountToBorrow = reserve
@@ -184,6 +182,9 @@ export const ReserveActions = ({ reserve, poolId, underlyingAsset }: ReserveActi
     [interestRemainingUsd, requiredRepayAmountUsd, unclaimedEarnings]
   );
 
+  const availableBalance = Number(pool?.availableBalance) + Number(balance?.amount);
+  const availableBalanceUsd = Number(pool?.availableBalanceUsd) + Number(balance?.amountUSD);
+
   if (!currentAccount && !isPermissionsLoading) {
     return <ConnectWallet loading={loadingWeb3Context} />;
   }
@@ -226,8 +227,8 @@ export const ReserveActions = ({ reserve, poolId, underlyingAsset }: ReserveActi
           <Divider sx={{ my: 6 }} />
           <Stack gap={3}>
             <SupplyAction
-              value={reserve ? pool?.availableBalance.toString() : balance.amount ?? '0'}
-              usdValue={reserve ? pool?.availableBalanceUsd.toString() : balance.amountUSD ?? '0'}
+              value={availableBalance.toString()}
+              usdValue={availableBalanceUsd.toString()}
               symbol={selectedAsset}
               disable={false}
               onActionClicked={() => openCreditDelegation(poolId, pool?.underlyingAsset)}

@@ -44,7 +44,7 @@ const head = [
     tooltip: 'Unclaimed Earnings',
     hasHint: true,
   },
-  { title: <Trans key="APY">APY</Trans>, sortKey: 'supplyAPY' },
+  { title: <Trans key="APY">APY</Trans>, sortKey: 'supplyAPY', tooltip: 'APY', hasHint: true },
 ];
 
 interface HeaderProps {

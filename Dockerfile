@@ -72,6 +72,9 @@ ENV NEXT_PUBLIC_BORROWERS_META_SHEET_ID=$next_public_borrowers_meta_sheet_id
 ARG next_public_markets_config_sheet_id
 ENV NEXT_PUBLIC_MARKETS_CONFIG_SHEET_ID=$next_public_markets_config_sheet_id
 
+ARG next_public_zapper_api_key
+ENV NEXT_PUBLIC_ZAPPER_API_KEY=$next_public_zapper_api_key
+
 RUN yarn install --frozen-lockfile
 
 RUN yarn build
