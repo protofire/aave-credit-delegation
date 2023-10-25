@@ -23,6 +23,8 @@ const head = [
   {
     title: <Trans>APY</Trans>,
     sortKey: 'apy',
+    tooltip: 'APY',
+    hasHint: true,
   },
   {
     title: <Trans>Secured By</Trans>,
@@ -31,9 +33,15 @@ const head = [
     hasHint: true,
   },
   {
-    title: <Trans>My Lending Capacity</Trans>,
-    sortKey: 'lendingCapacity',
-    tooltip: 'My Lending Capacity',
+    title: <Trans>My Aave Capacity</Trans>,
+    sortKey: 'lendingCapacityAave',
+    tooltip: 'My Aave Capacity',
+    hasHint: true,
+  },
+  {
+    title: <Trans>My Wallet Capacity</Trans>,
+    sortKey: 'lendingCapacityWallet',
+    tooltip: 'My Wallet Capacity',
     hasHint: true,
   },
 ];

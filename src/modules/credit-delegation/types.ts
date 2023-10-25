@@ -488,3 +488,15 @@ export interface AssetToLend {
   lendingCapacity: number;
   lendingCapacityUsd: number;
 }
+
+export interface ZapperBalance {
+  name: string;
+  symbol: string;
+  decimals: number;
+  address: string;
+  coingeckoId: string;
+  priceUSD: number;
+  balanceNormalized: number;
+  balanceUSD: number;
+  balanceRaw: string;
+}

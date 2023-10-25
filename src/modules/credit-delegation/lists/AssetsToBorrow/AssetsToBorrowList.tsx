@@ -43,6 +43,8 @@ const head = [
   {
     title: <Trans>APY</Trans>,
     sortKey: 'apy',
+    tooltip: 'APY',
+    hasHint: true,
   },
 ];
 

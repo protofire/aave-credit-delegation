@@ -1136,11 +1136,14 @@ msgstr "Modify Desired Credit Line Size"
 msgid "Modifying desired credit line size..."
 msgstr "Modifying desired credit line size..."
 
+#: src/modules/credit-delegation/lists/AssetsToLend/AssetsToLendList.tsx
+msgid "My Aave Capacity"
+msgstr "My Aave Capacity"
+
 #: src/modules/credit-delegation/lists/LendingPositionsList/LendingPositionsList.tsx
 msgid "My Asset Balance"
 msgstr "My Asset Balance"
 
-#: src/modules/credit-delegation/lists/AssetsToLend/AssetsToLendList.tsx
 #: src/modules/credit-delegation/lists/PoolsList/PoolsList.tsx
 msgid "My Lending Capacity"
 msgstr "My Lending Capacity"
@@ -1148,6 +1151,11 @@ msgstr "My Lending Capacity"
 #: src/modules/credit-delegation/modals/WithdrawPool/ManageVaultModalContent.tsx
 msgid "My Pool Balance"
 msgstr "My Pool Balance"
+
+#: src/modules/credit-delegation/lists/AssetsToLend/AssetsToLendList.tsx
+#: src/modules/credit-delegation/lists/PoolsList/PoolsList.tsx
+msgid "My Wallet Capacity"
+msgstr "My Wallet Capacity"
 
 #: src/modules/credit-delegation/lists/AllMarketsList/AllMarketsList.tsx
 #: src/modules/credit-delegation/lists/MarketsList/MarketsList.tsx

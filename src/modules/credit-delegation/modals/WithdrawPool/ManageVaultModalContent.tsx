@@ -18,10 +18,10 @@ import {
 } from 'src/components/transactions/FlowCommons/TxModalDetails';
 import { useModalContext } from 'src/hooks/useModal';
 
-import { usePollPrice } from '../../hooks/usePollPrice';
 import { useRiskPool } from '../../hooks/useRiskPool';
 import { useTickingReward } from '../../hooks/useTickingReward';
 import { useTokensData } from '../../hooks/useTokensData';
+import { useWalletBalance } from '../../hooks/useWalletBalance';
 import { AtomicaDelegationPool } from '../../types';
 import { ManageVaultModalActions } from './ManageVaultModalActions';
 
@@ -108,7 +108,7 @@ export const ManageVaultModalContent = memo(
 
     const { data: assets } = useTokensData(useMemo(() => [underlyingAsset], [underlyingAsset]));
 
-    const price = usePollPrice(assets[0]?.symbol);
+    const { price } = useWalletBalance(underlyingAsset);
 
     const { earnings } = rewards || {};
 
@@ -144,6 +144,8 @@ export const ManageVaultModalContent = memo(
       .toString();
 
     const usdValue = valueToBigNumber(receiveAmount).multipliedBy(price ?? '0');
+
+    // console.log('usdValue', usdValue.toString(10));
 
     const normalizedBalanceUSD = valueToBigNumber(totalAmount).multipliedBy(price ?? '0');
 

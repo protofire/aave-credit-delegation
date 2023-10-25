@@ -1,75 +1,134 @@
-// import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useWeb3Context } from 'src/libs/hooks/useWeb3Context';
+import { getNetworkConfig } from 'src/utils/marketsAndNetworksConfig';
 
-// const apiKey = 'eb39ea1e-bfb0-479b-b225-70ff3da5c1ba';
-// const address = '0x31C2cb2cd72a0a35Bf1839a2e0d383566bf904b0';
+import { createCache } from '../cache';
+import { NEXT_PUBLIC_ZAPPER_API_KEY } from '../consts';
+import { ZapperBalance } from '../types';
 
-// const Authorization = `Basic ${Buffer.from(`${apiKey}:`, 'binary').toString('base64')}`;
+interface ZapperResponse {
+  key: string;
+  address: string;
+  network: string;
+  updatedAt: string;
+  token: {
+    id: string;
+    networkId: number;
+    address: string;
+    name: string;
+    symbol: string;
+    decimals: number;
+    coingeckoId: string;
+    priceUpdatedAt: string;
+    price: number;
+    balance: number;
+    balanceUSD: number;
+    balanceRaw: string;
+  };
+}
 
-// // {
-// //     "statusCode": 400,
-// //     "code": "FST_ERR_CTP_EMPTY_JSON_BODY",
-// //     "error": "Bad Request",
-// //     "message": "Body cannot be empty when content-type is set to 'application/json'"
-// // }
+const INTERVAL = 1000 * 60 * 5;
 
-// const getBalances = async () => {
-//   const response = await fetch(
-//     `https://api.zapper.xyz/v2/balances/tokens?addresses%5B%5D=${address}`,
-//     {
-//       method: 'POST',
-//       headers: {
-//         accept: '*/*',
-//         Authorization,
-//       },
-//     }
-//   );
+const cache = createCache<ZapperBalance[]>({ expirationDelay: INTERVAL });
 
-//   const data = await response.json();
+let timeOut: NodeJS.Timeout | undefined;
 
-//   const jobId = data.jobId;
+const Authorization = `Basic ${Buffer.from(`${NEXT_PUBLIC_ZAPPER_API_KEY}:`, 'binary').toString(
+  'base64'
+)}`;
 
-//   let jobStatus;
+const requestInfo = (method: string) => ({
+  method,
+  headers: {
+    accept: '*/*',
+    Authorization,
+  },
+});
 
-//   do {
-//     const jobStatusResponse = await fetch(
-//       `https://api.zapper.xyz/v2/balances/job-status?jobId=${jobId}`,
-//       {
-//         method: 'GET',
-//         headers: {
-//           accept: '*/*',
-//           Authorization,
-//         },
-//       }
-//     );
-//     const jobData = await jobStatusResponse.json();
+const parseZapperBalance = (balances?: ZapperResponse[]): ZapperBalance[] | undefined => {
+  return balances?.map(({ token }) => {
+    return {
+      name: token.name,
+      symbol: token.symbol,
+      address: token.address,
+      decimals: token.decimals,
+      coingeckoId: token.coingeckoId,
+      priceUSD: token.price,
+      balanceNormalized: token.balance,
+      balanceUSD: token.balanceUSD,
+      balanceRaw: token.balanceRaw,
+    };
+  });
+};
 
-//     jobStatus = jobData.status;
-//     // add delay to avoid overloading the server
-//     await new Promise((resolve) => setTimeout(resolve, 1000));
-//   } while (jobStatus !== 'completed');
-//   {
-//     const balancesResponse = await fetch(
-//       `https://api.zapper.xyz/v2/balances/tokens?addresses%5B%5D=${address}`,
-//       {
-//         method: 'GET',
-//         headers: {
-//           accept: '*/*',
-//           Authorization,
-//         },
-//       }
-//     );
-//     const balances = await balancesResponse.json();
-//     console.log('ZAPPER', balances);
-//     return balances;
-//   }
-// };
+const getBalances = async (currentAccount: string, network: string) => {
+  // Testing purposes only
+  const networkName = network === 'Mumbai' ? 'polygon' : network;
 
-// export const useZapper = () => {
-//   //   const [zapper, setZapper] = useState<any>();
+  const response = await fetch(
+    `https://api.zapper.xyz/v2/balances/tokens?addresses%5B%5D=${currentAccount}&networks%5B%5D=${networkName}`,
+    requestInfo('POST')
+  );
 
-//   useEffect(() => {
-//     getBalances().then((data) => setZapper(data));
-//   }, []);
+  const { jobId } = await response.json();
+  let jobStatus;
 
-//   return zapper;
-// };
+  do {
+    const jobStatusResponse = await fetch(
+      `https://api.zapper.xyz/v2/balances/job-status?jobId=${jobId}`,
+      requestInfo('GET')
+    );
+    const { status } = await jobStatusResponse.json();
+    jobStatus = status;
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  } while (jobStatus !== 'completed');
+  {
+    const balancesResponse = await fetch(
+      `https://api.zapper.xyz/v2/balances/tokens?addresses%5B%5D=${currentAccount}&networks%5B%5D=${networkName}`,
+      requestInfo('GET')
+    );
+    const balances = await balancesResponse.json();
+
+    const zapperBalances = parseZapperBalance(Object.values(balances)[0] as ZapperResponse[]) || [];
+    cache.set(currentAccount.toLowerCase(), zapperBalances);
+
+    return zapperBalances;
+  }
+};
+
+const refreshBalance = async (currentAccount: string, network: string) => {
+  if (timeOut === undefined) {
+    getBalances(currentAccount, network);
+    timeOut = setInterval(() => getBalances(currentAccount, network), INTERVAL);
+  }
+};
+
+export const useZapper = () => {
+  const { currentAccount, chainId } = useWeb3Context();
+  const [balances, setBalances] = useState<ZapperBalance[]>(
+    currentAccount ? cache.get(currentAccount.toLowerCase()) ?? [] : []
+  );
+
+  const { name: networkName } = getNetworkConfig(chainId);
+
+  useEffect(() => {
+    if (!currentAccount || !networkName) return;
+
+    const currentBalances = cache.get(currentAccount.toLowerCase());
+
+    if (currentBalances) setBalances(currentBalances);
+
+    refreshBalance(currentAccount, networkName);
+  }, [currentAccount, networkName]);
+
+  useEffect(() => {
+    if (!currentAccount) return;
+
+    const unsubscribe = cache.subscribe(currentAccount.toLowerCase(), setBalances);
+
+    return unsubscribe;
+  }, [currentAccount]);
+
+  return balances;
+};

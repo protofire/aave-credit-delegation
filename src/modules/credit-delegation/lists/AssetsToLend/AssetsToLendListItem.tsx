@@ -3,6 +3,7 @@ import { Button } from '@mui/material';
 import { ListColumn } from 'src/components/lists/ListColumn';
 
 import { useCreditDelegationContext } from '../../CreditDelegationContext';
+import { useWalletBalance } from '../../hooks/useWalletBalance';
 import { AssetToLend } from '../../types';
 import { ListButtonsColumn } from '../ListButtonsColumn';
 import { ListItemWrapper } from '../ListItemWrapper';
@@ -19,6 +20,7 @@ export const AssetsToLendListItem = ({
   asset,
 }: AssetToLend) => {
   const { setActiveTab } = useCreditDelegationContext();
+  const balance = useWalletBalance(asset?.address);
 
   return (
     <ListItemWrapper
@@ -37,6 +39,12 @@ export const AssetsToLendListItem = ({
         subValue={Number.isNaN(lendingCapacity) ? '0' : lendingCapacityUsd}
       />
 
+      <ListValueColumn
+        symbol={symbol}
+        value={balance.amount || ''}
+        subValue={balance.amountUSD || ''}
+        withTooltip
+      />
       <ListButtonsColumn>
         <Button variant="contained" onClick={() => setActiveTab('delegate')}>
           <Trans>Explore Pools</Trans>

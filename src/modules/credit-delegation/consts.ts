@@ -10,6 +10,8 @@ export const NEXT_PUBLIC_BORROWERS_META_SHEET_ID = `${process.env.NEXT_PUBLIC_BO
 
 export const NEXT_PUBLIC_MARKETS_CONFIG_SHEET_ID = `${process.env.NEXT_PUBLIC_MARKETS_CONFIG_SHEET_ID}`;
 
+export const NEXT_PUBLIC_ZAPPER_API_KEY = `${process.env.NEXT_PUBLIC_ZAPPER_API_KEY}`;
+
 export const PRODUCT_IDS = ['1', '2', '3', '4', '5'];
 
 export const POOL_OPERATOR_IDS = ['0x31C2cb2cd72a0a35Bf1839a2e0d383566bf904b0'];
